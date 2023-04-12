@@ -25,9 +25,15 @@ type NestedBlock struct {
 	OptionalArgs         *Args
 	RequiredNestedBlocks *NestedBlocks
 	OptionalNestedBlocks *NestedBlocks
-	ParentBlockNames     []string
+	Path                 []string
 	emit                 func(block Block) error
 }
+
+func (b *NestedBlock) emitter() func(block Block) error {
+	return b.emit
+}
+
+var _ block = &NestedBlock{}
 
 // CheckBlock checks the nestedBlock recursively to find the block not in order,
 // and invoke the emit function on that block
@@ -157,7 +163,7 @@ func (b *NestedBlock) nestedBlocks() []*NestedBlock {
 }
 
 func (b *NestedBlock) buildAttributes(attributes hclsyntax.Attributes) {
-	argSchemas := queryBlockSchema(b.ParentBlockNames)
+	argSchemas := queryBlockSchema(b.Path)
 	attrs := attributesByLines(attributes)
 	for _, attr := range attrs {
 		attrName := attr.Name
@@ -197,22 +203,22 @@ func (b *NestedBlock) buildNestedBlock(nestedBlock *hclsyntax.Block) {
 	}
 	var parentBlockNames []string
 	if nestedBlockName == "content" && b.Block.Type == "dynamic" {
-		parentBlockNames = b.ParentBlockNames
+		parentBlockNames = b.Path
 	} else {
-		parentBlockNames = append(b.ParentBlockNames, nestedBlockName)
+		parentBlockNames = append(b.Path, nestedBlockName)
 	}
 	nb := &NestedBlock{
-		Name:             nestedBlockName,
-		SortField:        sortField,
-		Range:            nestedBlock.Range(),
-		Block:            nestedBlock,
-		ParentBlockNames: parentBlockNames,
-		File:             b.File,
-		emit:             b.emit,
+		Name:      nestedBlockName,
+		SortField: sortField,
+		Range:     nestedBlock.Range(),
+		Block:     nestedBlock,
+		Path:      parentBlockNames,
+		File:      b.File,
+		emit:      b.emitter(),
 	}
 	nb.buildAttributes(nestedBlock.Body.Attributes)
 	nb.buildNestedBlocks(nestedBlock.Body.Blocks)
-	blockSchema := queryBlockSchema(b.ParentBlockNames)
+	blockSchema := queryBlockSchema(b.Path)
 	if metaArgOrUnknownBlock(blockSchema) {
 		b.addOptionalNestedBlock(nb)
 		return
@@ -301,4 +307,12 @@ func (b *NestedBlock) checkGap() bool {
 		lastEndLine = r.End.Line
 	}
 	return true
+}
+
+func (b *NestedBlock) file() *hcl.File {
+	return b.File
+}
+
+func (b *NestedBlock) path() []string {
+	return b.Path
 }
