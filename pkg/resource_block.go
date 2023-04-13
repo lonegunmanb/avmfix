@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	tfjson "github.com/hashicorp/terraform-json"
-	"sort"
 	"strings"
 )
 
@@ -28,9 +27,11 @@ type Block interface {
 }
 
 var _ block = &ResourceBlock{}
+var _ rootBlock = &ResourceBlock{}
 
 // ResourceBlock is the wrapper of a resource block
 type ResourceBlock struct {
+	*AbstractBlock
 	Name                 string
 	Type                 string
 	File                 *hcl.File
@@ -46,6 +47,10 @@ type ResourceBlock struct {
 	Path                 []string
 	emit                 func(block Block) error
 	writeBlock           *hclwrite.Block
+}
+
+func (b *ResourceBlock) headMetaArgs() *HeadMetaArgs {
+	return b.HeadMetaArgs
 }
 
 // CheckBlock checks the resource block and nested block recursively to find the block not in order,
@@ -74,17 +79,18 @@ func BuildResourceBlock(block *hclsyntax.Block, file *hcl.File,
 	wFile, _ := hclwrite.ParseConfig(file.Bytes, "", hcl.InitialPos)
 	wBlock := wFile.Body().FirstMatchingBlock(block.Type, block.Labels)
 	b := &ResourceBlock{
-		Type:       block.Labels[0],
-		Name:       block.Labels[1],
-		File:       file,
-		writeFile:  wFile,
-		writeBlock: wBlock,
-		Block:      block,
-		Path:       []string{block.Type, block.Labels[0]},
-		emit:       emitter,
+		AbstractBlock: &AbstractBlock{},
+		Type:          block.Labels[0],
+		Name:          block.Labels[1],
+		File:          file,
+		writeFile:     wFile,
+		writeBlock:    wBlock,
+		Block:         block,
+		Path:          []string{block.Type, block.Labels[0]},
+		emit:          emitter,
 	}
-	b.buildArgs(block.Body.Attributes)
-	b.buildNestedBlocks(block.Body.Blocks)
+	buildArgs(b, block.Body.Attributes)
+	buildNestedBlocks(b, block.Body.Blocks)
 	return b
 }
 
@@ -142,86 +148,6 @@ func (b *ResourceBlock) nestedBlocks() []*NestedBlock {
 	return nbs
 }
 
-func (b *ResourceBlock) buildArgs(attributes hclsyntax.Attributes) {
-	resourceBlock := queryBlockSchema(b.Path)
-	for _, attr := range attributesByLines(attributes) {
-		attrName := attr.Name
-		arg := buildAttrArg(attr, b.File)
-		if IsHeadMeta(attrName) {
-			b.addHeadMetaArg(arg)
-			continue
-		}
-		if IsTailMeta(attrName) {
-			b.addTailMetaArg(arg)
-			continue
-		}
-		if resourceBlock == nil {
-			b.addOptionalAttr(arg)
-			continue
-		}
-		attrSchema, isAzAttr := resourceBlock.Attributes[attrName]
-		if isAzAttr && attrSchema.Required {
-			b.addRequiredAttr(arg)
-		} else {
-			b.addOptionalAttr(arg)
-		}
-	}
-}
-
-func attributesByLines(attributes hclsyntax.Attributes) []*hclsyntax.Attribute {
-	var attrs []*hclsyntax.Attribute
-	for _, attr := range attributes {
-		attrs = append(attrs, attr)
-	}
-	sort.Slice(attrs, func(i, j int) bool {
-		return attrs[i].Range().Start.Line < attrs[j].Range().Start.Line
-	})
-	return attrs
-}
-
-func buildNestedBlock(parent block, nestedBlock *hclsyntax.Block) *NestedBlock {
-	nestedBlockName := nestedBlock.Type
-	sortField := nestedBlock.Type
-	if nestedBlock.Type == "dynamic" {
-		nestedBlockName = nestedBlock.Labels[0]
-		sortField = strings.Join(nestedBlock.Labels, "")
-	}
-	path := append(parent.path(), nestedBlockName)
-	nb := &NestedBlock{
-		Name:      nestedBlockName,
-		SortField: sortField,
-		Range:     nestedBlock.Range(),
-		Block:     nestedBlock,
-		Path:      path,
-		File:      parent.file(),
-		emit:      parent.emitter(),
-	}
-	nb.buildAttributes(nestedBlock.Body.Attributes)
-	nb.buildNestedBlocks(nestedBlock.Body.Blocks)
-	return nb
-}
-
-func (b *ResourceBlock) buildNestedBlocks(nestedBlocks hclsyntax.Blocks) {
-	blockSchema := queryBlockSchema(b.Path)
-	for _, nestedBlock := range nestedBlocks {
-		nb := buildNestedBlock(b, nestedBlock)
-		if IsTailMeta(nb.Name) {
-			b.addTailMetaNestedBlock(nb)
-			continue
-		}
-		if metaArgOrUnknownBlock(blockSchema) {
-			b.addOptionalNestedBlock(nb)
-			continue
-		}
-		nbSchema, isAzNestedBlock := blockSchema.NestedBlocks[nb.Name]
-		if isAzNestedBlock && nbSchema.MinItems > 0 {
-			b.addRequiredNestedBlock(nb)
-		} else {
-			b.addOptionalNestedBlock(nb)
-		}
-	}
-}
-
 func metaArgOrUnknownBlock(blockSchema *tfjson.SchemaBlock) bool {
 	return blockSchema == nil || blockSchema.NestedBlocks == nil
 }
@@ -272,13 +198,6 @@ func (b *ResourceBlock) gaped() bool {
 		lastEndLine = r.End.Line
 	}
 	return true
-}
-
-func (b *ResourceBlock) addHeadMetaArg(arg *Arg) {
-	if b.HeadMetaArgs == nil {
-		b.HeadMetaArgs = &HeadMetaArgs{}
-	}
-	b.HeadMetaArgs.add(arg)
 }
 
 func (b *ResourceBlock) addTailMetaArg(arg *Arg) {

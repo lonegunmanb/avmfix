@@ -14,19 +14,23 @@ import (
 
 // NestedBlock is a wrapper of the nested block
 type NestedBlock struct {
+	*AbstractBlock
 	File                 *hcl.File
 	Block                *hclsyntax.Block
 	writeBlock           *hclwrite.Block
 	Name                 string
 	SortField            string
 	Range                hcl.Range
-	HeadMetaArgs         *HeadMetaArgs
 	RequiredArgs         *Args
 	OptionalArgs         *Args
 	RequiredNestedBlocks *NestedBlocks
 	OptionalNestedBlocks *NestedBlocks
 	Path                 []string
 	emit                 func(block Block) error
+}
+
+func (b *NestedBlock) headMetaArgs() *HeadMetaArgs {
+	return b.HeadMetaArgs
 }
 
 func (b *NestedBlock) emitter() func(block Block) error {
@@ -127,6 +131,10 @@ func (b *NestedBlocks) GetRange() *hcl.Range {
 	return b.Range
 }
 
+func (b *NestedBlock) BlockType() string {
+	return b.Block.Type
+}
+
 func (b *NestedBlocks) add(arg *NestedBlock) {
 	b.Blocks = append(b.Blocks, arg)
 	if b.Range == nil {
@@ -160,83 +168,6 @@ func (b *NestedBlock) nestedBlocks() []*NestedBlock {
 		}
 	}
 	return nbs
-}
-
-func (b *NestedBlock) buildAttributes(attributes hclsyntax.Attributes) {
-	argSchemas := queryBlockSchema(b.Path)
-	attrs := attributesByLines(attributes)
-	for _, attr := range attrs {
-		attrName := attr.Name
-		arg := buildAttrArg(attr, b.File)
-		if IsHeadMeta(attrName) {
-			b.addHeadMeta(arg)
-			continue
-		}
-		if argSchemas == nil {
-			b.addOptionalAttr(arg)
-			continue
-		}
-		attrSchema, isAzAttr := argSchemas.Attributes[attrName]
-		if isAzAttr && attrSchema.Required {
-			b.addRequiredAttr(arg)
-		} else {
-			b.addOptionalAttr(arg)
-		}
-	}
-}
-
-func (b *NestedBlock) buildNestedBlocks(nestedBlock hclsyntax.Blocks) {
-	for _, nb := range nestedBlock {
-		b.buildNestedBlock(nb)
-	}
-}
-
-func (b *NestedBlock) buildNestedBlock(nestedBlock *hclsyntax.Block) {
-	var nestedBlockName, sortField string
-	switch nestedBlock.Type {
-	case "dynamic":
-		nestedBlockName = nestedBlock.Labels[0]
-		sortField = strings.Join(nestedBlock.Labels, "")
-	default:
-		nestedBlockName = nestedBlock.Type
-		sortField = nestedBlock.Type
-	}
-	var parentBlockNames []string
-	if nestedBlockName == "content" && b.Block.Type == "dynamic" {
-		parentBlockNames = b.Path
-	} else {
-		parentBlockNames = append(b.Path, nestedBlockName)
-	}
-	nb := &NestedBlock{
-		Name:      nestedBlockName,
-		SortField: sortField,
-		Range:     nestedBlock.Range(),
-		Block:     nestedBlock,
-		Path:      parentBlockNames,
-		File:      b.File,
-		emit:      b.emitter(),
-	}
-	nb.buildAttributes(nestedBlock.Body.Attributes)
-	nb.buildNestedBlocks(nestedBlock.Body.Blocks)
-	blockSchema := queryBlockSchema(b.Path)
-	if metaArgOrUnknownBlock(blockSchema) {
-		b.addOptionalNestedBlock(nb)
-		return
-	}
-
-	nbSchema, ok := blockSchema.NestedBlocks[nb.Name]
-	if ok && nbSchema.MinItems > 0 {
-		b.addRequiredNestedBlock(nb)
-	} else {
-		b.addOptionalNestedBlock(nb)
-	}
-}
-
-func (b *NestedBlock) addHeadMeta(arg *Arg) {
-	if b.HeadMetaArgs == nil {
-		b.HeadMetaArgs = &HeadMetaArgs{}
-	}
-	b.HeadMetaArgs.add(arg)
 }
 
 func (b *NestedBlock) addRequiredAttr(arg *Arg) {
@@ -315,4 +246,12 @@ func (b *NestedBlock) file() *hcl.File {
 
 func (b *NestedBlock) path() []string {
 	return b.Path
+}
+
+func (b *NestedBlock) isHeadMeta(argName string) bool {
+	return b.BlockType() == "dynamic" && argName == "for_each"
+}
+
+func (b *NestedBlock) isTailMeta(argName string) bool {
+	return false
 }
