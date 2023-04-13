@@ -15,26 +15,8 @@ import (
 // NestedBlock is a wrapper of the nested block
 type NestedBlock struct {
 	*AbstractBlock
-	File                 *hcl.File
-	Block                *hclsyntax.Block
-	writeBlock           *hclwrite.Block
-	Name                 string
-	SortField            string
-	Range                hcl.Range
-	RequiredArgs         *Args
-	OptionalArgs         *Args
-	RequiredNestedBlocks *NestedBlocks
-	OptionalNestedBlocks *NestedBlocks
-	Path                 []string
-	emit                 func(block Block) error
-}
-
-func (b *NestedBlock) headMetaArgs() *HeadMetaArgs {
-	return b.HeadMetaArgs
-}
-
-func (b *NestedBlock) emitter() func(block Block) error {
-	return b.emit
+	writeBlock *hclwrite.Block
+	SortField  string
 }
 
 var _ block = &NestedBlock{}
@@ -170,34 +152,6 @@ func (b *NestedBlock) nestedBlocks() []*NestedBlock {
 	return nbs
 }
 
-func (b *NestedBlock) addRequiredAttr(arg *Arg) {
-	if b.RequiredArgs == nil {
-		b.RequiredArgs = &Args{}
-	}
-	b.RequiredArgs.add(arg)
-}
-
-func (b *NestedBlock) addOptionalAttr(arg *Arg) {
-	if b.OptionalArgs == nil {
-		b.OptionalArgs = &Args{}
-	}
-	b.OptionalArgs.add(arg)
-}
-
-func (b *NestedBlock) addRequiredNestedBlock(nb *NestedBlock) {
-	if b.RequiredNestedBlocks == nil {
-		b.RequiredNestedBlocks = &NestedBlocks{}
-	}
-	b.RequiredNestedBlocks.add(nb)
-}
-
-func (b *NestedBlock) addOptionalNestedBlock(nb *NestedBlock) {
-	if b.OptionalNestedBlocks == nil {
-		b.OptionalNestedBlocks = &NestedBlocks{}
-	}
-	b.OptionalNestedBlocks.add(nb)
-}
-
 func (b *NestedBlock) checkSubSectionOrder() bool {
 	sections := []Section{
 		b.HeadMetaArgs,
@@ -238,14 +192,6 @@ func (b *NestedBlock) checkGap() bool {
 		lastEndLine = r.End.Line
 	}
 	return true
-}
-
-func (b *NestedBlock) file() *hcl.File {
-	return b.File
-}
-
-func (b *NestedBlock) path() []string {
-	return b.Path
 }
 
 func (b *NestedBlock) isHeadMeta(argName string) bool {

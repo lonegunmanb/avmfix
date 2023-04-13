@@ -62,6 +62,7 @@ resource "azurerm_container_group" "example" {
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	assert.Equal(t, "container", containerBlock.Name)
 	assert.Equal(t, "container", containerBlock.SortField)
+	assert.Equal(t, containerBlock.Block.Range(), containerBlock.Range)
 	assert.Equal(t, 4, len(containerBlock.RequiredArgs.Args))
 	assert.Equal(t, "name", containerBlock.RequiredArgs.Args[0].Name)
 	assert.Equal(t, "image", containerBlock.RequiredArgs.Args[1].Name)

@@ -32,21 +32,11 @@ var _ rootBlock = &ResourceBlock{}
 // ResourceBlock is the wrapper of a resource block
 type ResourceBlock struct {
 	*AbstractBlock
-	Name                 string
 	Type                 string
-	File                 *hcl.File
 	writeFile            *hclwrite.File
-	Block                *hclsyntax.Block
-	HeadMetaArgs         *HeadMetaArgs
-	RequiredArgs         *Args
-	OptionalArgs         *Args
-	RequiredNestedBlocks *NestedBlocks
-	OptionalNestedBlocks *NestedBlocks
+	writeBlock           *hclwrite.Block
 	TailMetaArgs         *Args
 	TailMetaNestedBlocks *NestedBlocks
-	Path                 []string
-	emit                 func(block Block) error
-	writeBlock           *hclwrite.Block
 }
 
 func (b *ResourceBlock) headMetaArgs() *HeadMetaArgs {
@@ -79,15 +69,10 @@ func BuildResourceBlock(block *hclsyntax.Block, file *hcl.File,
 	wFile, _ := hclwrite.ParseConfig(file.Bytes, "", hcl.InitialPos)
 	wBlock := wFile.Body().FirstMatchingBlock(block.Type, block.Labels)
 	b := &ResourceBlock{
-		AbstractBlock: &AbstractBlock{},
+		AbstractBlock: newAbstractBlock(block.Labels[1], block, file, []string{block.Type, block.Labels[0]}, emitter),
 		Type:          block.Labels[0],
-		Name:          block.Labels[1],
-		File:          file,
 		writeFile:     wFile,
 		writeBlock:    wBlock,
-		Block:         block,
-		Path:          []string{block.Type, block.Labels[0]},
-		emit:          emitter,
 	}
 	buildArgs(b, block.Body.Attributes)
 	buildNestedBlocks(b, block.Body.Blocks)
@@ -207,49 +192,9 @@ func (b *ResourceBlock) addTailMetaArg(arg *Arg) {
 	b.TailMetaArgs.add(arg)
 }
 
-func (b *ResourceBlock) addRequiredAttr(arg *Arg) {
-	if b.RequiredArgs == nil {
-		b.RequiredArgs = &Args{}
-	}
-	b.RequiredArgs.add(arg)
-}
-
-func (b *ResourceBlock) addOptionalAttr(arg *Arg) {
-	if b.OptionalArgs == nil {
-		b.OptionalArgs = &Args{}
-	}
-	b.OptionalArgs.add(arg)
-}
-
 func (b *ResourceBlock) addTailMetaNestedBlock(nb *NestedBlock) {
 	if b.TailMetaNestedBlocks == nil {
 		b.TailMetaNestedBlocks = &NestedBlocks{}
 	}
 	b.TailMetaNestedBlocks.add(nb)
-}
-
-func (b *ResourceBlock) addRequiredNestedBlock(nb *NestedBlock) {
-	if b.RequiredNestedBlocks == nil {
-		b.RequiredNestedBlocks = &NestedBlocks{}
-	}
-	b.RequiredNestedBlocks.add(nb)
-}
-
-func (b *ResourceBlock) addOptionalNestedBlock(nb *NestedBlock) {
-	if b.OptionalNestedBlocks == nil {
-		b.OptionalNestedBlocks = &NestedBlocks{}
-	}
-	b.OptionalNestedBlocks.add(nb)
-}
-
-func (b *ResourceBlock) file() *hcl.File {
-	return b.File
-}
-
-func (b *ResourceBlock) path() []string {
-	return b.Path
-}
-
-func (b *ResourceBlock) emitter() func(block Block) error {
-	return b.emit
 }

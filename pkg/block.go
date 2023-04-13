@@ -33,14 +33,8 @@ func buildNestedBlock(parent block, nestedBlock *hclsyntax.Block) *NestedBlock {
 	}
 	path := append(parent.path(), nestedBlockName)
 	nb := &NestedBlock{
-		AbstractBlock: &AbstractBlock{},
-		Name:          nestedBlockName,
+		AbstractBlock: newAbstractBlock(nestedBlockName, nestedBlock, parent.file(), path, parent.emitter()),
 		SortField:     sortField,
-		Range:         nestedBlock.Range(),
-		Block:         nestedBlock,
-		Path:          path,
-		File:          parent.file(),
-		emit:          parent.emitter(),
 	}
 	if nb.BlockType() == "dynamic" {
 		buildArgs(nb, mergeAttributes(nestedBlock.Body.Attributes, nestedBlock.Body.Blocks[0].Body.Attributes))
@@ -110,15 +104,4 @@ func buildNestedBlocks(b block, nestedBlocks hclsyntax.Blocks) {
 			b.addOptionalNestedBlock(nb)
 		}
 	}
-}
-
-type AbstractBlock struct {
-	HeadMetaArgs *HeadMetaArgs
-}
-
-func (b *AbstractBlock) addHeadMetaArg(arg *Arg) {
-	if b.HeadMetaArgs == nil {
-		b.HeadMetaArgs = &HeadMetaArgs{}
-	}
-	b.HeadMetaArgs.add(arg)
 }
