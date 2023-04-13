@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"strings"
@@ -36,25 +37,15 @@ func buildNestedBlock(parent block, nestedBlock *hclsyntax.Block) *NestedBlock {
 		AbstractBlock: newAbstractBlock(nestedBlockName, nestedBlock, parent.file(), path, parent.emitter()),
 		SortField:     sortField,
 	}
+	attributes := nestedBlock.Body.Attributes
+	blocks := nestedBlock.Body.Blocks
 	if nb.BlockType() == "dynamic" {
-		buildArgs(nb, mergeAttributes(nestedBlock.Body.Attributes, nestedBlock.Body.Blocks[0].Body.Attributes))
-		buildNestedBlocks(nb, nestedBlock.Body.Blocks[0].Body.Blocks)
-	} else {
-		buildArgs(nb, nestedBlock.Body.Attributes)
-		buildNestedBlocks(nb, nestedBlock.Body.Blocks)
+		linq.From(attributes).Concat(linq.From(nestedBlock.Body.Blocks[0].Body.Attributes)).ToMap(&attributes)
+		blocks = nestedBlock.Body.Blocks[0].Body.Blocks
 	}
+	buildArgs(nb, attributes)
+	buildNestedBlocks(nb, blocks)
 	return nb
-}
-
-func mergeAttributes(a1, a2 map[string]*hclsyntax.Attribute) map[string]*hclsyntax.Attribute {
-	r := make(map[string]*hclsyntax.Attribute)
-	for k, v := range a1 {
-		r[k] = v
-	}
-	for k, v := range a2 {
-		r[k] = v
-	}
-	return r
 }
 
 func buildArgs(b block, attributes hclsyntax.Attributes) {

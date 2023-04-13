@@ -1,10 +1,11 @@
-package pkg
+package pkg_test
 
 import (
 	"testing"
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -13,6 +14,7 @@ func TestBuildNestedBlock_OneOptionalNestedBlock(t *testing.T) {
 	code := `
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
+
   dns_config {
     nameservers = []
 	search_domains = []
@@ -21,7 +23,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
 	require.False(t, diag.HasErrors())
-	resourceBlock := BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
@@ -40,6 +42,7 @@ func TestBuildNestedBlock_OneRequiredNestedBlock(t *testing.T) {
 	code := `
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
+
   container {
     name   = "hello-world"
     image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
@@ -56,7 +59,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
 	require.False(t, diag.HasErrors())
-	resourceBlock := BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -96,7 +99,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
 	require.False(t, diag.HasErrors())
-	resourceBlock := BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
@@ -127,7 +130,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
 	require.False(t, diag.HasErrors())
-	resourceBlock := BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Equal(t, "container", resourceBlock.RequiredNestedBlocks.Blocks[0].Name)
@@ -158,7 +161,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
 	require.False(t, diag.HasErrors())
-	resourceBlock := BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -170,4 +173,103 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, 2, len(gpuLimitBlock.OptionalArgs.Args))
 	assert.Equal(t, "count", gpuLimitBlock.OptionalArgs.Args[0].Name)
 	assert.Equal(t, "sku", gpuLimitBlock.OptionalArgs.Args[1].Name)
+}
+
+func TestNestedBlock_NotWellGaped(t *testing.T) {
+	inputs := []string{
+		`
+resource "azurerm_container_group" "example" {
+  location = azurerm_resource_group.example.location
+
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	memory_limit = 1.5
+	gpu_limit {
+		count = 1
+		sku = "K80"
+	}
+  }
+}
+`,
+	}
+
+	for i := 0; i < len(inputs); i++ {
+		file, diag := hclsyntax.ParseConfig([]byte(inputs[i]), "", hcl.InitialPos)
+		require.False(t, diag.HasErrors())
+		resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+		assert.False(t, resourceBlock.RequiredNestedBlocks.Blocks[0].CheckOrder())
+	}
+}
+
+func TestNestedBlock_WellFormatNestedBlock(t *testing.T) {
+	inputs := []string{`
+resource "azurerm_container_group" "example" {
+  location = azurerm_resource_group.example.location
+
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	memory_limit = 1.5
+
+	dynamic "gpu" {
+		for_each = var.gpu == null ? [] : [1]
+
+		content {
+			count = var.gpu.count
+			sku   = var.gpu.sku
+		}
+	}
+	gpu_limit {
+		count = 1
+		sku = "K80"
+	}
+  }
+}
+`,
+		`
+resource "azurerm_container_group" "example" {
+  location = azurerm_resource_group.example.location
+
+  container {
+    cpu    = "0.5"
+	# comment
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	memory_limit = 1.5
+
+	dynamic "gpu" {
+		for_each = var.gpu == null ? [] : [1]
+
+		content {
+			count = var.gpu.count
+			# comment
+			sku   = var.gpu.sku
+		}
+	}
+	gpu_limit {
+		count = 1
+		sku = "K80"
+	}
+  }
+}
+`}
+	for i := 0; i < len(inputs); i++ {
+		code := inputs[i]
+		file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
+		require.False(t, diag.HasErrors())
+		resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+		assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
+		containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
+		assert.True(t, containerBlock.CheckOrder())
+		gpuBlock := containerBlock.OptionalNestedBlocks.Blocks[0]
+		assert.True(t, gpuBlock.CheckOrder())
+		gpuLimitBlock := containerBlock.OptionalNestedBlocks.Blocks[1]
+		assert.True(t, gpuLimitBlock.CheckOrder())
+	}
 }

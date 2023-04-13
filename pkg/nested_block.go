@@ -84,6 +84,9 @@ func (b *NestedBlocks) CheckOrder() bool {
 			return false
 		}
 		sortField = &nb.SortField
+		if !nb.CheckOrder() {
+			return false
+		}
 	}
 	return true
 }

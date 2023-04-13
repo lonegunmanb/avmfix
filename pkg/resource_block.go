@@ -68,9 +68,10 @@ func BuildResourceBlock(block *hclsyntax.Block, file *hcl.File,
 	emitter func(block Block) error) *ResourceBlock {
 	wFile, _ := hclwrite.ParseConfig(file.Bytes, "", hcl.InitialPos)
 	wBlock := wFile.Body().FirstMatchingBlock(block.Type, block.Labels)
+	resourceType, resourceName := block.Labels[0], block.Labels[1]
 	b := &ResourceBlock{
-		AbstractBlock: newAbstractBlock(block.Labels[1], block, file, []string{block.Type, block.Labels[0]}, emitter),
-		Type:          block.Labels[0],
+		AbstractBlock: newAbstractBlock(resourceName, block, file, []string{block.Type, resourceType}, emitter),
+		Type:          resourceType,
 		writeFile:     wFile,
 		writeBlock:    wBlock,
 	}
