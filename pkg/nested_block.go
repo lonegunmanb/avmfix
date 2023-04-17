@@ -12,17 +12,17 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
-// NestedBlock is a wrapper of the nested block
+// NestedBlock is a wrapper of the nested Block
 type NestedBlock struct {
-	*AbstractBlock
+	*block
 	writeBlock *hclwrite.Block
 	SortField  string
 }
 
-var _ block = &NestedBlock{}
+var _ Block = &NestedBlock{}
 
-// CheckBlock checks the nestedBlock recursively to find the block not in order,
-// and invoke the emit function on that block
+// CheckBlock checks the nestedBlock recursively to find the Block not in order,
+// and invoke the emit function on that Block
 func (b *NestedBlock) CheckBlock() error {
 	if !b.CheckOrder() {
 		return b.emit(b)
@@ -36,7 +36,7 @@ func (b *NestedBlock) CheckBlock() error {
 	return err
 }
 
-// DefRange gets the definition range of the nested block
+// DefRange gets the definition range of the nested Block
 func (b *NestedBlock) DefRange() hcl.Range {
 	return b.Block.DefRange()
 }
@@ -46,7 +46,7 @@ func (b *NestedBlock) CheckOrder() bool {
 	return b.checkSubSectionOrder() && b.checkGap()
 }
 
-// ToString prints the sorted block
+// ToString prints the sorted Block
 func (b *NestedBlock) ToString() string {
 	headMeta := toString(b.HeadMetaArgs)
 	args := toString(b.RequiredArgs, b.OptionalArgs)

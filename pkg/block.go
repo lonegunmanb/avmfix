@@ -4,10 +4,24 @@ import (
 	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"strings"
 )
 
-type block interface {
+// Block is an interface offering general APIs on resource/nested Block
+type Block interface {
+	// CheckBlock checks the resourceBlock/nestedBlock recursively to find the Block not in order,
+	// and invoke the emit function on that Block
+	CheckBlock() error
+
+	// ToString prints the sorted Block
+	ToString() string
+
+	// DefRange gets the definition range of the Block
+	DefRange() hcl.Range
+
+	getSyntaxAttribute(name string) *hclsyntax.Attribute
+	getWriteAttribute(name string) *hclwrite.Attribute
 	file() *hcl.File
 	path() []string
 	emitter() func(block Block) error
@@ -25,7 +39,7 @@ type rootBlock interface {
 	addTailMetaNestedBlock(nb *NestedBlock)
 }
 
-func buildNestedBlock(parent block, nestedBlock *hclsyntax.Block) *NestedBlock {
+func buildNestedBlock(parent Block, nestedBlock *hclsyntax.Block) *NestedBlock {
 	nestedBlockName := nestedBlock.Type
 	sortField := nestedBlock.Type
 	if nestedBlock.Type == "dynamic" {
@@ -34,8 +48,8 @@ func buildNestedBlock(parent block, nestedBlock *hclsyntax.Block) *NestedBlock {
 	}
 	path := append(parent.path(), nestedBlockName)
 	nb := &NestedBlock{
-		AbstractBlock: newAbstractBlock(nestedBlockName, nestedBlock, parent.file(), path, parent.emitter()),
-		SortField:     sortField,
+		block:     newBlock(nestedBlockName, nestedBlock, parent.file(), path, parent.emitter()),
+		SortField: sortField,
 	}
 	attributes := nestedBlock.Body.Attributes
 	blocks := nestedBlock.Body.Blocks
@@ -48,7 +62,7 @@ func buildNestedBlock(parent block, nestedBlock *hclsyntax.Block) *NestedBlock {
 	return nb
 }
 
-func buildArgs(b block, attributes hclsyntax.Attributes) {
+func buildArgs(b Block, attributes hclsyntax.Attributes) {
 	argSchemas := queryBlockSchema(b.path())
 	for _, attr := range attributesByLines(attributes) {
 		attrName := attr.Name
@@ -75,7 +89,7 @@ func buildArgs(b block, attributes hclsyntax.Attributes) {
 	}
 }
 
-func buildNestedBlocks(b block, nestedBlocks hclsyntax.Blocks) {
+func buildNestedBlocks(b Block, nestedBlocks hclsyntax.Blocks) {
 	blockSchema := queryBlockSchema(b.path())
 	for _, nestedBlock := range nestedBlocks {
 		nb := buildNestedBlock(b, nestedBlock)
@@ -95,4 +109,76 @@ func buildNestedBlocks(b block, nestedBlocks hclsyntax.Blocks) {
 			b.addOptionalNestedBlock(nb)
 		}
 	}
+}
+
+type block struct {
+	Block                *hclsyntax.Block
+	Name                 string
+	HeadMetaArgs         *HeadMetaArgs
+	RequiredArgs         *Args
+	OptionalArgs         *Args
+	RequiredNestedBlocks *NestedBlocks
+	OptionalNestedBlocks *NestedBlocks
+	File                 *hcl.File
+	Range                hcl.Range
+	Path                 []string
+	emit                 func(block Block) error
+}
+
+func newBlock(name string, b *hclsyntax.Block, f *hcl.File, path []string, emitter func(block Block) error) *block {
+	return &block{
+		Name:  name,
+		Block: b,
+		File:  f,
+		Path:  path,
+		emit:  emitter,
+		Range: b.Range(),
+	}
+}
+
+func (b *block) addHeadMetaArg(arg *Arg) {
+	if b.HeadMetaArgs == nil {
+		b.HeadMetaArgs = &HeadMetaArgs{}
+	}
+	b.HeadMetaArgs.add(arg)
+}
+
+func (b *block) addRequiredAttr(arg *Arg) {
+	if b.RequiredArgs == nil {
+		b.RequiredArgs = &Args{}
+	}
+	b.RequiredArgs.add(arg)
+}
+
+func (b *block) addOptionalAttr(arg *Arg) {
+	if b.OptionalArgs == nil {
+		b.OptionalArgs = &Args{}
+	}
+	b.OptionalArgs.add(arg)
+}
+
+func (b *block) addRequiredNestedBlock(nb *NestedBlock) {
+	if b.RequiredNestedBlocks == nil {
+		b.RequiredNestedBlocks = &NestedBlocks{}
+	}
+	b.RequiredNestedBlocks.add(nb)
+}
+
+func (b *block) addOptionalNestedBlock(nb *NestedBlock) {
+	if b.OptionalNestedBlocks == nil {
+		b.OptionalNestedBlocks = &NestedBlocks{}
+	}
+	b.OptionalNestedBlocks.add(nb)
+}
+
+func (b *block) file() *hcl.File {
+	return b.File
+}
+
+func (b *block) path() []string {
+	return b.Path
+}
+
+func (b *block) emitter() func(block Block) error {
+	return b.emit
 }

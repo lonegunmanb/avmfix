@@ -1,8 +1,9 @@
 package pkg
 
 import (
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"sort"
+
+	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
 var headMetaArgPriority = map[string]int{"for_each": 0, "count": 0, "provider": 1}

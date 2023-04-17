@@ -2,36 +2,21 @@ package pkg
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	tfjson "github.com/hashicorp/terraform-json"
-	"strings"
 )
 
-// Block is an interface offering general APIs on resource/nested block
-type Block interface {
-	// CheckBlock checks the resourceBlock/nestedBlock recursively to find the block not in order,
-	// and invoke the emit function on that block
-	CheckBlock() error
-
-	// ToString prints the sorted block
-	ToString() string
-
-	// DefRange gets the definition range of the block
-	DefRange() hcl.Range
-
-	getSyntaxAttribute(name string) *hclsyntax.Attribute
-	getWriteAttribute(name string) *hclwrite.Attribute
-}
-
-var _ block = &ResourceBlock{}
+var _ Block = &ResourceBlock{}
 var _ rootBlock = &ResourceBlock{}
 
-// ResourceBlock is the wrapper of a resource block
+// ResourceBlock is the wrapper of a resource Block
 type ResourceBlock struct {
-	*AbstractBlock
+	*block
 	Type                 string
 	writeFile            *hclwrite.File
 	writeBlock           *hclwrite.Block
@@ -43,8 +28,8 @@ func (b *ResourceBlock) headMetaArgs() *HeadMetaArgs {
 	return b.HeadMetaArgs
 }
 
-// CheckBlock checks the resource block and nested block recursively to find the block not in order,
-// and invoke the emit function on that block
+// CheckBlock checks the resource Block and nested Block recursively to find the Block not in order,
+// and invoke the emit function on that Block
 func (b *ResourceBlock) CheckBlock() error {
 	if !b.CheckOrder() {
 		return b.emit(b)
@@ -58,22 +43,22 @@ func (b *ResourceBlock) CheckBlock() error {
 	return err
 }
 
-// DefRange gets the definition range of the resource block
+// DefRange gets the definition range of the resource Block
 func (b *ResourceBlock) DefRange() hcl.Range {
 	return b.Block.DefRange()
 }
 
-// BuildResourceBlock Build the root block wrapper using hclsyntax.Block
+// BuildResourceBlock Build the root Block wrapper using hclsyntax.Block
 func BuildResourceBlock(block *hclsyntax.Block, file *hcl.File,
 	emitter func(block Block) error) *ResourceBlock {
 	wFile, _ := hclwrite.ParseConfig(file.Bytes, "", hcl.InitialPos)
 	wBlock := wFile.Body().FirstMatchingBlock(block.Type, block.Labels)
 	resourceType, resourceName := block.Labels[0], block.Labels[1]
 	b := &ResourceBlock{
-		AbstractBlock: newAbstractBlock(resourceName, block, file, []string{block.Type, resourceType}, emitter),
-		Type:          resourceType,
-		writeFile:     wFile,
-		writeBlock:    wBlock,
+		block:      newBlock(resourceName, block, file, []string{block.Type, resourceType}, emitter),
+		Type:       resourceType,
+		writeFile:  wFile,
+		writeBlock: wBlock,
 	}
 	buildArgs(b, block.Body.Attributes)
 	buildNestedBlocks(b, block.Body.Blocks)
@@ -85,7 +70,7 @@ func (b *ResourceBlock) CheckOrder() bool {
 	return b.sorted() && b.gaped()
 }
 
-// ToString prints the sorted resource block
+// ToString prints the sorted resource Block
 func (b *ResourceBlock) ToString() string {
 	headMetaTxt := toString(b.HeadMetaArgs)
 	argTxt := toString(b.RequiredArgs, b.OptionalArgs)
