@@ -8,15 +8,13 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 // NestedBlock is a wrapper of the nested Block
 type NestedBlock struct {
 	*block
-	writeBlock *hclwrite.Block
-	SortField  string
+	SortField string
 }
 
 var _ Block = &NestedBlock{}
@@ -135,14 +133,6 @@ func (b *NestedBlocks) add(arg *NestedBlock) {
 	if b.Range.End.Line < arg.Range.End.Line {
 		b.Range.End = arg.Range.End
 	}
-}
-
-func (b *NestedBlock) getSyntaxAttribute(name string) *hclsyntax.Attribute {
-	return b.Block.Body.Attributes[name]
-}
-
-func (b *NestedBlock) getWriteAttribute(name string) *hclwrite.Attribute {
-	return b.writeBlock.Body().GetAttribute(name)
 }
 
 func (b *NestedBlock) nestedBlocks() []*NestedBlock {

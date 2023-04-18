@@ -18,8 +18,6 @@ var _ rootBlock = &ResourceBlock{}
 type ResourceBlock struct {
 	*block
 	Type                 string
-	writeFile            *hclwrite.File
-	writeBlock           *hclwrite.Block
 	TailMetaArgs         *Args
 	TailMetaNestedBlocks *NestedBlocks
 }
@@ -51,14 +49,10 @@ func (b *ResourceBlock) DefRange() hcl.Range {
 // BuildResourceBlock Build the root Block wrapper using hclsyntax.Block
 func BuildResourceBlock(block *hclsyntax.Block, file *hcl.File,
 	emitter func(block Block) error) *ResourceBlock {
-	wFile, _ := hclwrite.ParseConfig(file.Bytes, "", hcl.InitialPos)
-	wBlock := wFile.Body().FirstMatchingBlock(block.Type, block.Labels)
 	resourceType, resourceName := block.Labels[0], block.Labels[1]
 	b := &ResourceBlock{
-		block:      newBlock(resourceName, block, file, []string{block.Type, resourceType}, emitter),
-		Type:       resourceType,
-		writeFile:  wFile,
-		writeBlock: wBlock,
+		block: newBlock(resourceName, block, file, []string{block.Type, resourceType}, emitter),
+		Type:  resourceType,
 	}
 	buildArgs(b, block.Body.Attributes)
 	buildNestedBlocks(b, block.Body.Blocks)
@@ -96,14 +90,6 @@ func (b *ResourceBlock) ToString() string {
 		txt = fmt.Sprintf("%s {\n%s\n}", blockHead, txt)
 	}
 	return string(hclwrite.Format([]byte(txt)))
-}
-
-func (b *ResourceBlock) getSyntaxAttribute(name string) *hclsyntax.Attribute {
-	return b.Block.Body.Attributes[name]
-}
-
-func (b *ResourceBlock) getWriteAttribute(name string) *hclwrite.Attribute {
-	return b.writeBlock.Body().GetAttribute(name)
 }
 
 func (b *ResourceBlock) nestedBlocks() []*NestedBlock {

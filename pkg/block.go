@@ -4,7 +4,6 @@ import (
 	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
-	"github.com/hashicorp/hcl/v2/hclwrite"
 	"strings"
 )
 
@@ -20,8 +19,6 @@ type Block interface {
 	// DefRange gets the definition range of the Block
 	DefRange() hcl.Range
 
-	getSyntaxAttribute(name string) *hclsyntax.Attribute
-	getWriteAttribute(name string) *hclwrite.Attribute
 	file() *hcl.File
 	path() []string
 	emitter() func(block Block) error
