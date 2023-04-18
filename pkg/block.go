@@ -3,7 +3,6 @@ package pkg
 import (
 	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"strings"
 )
 
@@ -36,7 +35,7 @@ type rootBlock interface {
 	addTailMetaNestedBlock(nb *NestedBlock)
 }
 
-func buildNestedBlock(parent Block, nestedBlock *hclsyntax.Block) *NestedBlock {
+func buildNestedBlock(parent Block, nestedBlock *HclBlock) *NestedBlock {
 	nestedBlockName := nestedBlock.Type
 	sortField := nestedBlock.Type
 	if nestedBlock.Type == "dynamic" {
@@ -48,18 +47,18 @@ func buildNestedBlock(parent Block, nestedBlock *hclsyntax.Block) *NestedBlock {
 		block:     newBlock(nestedBlockName, nestedBlock, parent.file(), path, parent.emitter()),
 		SortField: sortField,
 	}
-	attributes := nestedBlock.Body.Attributes
-	blocks := nestedBlock.Body.Blocks
+	attributes := nestedBlock.Attributes()
+	blocks := nestedBlock.NestedBlocks()
 	if nb.BlockType() == "dynamic" {
-		linq.From(attributes).Concat(linq.From(nestedBlock.Body.Blocks[0].Body.Attributes)).ToMap(&attributes)
-		blocks = nestedBlock.Body.Blocks[0].Body.Blocks
+		linq.From(attributes).Concat(linq.From(nestedBlock.NestedBlocks()[0].Attributes())).ToMap(&attributes)
+		blocks = blocks[0].NestedBlocks()
 	}
 	buildArgs(nb, attributes)
 	buildNestedBlocks(nb, blocks)
 	return nb
 }
 
-func buildArgs(b Block, attributes hclsyntax.Attributes) {
+func buildArgs(b Block, attributes map[string]*HclAttribute) {
 	argSchemas := queryBlockSchema(b.path())
 	for _, attr := range attributesByLines(attributes) {
 		attrName := attr.Name
@@ -86,7 +85,7 @@ func buildArgs(b Block, attributes hclsyntax.Attributes) {
 	}
 }
 
-func buildNestedBlocks(b Block, nestedBlocks hclsyntax.Blocks) {
+func buildNestedBlocks(b Block, nestedBlocks []*HclBlock) {
 	blockSchema := queryBlockSchema(b.path())
 	for _, nestedBlock := range nestedBlocks {
 		nb := buildNestedBlock(b, nestedBlock)
@@ -109,7 +108,7 @@ func buildNestedBlocks(b Block, nestedBlocks hclsyntax.Blocks) {
 }
 
 type block struct {
-	Block                *hclsyntax.Block
+	Block                *HclBlock
 	Name                 string
 	HeadMetaArgs         *HeadMetaArgs
 	RequiredArgs         *Args
@@ -122,7 +121,7 @@ type block struct {
 	emit                 func(block Block) error
 }
 
-func newBlock(name string, b *hclsyntax.Block, f *hcl.File, path []string, emitter func(block Block) error) *block {
+func newBlock(name string, b *HclBlock, f *hcl.File, path []string, emitter func(block Block) error) *block {
 	return &block{
 		Name:  name,
 		Block: b,

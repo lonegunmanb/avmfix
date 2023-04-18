@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
@@ -69,8 +68,7 @@ type Arg struct {
 	Name  string
 	Range hcl.Range
 	File  *hcl.File
-	sAttr *hclsyntax.Attribute
-	wAttr *hclwrite.Attribute
+	Attr  *HclAttribute
 }
 
 // ToString prints the arg content
@@ -212,11 +210,11 @@ func (a *HeadMetaArgs) updateRange(arg *Arg) {
 	}
 }
 
-func buildAttrArg(sAttr *hclsyntax.Attribute, file *hcl.File) *Arg {
+func buildAttrArg(sAttr *HclAttribute, file *hcl.File) *Arg {
 	return &Arg{
 		Name:  sAttr.Name,
 		Range: sAttr.SrcRange,
 		File:  file,
-		sAttr: sAttr,
+		Attr:  sAttr,
 	}
 }

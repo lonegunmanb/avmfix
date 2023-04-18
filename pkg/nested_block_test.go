@@ -3,8 +3,6 @@ package pkg_test
 import (
 	"testing"
 
-	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,16 +19,16 @@ resource "azurerm_container_group" "example" {
   }
 }
 `
-	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
+	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
 	assert.Equal(t, "dns_config", dnsConfigBlock.Name)
 	assert.Equal(t, "dns_config", dnsConfigBlock.SortField)
-	assert.Equal(t, file, dnsConfigBlock.File)
-	assert.Equal(t, resourceBlock.Block.Body.Blocks[0], dnsConfigBlock.Block)
+	assert.Equal(t, file.File, dnsConfigBlock.File)
+	assert.Equal(t, resourceBlock.Block.Body.Blocks[0], dnsConfigBlock.Block.Block)
 	assert.Equal(t, 1, len(dnsConfigBlock.RequiredArgs.Args))
 	assert.Equal(t, "nameservers", dnsConfigBlock.RequiredArgs.Args[0].Name)
 	assert.Equal(t, 1, len(dnsConfigBlock.OptionalArgs.Args))
@@ -57,9 +55,9 @@ resource "azurerm_container_group" "example" {
   }
 }
 `
-	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
+	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -97,9 +95,9 @@ resource "azurerm_container_group" "example" {
   }
 }
 `
-	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
+	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
@@ -128,9 +126,9 @@ resource "azurerm_container_group" "example" {
   }
 }
 `
-	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
+	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Equal(t, "container", resourceBlock.RequiredNestedBlocks.Blocks[0].Name)
@@ -159,9 +157,9 @@ resource "azurerm_container_group" "example" {
   }
 }
 `
-	file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
+	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -197,9 +195,9 @@ resource "azurerm_container_group" "example" {
 	}
 
 	for i := 0; i < len(inputs); i++ {
-		file, diag := hclsyntax.ParseConfig([]byte(inputs[i]), "", hcl.InitialPos)
+		file, diag := pkg.ParseConfig([]byte(inputs[i]), "")
 		require.False(t, diag.HasErrors())
-		resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+		resourceBlock := pkg.BuildResourceBlock(file.GetBlock(i), file.File, func(block pkg.Block) error { return nil })
 		assert.False(t, resourceBlock.RequiredNestedBlocks.Blocks[0].CheckOrder())
 	}
 }
@@ -261,9 +259,9 @@ resource "azurerm_container_group" "example" {
 `}
 	for i := 0; i < len(inputs); i++ {
 		code := inputs[i]
-		file, diag := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
+		file, diag := pkg.ParseConfig([]byte(code), "")
 		require.False(t, diag.HasErrors())
-		resourceBlock := pkg.BuildResourceBlock(file.Body.(*hclsyntax.Body).Blocks[0], file, func(block pkg.Block) error { return nil })
+		resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
 		assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 		containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
 		assert.True(t, containerBlock.CheckOrder())

@@ -6,7 +6,6 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	tfjson "github.com/hashicorp/terraform-json"
 )
@@ -47,15 +46,15 @@ func (b *ResourceBlock) DefRange() hcl.Range {
 }
 
 // BuildResourceBlock Build the root Block wrapper using hclsyntax.Block
-func BuildResourceBlock(block *hclsyntax.Block, file *hcl.File,
+func BuildResourceBlock(block *HclBlock, file *hcl.File,
 	emitter func(block Block) error) *ResourceBlock {
 	resourceType, resourceName := block.Labels[0], block.Labels[1]
 	b := &ResourceBlock{
 		block: newBlock(resourceName, block, file, []string{block.Type, resourceType}, emitter),
 		Type:  resourceType,
 	}
-	buildArgs(b, block.Body.Attributes)
-	buildNestedBlocks(b, block.Body.Blocks)
+	buildArgs(b, block.Attributes())
+	buildNestedBlocks(b, block.NestedBlocks())
 	return b
 }
 

@@ -2,8 +2,6 @@ package pkg
 
 import (
 	"sort"
-
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
 var headMetaArgPriority = map[string]int{"for_each": 0, "count": 0, "provider": 1}
@@ -21,8 +19,8 @@ func (b *ResourceBlock) isTailMeta(argName string) bool {
 	return isTailMeta
 }
 
-func attributesByLines(attributes hclsyntax.Attributes) []*hclsyntax.Attribute {
-	var attrs []*hclsyntax.Attribute
+func attributesByLines(attributes map[string]*HclAttribute) []*HclAttribute {
+	var attrs []*HclAttribute
 	for _, attr := range attributes {
 		attrs = append(attrs, attr)
 	}

@@ -3,8 +3,6 @@ package pkg_test
 import (
 	"testing"
 
-	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,9 +17,9 @@ resource "azurerm_resource_group" "example" {
 	environment = "Production"
   }
 }`
-	config, diagnostics := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
-	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(config.Body.(*hclsyntax.Body).Blocks[0], config, func(block pkg.Block) error { return nil })
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
 	assert.Equal(t, "example", resourceBlock.Name)
 	assert.Equal(t, "azurerm_resource_group", resourceBlock.Type)
 	assert.Equal(t, 2, len(resourceBlock.RequiredArgs.Args))
@@ -56,9 +54,9 @@ resource "azurerm_resource_group" "example" {
 	]
   }
 }`
-	config, diagnostics := hclsyntax.ParseConfig([]byte(code), "", hcl.InitialPos)
-	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(config.Body.(*hclsyntax.Body).Blocks[0], config, func(block pkg.Block) error { return nil })
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
 	assert.Equal(t, 2, len(resourceBlock.HeadMetaArgs.Args))
 	assert.Equal(t, "count", resourceBlock.HeadMetaArgs.Args[0].Name)
 	assert.Equal(t, "provider", resourceBlock.HeadMetaArgs.Args[1].Name)
