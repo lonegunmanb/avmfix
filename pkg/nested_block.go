@@ -2,6 +2,8 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/ahmetb/go-linq/v3"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"math"
 	"sort"
 	"strings"
@@ -11,10 +13,16 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
+var newLine = &hclwrite.Token{
+	Type:  hclsyntax.TokenNewline,
+	Bytes: []byte{'\n'},
+}
+
 // NestedBlock is a wrapper of the nested Block
 type NestedBlock struct {
 	*block
 	SortField string
+	Index     int
 }
 
 var _ Block = &NestedBlock{}
@@ -36,7 +44,7 @@ func (b *NestedBlock) CheckBlock() error {
 
 // DefRange gets the definition range of the nested Block
 func (b *NestedBlock) DefRange() hcl.Range {
-	return b.Block.DefRange()
+	return b.HclBlock.DefRange()
 }
 
 // CheckOrder checks whether the nestedBlock is sorted
@@ -56,7 +64,7 @@ func (b *NestedBlock) ToString() string {
 		}
 	}
 	code := strings.Join(codes, "\n\n")
-	blockHead := string(b.Block.DefRange().SliceBytes(b.File.Bytes))
+	blockHead := string(b.HclBlock.DefRange().SliceBytes(b.File.Bytes))
 	if strings.TrimSpace(code) == "" {
 		code = fmt.Sprintf("%s {}", blockHead)
 	} else {
@@ -115,7 +123,60 @@ func (b *NestedBlocks) GetRange() *hcl.Range {
 }
 
 func (b *NestedBlock) BlockType() string {
-	return b.Block.Type
+	return b.HclBlock.Type
+}
+
+func (b *NestedBlock) AutoFix() {
+	for _, nestedBlock := range b.nestedBlocks() {
+		nestedBlock.AutoFix()
+	}
+	blockToFix := b.HclBlock
+	if b.BlockType() == "dynamic" {
+		blockToFix = b.HclBlock.NestedBlocks()[0]
+	}
+	attributes := b.HclBlock.WriteBlock.Body().Attributes()
+	nestedBlocks := b.HclBlock.WriteBlock.Body().Blocks()
+	blockToFix.Clear()
+	if b.RequiredArgs != nil || b.OptionalArgs != nil {
+		blockToFix.writeNewLine()
+		blockToFix.writeArgs(b.RequiredArgs, attributes)
+		blockToFix.writeArgs(b.OptionalArgs, attributes)
+	}
+	if len(b.nestedBlocks()) > 0 {
+		blockToFix.writeNewLine()
+		blockToFix.writeNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
+		blockToFix.writeNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
+	}
+}
+
+func (b *HclBlock) writeArgs(args *Args, attributes map[string]*hclwrite.Attribute) {
+	if args == nil {
+		return
+	}
+
+	for _, arg := range args.SortByName() {
+		tokens := attributes[arg.Name].BuildTokens(hclwrite.Tokens{})
+		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
+	}
+}
+
+func (b *HclBlock) writeNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwrite.Block) {
+	if nbs == nil {
+		return
+	}
+	var orderedBlocks []*NestedBlock
+	linq.From(nbs.Blocks).OrderBy(func(i interface{}) interface{} {
+		return i.(*NestedBlock).SortField
+	}).ToSlice(&orderedBlocks)
+
+	for _, ob := range orderedBlocks {
+		tokens := originalBlocks[ob.Index].BuildTokens(hclwrite.Tokens{})
+		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
+	}
+}
+
+func (b *HclBlock) writeNewLine() {
+	b.WriteBlock.Body().AppendNewline()
 }
 
 func (b *NestedBlocks) add(arg *NestedBlock) {

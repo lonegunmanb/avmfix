@@ -1,6 +1,8 @@
 package pkg_test
 
 import (
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"testing"
 
 	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
@@ -28,7 +30,7 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, "dns_config", dnsConfigBlock.Name)
 	assert.Equal(t, "dns_config", dnsConfigBlock.SortField)
 	assert.Equal(t, file.File, dnsConfigBlock.File)
-	assert.Equal(t, resourceBlock.Block.Body.Blocks[0], dnsConfigBlock.Block.Block)
+	assert.Equal(t, resourceBlock.HclBlock.Body.Blocks[0], dnsConfigBlock.HclBlock.Block)
 	assert.Equal(t, 1, len(dnsConfigBlock.RequiredArgs.Args))
 	assert.Equal(t, "nameservers", dnsConfigBlock.RequiredArgs.Args[0].Name)
 	assert.Equal(t, 1, len(dnsConfigBlock.OptionalArgs.Args))
@@ -63,7 +65,7 @@ resource "azurerm_container_group" "example" {
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	assert.Equal(t, "container", containerBlock.Name)
 	assert.Equal(t, "container", containerBlock.SortField)
-	assert.Equal(t, containerBlock.Block.Range(), containerBlock.Range)
+	assert.Equal(t, containerBlock.HclBlock.Range(), containerBlock.Range)
 	assert.Equal(t, 4, len(containerBlock.RequiredArgs.Args))
 	assert.Equal(t, "name", containerBlock.RequiredArgs.Args[0].Name)
 	assert.Equal(t, "image", containerBlock.RequiredArgs.Args[1].Name)
@@ -270,4 +272,55 @@ resource "azurerm_container_group" "example" {
 		gpuLimitBlock := containerBlock.OptionalNestedBlocks.Blocks[1]
 		assert.True(t, gpuLimitBlock.CheckOrder())
 	}
+}
+
+func TestBuildNestedBlock_AutoFix_ReorderRequiredArgsByNames(t *testing.T) {
+	code := `
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+
+  container {
+    name   = "hello-world"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    cpu    = "0.5"
+    memory = "1.5"
+	memory_limit = 1.5
+	
+	gpu_limit {
+		count = 1
+		sku = "K80"
+	}
+  }
+}
+`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
+	cb.AutoFix()
+	expected := `container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	memory_limit = 1.5
+	
+	gpu_limit {
+		count = 1
+		sku = "K80"
+	}
+  }
+`
+	s := string(cb.HclBlock.WriteBlock.BuildTokens(hclwrite.Tokens{}).Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(s))
+}
+
+func formatHcl(input string) string {
+	// Create a new HCL file from the input string
+	f, _ := hclwrite.ParseConfig([]byte(input), "", hcl.InitialPos)
+
+	// Format the HCL file
+	formatted := f.Bytes()
+
+	return string(formatted)
 }

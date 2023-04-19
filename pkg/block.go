@@ -35,7 +35,7 @@ type rootBlock interface {
 	addTailMetaNestedBlock(nb *NestedBlock)
 }
 
-func buildNestedBlock(parent Block, nestedBlock *HclBlock) *NestedBlock {
+func buildNestedBlock(parent Block, index int, nestedBlock *HclBlock) *NestedBlock {
 	nestedBlockName := nestedBlock.Type
 	sortField := nestedBlock.Type
 	if nestedBlock.Type == "dynamic" {
@@ -46,6 +46,7 @@ func buildNestedBlock(parent Block, nestedBlock *HclBlock) *NestedBlock {
 	nb := &NestedBlock{
 		block:     newBlock(nestedBlockName, nestedBlock, parent.file(), path, parent.emitter()),
 		SortField: sortField,
+		Index:     index,
 	}
 	attributes := nestedBlock.Attributes()
 	blocks := nestedBlock.NestedBlocks()
@@ -87,8 +88,8 @@ func buildArgs(b Block, attributes map[string]*HclAttribute) {
 
 func buildNestedBlocks(b Block, nestedBlocks []*HclBlock) {
 	blockSchema := queryBlockSchema(b.path())
-	for _, nestedBlock := range nestedBlocks {
-		nb := buildNestedBlock(b, nestedBlock)
+	for i, nestedBlock := range nestedBlocks {
+		nb := buildNestedBlock(b, i, nestedBlock)
 		rb, rootBlock := b.(rootBlock)
 		if rootBlock && b.isTailMeta(nb.Name) {
 			rb.addTailMetaNestedBlock(nb)
@@ -108,7 +109,7 @@ func buildNestedBlocks(b Block, nestedBlocks []*HclBlock) {
 }
 
 type block struct {
-	Block                *HclBlock
+	HclBlock             *HclBlock
 	Name                 string
 	HeadMetaArgs         *HeadMetaArgs
 	RequiredArgs         *Args
@@ -123,12 +124,12 @@ type block struct {
 
 func newBlock(name string, b *HclBlock, f *hcl.File, path []string, emitter func(block Block) error) *block {
 	return &block{
-		Name:  name,
-		Block: b,
-		File:  f,
-		Path:  path,
-		emit:  emitter,
-		Range: b.Range(),
+		Name:     name,
+		HclBlock: b,
+		File:     f,
+		Path:     path,
+		emit:     emitter,
+		Range:    b.Range(),
 	}
 }
 

@@ -122,6 +122,15 @@ func (a *Args) GetRange() *hcl.Range {
 	return a.Range
 }
 
+func (a *Args) SortByName() []*Arg {
+	sortedArgs := make([]*Arg, len(a.Args))
+	copy(sortedArgs, a.Args)
+	sort.Slice(sortedArgs, func(i, j int) bool {
+		return sortedArgs[i].Name < sortedArgs[j].Name
+	})
+	return sortedArgs
+}
+
 // HeadMetaArgs is the collection of head meta args
 type HeadMetaArgs struct {
 	Args  []*Arg

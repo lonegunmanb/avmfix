@@ -42,7 +42,7 @@ func (b *ResourceBlock) CheckBlock() error {
 
 // DefRange gets the definition range of the resource Block
 func (b *ResourceBlock) DefRange() hcl.Range {
-	return b.Block.DefRange()
+	return b.HclBlock.DefRange()
 }
 
 // BuildResourceBlock Build the root Block wrapper using hclsyntax.Block
@@ -82,7 +82,7 @@ func (b *ResourceBlock) ToString() string {
 		}
 	}
 	txt := strings.Join(txts, "\n\n")
-	blockHead := string(b.Block.DefRange().SliceBytes(b.File.Bytes))
+	blockHead := string(b.HclBlock.DefRange().SliceBytes(b.File.Bytes))
 	if strings.TrimSpace(txt) == "" {
 		txt = fmt.Sprintf("%s {}", blockHead)
 	} else {

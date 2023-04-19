@@ -34,3 +34,7 @@ func (b *HclBlock) NestedBlocks() []*HclBlock {
 	}
 	return r
 }
+
+func (b *HclBlock) Clear() {
+	b.WriteBlock.Body().Clear()
+}
