@@ -315,6 +315,150 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, formatHcl(expected), formatHcl(s))
 }
 
+func TestBuildNestedBlock_AutoFix_RecursiveFix(t *testing.T) {
+	code := `
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	memory_limit = 1.5
+	
+	gpu_limit {
+		sku = "K80"
+		count = 1
+	}
+  }
+}
+`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
+	cb.AutoFix()
+	expected := `container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	memory_limit = 1.5
+	
+	gpu_limit {
+		count = 1
+		sku = "K80"
+	}
+  }
+`
+	s := string(cb.HclBlock.WriteBlock.BuildTokens(hclwrite.Tokens{}).Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(s))
+}
+
+func TestBuildNestedBlock_AutoFix_NestedBlockShouldBelowArguments(t *testing.T) {
+	code := `
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+
+  container {
+	gpu_limit {
+		sku = "K80"
+		count = 1
+	}
+    
+	cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	memory_limit = 1.5
+  }
+}
+`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
+	cb.AutoFix()
+	expected := `container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	memory_limit = 1.5
+	
+	gpu_limit {
+		count = 1
+		sku = "K80"
+	}
+  }
+`
+	s := string(cb.HclBlock.WriteBlock.BuildTokens(hclwrite.Tokens{}).Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(s))
+}
+
+func TestBuildNestedBlock_AutoFix_CommentsShouldBePerserved(t *testing.T) {
+	code := `
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+
+  # This is container block
+  container {
+	# Optional arguments:
+	memory_limit = 1.5
+
+	# Optional 
+	#   nested blocks
+	gpu_limit {
+		# Optional argument count:
+		count = 1
+		# Optional argument sku:
+		sku = "K80"
+	}
+
+	# Required arguments:
+	cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+  }
+}
+`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
+	cb.AutoFix()
+	expected := `
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+
+# This is container block
+  container {
+	# Required arguments:
+	cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+	# Optional arguments:
+	memory_limit = 1.5
+
+	# Optional 
+	#   nested blocks
+	gpu_limit {
+		# Optional argument count:
+		count = 1
+		# Optional argument sku:
+		sku = "K80"
+	}
+  }
+}
+`
+	s := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(s))
+
+}
+
 func formatHcl(input string) string {
 	// Create a new HCL file from the input string
 	f, _ := hclwrite.ParseConfig([]byte(input), "", hcl.InitialPos)
