@@ -274,7 +274,7 @@ resource "azurerm_container_group" "example" {
 	}
 }
 
-func TestBuildNestedBlock_AutoFix_ReorderRequiredArgsByNames(t *testing.T) {
+func TestNestedBlock_AutoFix_ReorderRequiredArgsByNames(t *testing.T) {
 	code := `
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
@@ -315,7 +315,7 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, formatHcl(expected), formatHcl(s))
 }
 
-func TestBuildNestedBlock_AutoFix_RecursiveFix(t *testing.T) {
+func TestNestedBlock_AutoFix_RecursiveFix(t *testing.T) {
 	code := `
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
@@ -356,7 +356,7 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, formatHcl(expected), formatHcl(s))
 }
 
-func TestBuildNestedBlock_AutoFix_NestedBlockShouldBelowArguments(t *testing.T) {
+func TestNestedBlock_AutoFix_NestedBlockShouldBelowArguments(t *testing.T) {
 	code := `
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
@@ -397,7 +397,7 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, formatHcl(expected), formatHcl(s))
 }
 
-func TestBuildNestedBlock_AutoFix_CommentsShouldBePerserved(t *testing.T) {
+func TestNestedBlock_AutoFix_CommentsShouldBePreserved(t *testing.T) {
 	code := `
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
@@ -456,7 +456,6 @@ resource "azurerm_container_group" "example" {
 `
 	s := string(file.WriteFile.Bytes())
 	assert.Equal(t, formatHcl(expected), formatHcl(s))
-
 }
 
 func formatHcl(input string) string {

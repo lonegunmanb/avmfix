@@ -132,10 +132,10 @@ func (b *NestedBlock) AutoFix() {
 	}
 	blockToFix := b.HclBlock
 	if b.BlockType() == "dynamic" {
-		blockToFix = b.HclBlock.NestedBlocks()[0]
+		blockToFix = blockToFix.NestedBlocks()[0]
 	}
-	attributes := b.HclBlock.WriteBlock.Body().Attributes()
-	nestedBlocks := b.HclBlock.WriteBlock.Body().Blocks()
+	attributes := blockToFix.WriteBlock.Body().Attributes()
+	nestedBlocks := blockToFix.WriteBlock.Body().Blocks()
 	blockToFix.Clear()
 	if b.RequiredArgs != nil || b.OptionalArgs != nil {
 		blockToFix.writeNewLine()

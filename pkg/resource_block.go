@@ -63,6 +63,26 @@ func (b *ResourceBlock) CheckOrder() bool {
 	return b.sorted() && b.gaped()
 }
 
+func (b *ResourceBlock) AutoFix() {
+	for _, nestedBlock := range b.nestedBlocks() {
+		nestedBlock.AutoFix()
+	}
+	blockToFix := b.HclBlock
+	attributes := blockToFix.WriteBlock.Body().Attributes()
+	nestedBlocks := blockToFix.WriteBlock.Body().Blocks()
+	blockToFix.Clear()
+	if b.RequiredArgs != nil || b.OptionalArgs != nil {
+		blockToFix.writeNewLine()
+		blockToFix.writeArgs(b.RequiredArgs, attributes)
+		blockToFix.writeArgs(b.OptionalArgs, attributes)
+	}
+	if len(b.nestedBlocks()) > 0 {
+		blockToFix.writeNewLine()
+		blockToFix.writeNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
+		blockToFix.writeNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
+	}
+}
+
 // ToString prints the sorted resource Block
 func (b *ResourceBlock) ToString() string {
 	headMetaTxt := toString(b.HeadMetaArgs)
