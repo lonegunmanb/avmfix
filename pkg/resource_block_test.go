@@ -19,14 +19,14 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	assert.Equal(t, "example", resourceBlock.Name)
 	assert.Equal(t, "azurerm_resource_group", resourceBlock.Type)
-	assert.Equal(t, 2, len(resourceBlock.RequiredArgs.Args))
-	assert.Equal(t, "name", resourceBlock.RequiredArgs.Args[0].Name)
-	assert.Equal(t, "location", resourceBlock.RequiredArgs.Args[1].Name)
-	assert.Equal(t, 1, len(resourceBlock.OptionalArgs.Args))
-	assert.Equal(t, "tags", resourceBlock.OptionalArgs.Args[0].Name)
+	assert.Equal(t, 2, len(resourceBlock.RequiredArgs))
+	assert.Equal(t, "name", resourceBlock.RequiredArgs[0].Name)
+	assert.Equal(t, "location", resourceBlock.RequiredArgs[1].Name)
+	assert.Equal(t, 1, len(resourceBlock.OptionalArgs))
+	assert.Equal(t, "tags", resourceBlock.OptionalArgs[0].Name)
 }
 
 func TestBuildResourceGroup_MetaArguments(t *testing.T) {
@@ -56,20 +56,20 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
-	assert.Equal(t, 2, len(resourceBlock.HeadMetaArgs.Args))
-	assert.Equal(t, "count", resourceBlock.HeadMetaArgs.Args[0].Name)
-	assert.Equal(t, "provider", resourceBlock.HeadMetaArgs.Args[1].Name)
-	assert.Equal(t, "depends_on", resourceBlock.TailMetaArgs.Args[0].Name)
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	assert.Equal(t, 2, len(resourceBlock.HeadMetaArgs))
+	assert.Equal(t, "count", resourceBlock.HeadMetaArgs[0].Name)
+	assert.Equal(t, "provider", resourceBlock.HeadMetaArgs[1].Name)
+	assert.Equal(t, "depends_on", resourceBlock.TailMetaArgs[0].Name)
 	assert.Equal(t, 1, len(resourceBlock.TailMetaNestedBlocks.Blocks))
 	lifecycleBlock := resourceBlock.TailMetaNestedBlocks.Blocks[0]
 	assert.Equal(t, "lifecycle", lifecycleBlock.Name)
 	assert.Nil(t, lifecycleBlock.RequiredArgs)
-	assert.Equal(t, 4, len(lifecycleBlock.OptionalArgs.Args))
-	assert.Equal(t, "create_before_destroy", lifecycleBlock.OptionalArgs.Args[0].Name)
-	assert.Equal(t, "prevent_destroy", lifecycleBlock.OptionalArgs.Args[1].Name)
-	assert.Equal(t, "ignore_changes", lifecycleBlock.OptionalArgs.Args[2].Name)
-	assert.Equal(t, "replace_triggered_by", lifecycleBlock.OptionalArgs.Args[3].Name)
+	assert.Equal(t, 4, len(lifecycleBlock.OptionalArgs))
+	assert.Equal(t, "create_before_destroy", lifecycleBlock.OptionalArgs[0].Name)
+	assert.Equal(t, "prevent_destroy", lifecycleBlock.OptionalArgs[1].Name)
+	assert.Equal(t, "ignore_changes", lifecycleBlock.OptionalArgs[2].Name)
+	assert.Equal(t, "replace_triggered_by", lifecycleBlock.OptionalArgs[3].Name)
 }
 
 func TestResourceBlockAutoFix(t *testing.T) {
@@ -106,7 +106,7 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -178,7 +178,7 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -249,7 +249,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -325,7 +325,7 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 # Multi-Line Comments
@@ -377,7 +377,7 @@ data "azurerm_virtual_network" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 data "azurerm_virtual_network" "example" {
@@ -397,7 +397,7 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_resource_group" "example" {
@@ -426,7 +426,7 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_resource_group" "example" {

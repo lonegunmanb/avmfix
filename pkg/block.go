@@ -7,20 +7,9 @@ import (
 )
 
 // Block is an interface offering general APIs on resource/nested Block
-type Block interface {
-	// CheckBlock checks the resourceBlock/nestedBlock recursively to find the Block not in order,
-	// and invoke the emit function on that Block
-	CheckBlock() error
-
-	// ToString prints the sorted Block
-	ToString() string
-
-	// DefRange gets the definition range of the Block
-	DefRange() hcl.Range
-
+type block interface {
 	file() *hcl.File
 	path() []string
-	emitter() func(block Block) error
 	isHeadMeta(argName string) bool
 	isTailMeta(argName string) bool
 	addHeadMetaArg(arg *Arg)
@@ -35,7 +24,7 @@ type rootBlock interface {
 	addTailMetaNestedBlock(nb *NestedBlock)
 }
 
-func buildNestedBlock(parent Block, index int, nestedBlock *HclBlock) *NestedBlock {
+func buildNestedBlock(parent block, index int, nestedBlock *HclBlock) *NestedBlock {
 	nestedBlockName := nestedBlock.Type
 	sortField := nestedBlock.Type
 	if nestedBlock.Type == "dynamic" {
@@ -44,9 +33,9 @@ func buildNestedBlock(parent Block, index int, nestedBlock *HclBlock) *NestedBlo
 	}
 	path := append(parent.path(), nestedBlockName)
 	nb := &NestedBlock{
-		block:     newBlock(nestedBlockName, nestedBlock, parent.file(), path, parent.emitter()),
-		SortField: sortField,
-		Index:     index,
+		resourceBlock: newBlock(nestedBlockName, nestedBlock, parent.file(), path),
+		SortField:     sortField,
+		Index:         index,
 	}
 	attributes := nestedBlock.Attributes()
 	blocks := nestedBlock.NestedBlocks()
@@ -59,7 +48,7 @@ func buildNestedBlock(parent Block, index int, nestedBlock *HclBlock) *NestedBlo
 	return nb
 }
 
-func buildArgs(b Block, attributes map[string]*HclAttribute) {
+func buildArgs(b block, attributes map[string]*HclAttribute) {
 	argSchemas := queryBlockSchema(b.path())
 	for _, attr := range attributesByLines(attributes) {
 		attrName := attr.Name
@@ -86,7 +75,7 @@ func buildArgs(b Block, attributes map[string]*HclAttribute) {
 	}
 }
 
-func buildNestedBlocks(b Block, nestedBlocks []*HclBlock) {
+func buildNestedBlocks(b block, nestedBlocks []*HclBlock) {
 	blockSchema := queryBlockSchema(b.path())
 	for i, nestedBlock := range nestedBlocks {
 		nb := buildNestedBlock(b, i, nestedBlock)
@@ -108,74 +97,59 @@ func buildNestedBlocks(b Block, nestedBlocks []*HclBlock) {
 	}
 }
 
-type block struct {
+type resourceBlock struct {
 	HclBlock             *HclBlock
 	Name                 string
-	HeadMetaArgs         *HeadMetaArgs
-	RequiredArgs         *Args
-	OptionalArgs         *Args
+	HeadMetaArgs         Args
+	RequiredArgs         Args
+	OptionalArgs         Args
 	RequiredNestedBlocks *NestedBlocks
 	OptionalNestedBlocks *NestedBlocks
 	File                 *hcl.File
 	Range                hcl.Range
 	Path                 []string
-	emit                 func(block Block) error
 }
 
-func newBlock(name string, b *HclBlock, f *hcl.File, path []string, emitter func(block Block) error) *block {
-	return &block{
+func newBlock(name string, b *HclBlock, f *hcl.File, path []string) *resourceBlock {
+	return &resourceBlock{
 		Name:     name,
 		HclBlock: b,
 		File:     f,
 		Path:     path,
-		emit:     emitter,
 		Range:    b.Range(),
 	}
 }
 
-func (b *block) addHeadMetaArg(arg *Arg) {
-	if b.HeadMetaArgs == nil {
-		b.HeadMetaArgs = &HeadMetaArgs{}
-	}
-	b.HeadMetaArgs.add(arg)
+func (b *resourceBlock) addHeadMetaArg(arg *Arg) {
+	b.HeadMetaArgs = append(b.HeadMetaArgs, arg)
 }
 
-func (b *block) addRequiredAttr(arg *Arg) {
-	if b.RequiredArgs == nil {
-		b.RequiredArgs = &Args{}
-	}
-	b.RequiredArgs.add(arg)
+func (b *resourceBlock) addRequiredAttr(arg *Arg) {
+	b.RequiredArgs = append(b.RequiredArgs, arg)
 }
 
-func (b *block) addOptionalAttr(arg *Arg) {
-	if b.OptionalArgs == nil {
-		b.OptionalArgs = &Args{}
-	}
-	b.OptionalArgs.add(arg)
+func (b *resourceBlock) addOptionalAttr(arg *Arg) {
+	b.OptionalArgs = append(b.OptionalArgs, arg)
 }
 
-func (b *block) addRequiredNestedBlock(nb *NestedBlock) {
+func (b *resourceBlock) addRequiredNestedBlock(nb *NestedBlock) {
 	if b.RequiredNestedBlocks == nil {
 		b.RequiredNestedBlocks = &NestedBlocks{}
 	}
 	b.RequiredNestedBlocks.add(nb)
 }
 
-func (b *block) addOptionalNestedBlock(nb *NestedBlock) {
+func (b *resourceBlock) addOptionalNestedBlock(nb *NestedBlock) {
 	if b.OptionalNestedBlocks == nil {
 		b.OptionalNestedBlocks = &NestedBlocks{}
 	}
 	b.OptionalNestedBlocks.add(nb)
 }
 
-func (b *block) file() *hcl.File {
+func (b *resourceBlock) file() *hcl.File {
 	return b.File
 }
 
-func (b *block) path() []string {
+func (b *resourceBlock) path() []string {
 	return b.Path
-}
-
-func (b *block) emitter() func(block Block) error {
-	return b.emit
 }

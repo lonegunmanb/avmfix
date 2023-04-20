@@ -23,7 +23,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
@@ -31,10 +31,10 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, "dns_config", dnsConfigBlock.SortField)
 	assert.Equal(t, file.File, dnsConfigBlock.File)
 	assert.Equal(t, resourceBlock.HclBlock.Body.Blocks[0], dnsConfigBlock.HclBlock.Block)
-	assert.Equal(t, 1, len(dnsConfigBlock.RequiredArgs.Args))
-	assert.Equal(t, "nameservers", dnsConfigBlock.RequiredArgs.Args[0].Name)
-	assert.Equal(t, 1, len(dnsConfigBlock.OptionalArgs.Args))
-	assert.Equal(t, "search_domains", dnsConfigBlock.OptionalArgs.Args[0].Name)
+	assert.Equal(t, 1, len(dnsConfigBlock.RequiredArgs))
+	assert.Equal(t, "nameservers", dnsConfigBlock.RequiredArgs[0].Name)
+	assert.Equal(t, 1, len(dnsConfigBlock.OptionalArgs))
+	assert.Equal(t, "search_domains", dnsConfigBlock.OptionalArgs[0].Name)
 	assert.Equal(t, []string{"resource", "azurerm_container_group", "dns_config"}, dnsConfigBlock.Path)
 }
 
@@ -59,28 +59,28 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	assert.Equal(t, "container", containerBlock.Name)
 	assert.Equal(t, "container", containerBlock.SortField)
 	assert.Equal(t, containerBlock.HclBlock.Range(), containerBlock.Range)
-	assert.Equal(t, 4, len(containerBlock.RequiredArgs.Args))
-	assert.Equal(t, "name", containerBlock.RequiredArgs.Args[0].Name)
-	assert.Equal(t, "image", containerBlock.RequiredArgs.Args[1].Name)
-	assert.Equal(t, "cpu", containerBlock.RequiredArgs.Args[2].Name)
-	assert.Equal(t, "memory", containerBlock.RequiredArgs.Args[3].Name)
-	assert.Equal(t, 1, len(containerBlock.OptionalArgs.Args))
-	assert.Equal(t, "memory_limit", containerBlock.OptionalArgs.Args[0].Name)
+	assert.Equal(t, 4, len(containerBlock.RequiredArgs))
+	assert.Equal(t, "name", containerBlock.RequiredArgs[0].Name)
+	assert.Equal(t, "image", containerBlock.RequiredArgs[1].Name)
+	assert.Equal(t, "cpu", containerBlock.RequiredArgs[2].Name)
+	assert.Equal(t, "memory", containerBlock.RequiredArgs[3].Name)
+	assert.Equal(t, 1, len(containerBlock.OptionalArgs))
+	assert.Equal(t, "memory_limit", containerBlock.OptionalArgs[0].Name)
 	assert.Equal(t, 1, len(containerBlock.OptionalNestedBlocks.Blocks))
 	gpuLimitBlock := containerBlock.OptionalNestedBlocks.Blocks[0]
 	assert.Equal(t, "gpu_limit", gpuLimitBlock.Name)
 	assert.Equal(t, "gpu_limit", gpuLimitBlock.SortField)
 	assert.Nil(t, gpuLimitBlock.RequiredArgs)
-	assert.Equal(t, 2, len(gpuLimitBlock.OptionalArgs.Args))
-	assert.Equal(t, "count", gpuLimitBlock.OptionalArgs.Args[0].Name)
-	assert.Equal(t, "sku", gpuLimitBlock.OptionalArgs.Args[1].Name)
+	assert.Equal(t, 2, len(gpuLimitBlock.OptionalArgs))
+	assert.Equal(t, "count", gpuLimitBlock.OptionalArgs[0].Name)
+	assert.Equal(t, "sku", gpuLimitBlock.OptionalArgs[1].Name)
 }
 
 func TestBuildNestedBlock_DynamicNestedBlock(t *testing.T) {
@@ -99,17 +99,17 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
 	assert.Equal(t, "dns_config", dnsConfigBlock.Name)
 	assert.Equal(t, "dns_config", dnsConfigBlock.SortField)
-	assert.Equal(t, 1, len(dnsConfigBlock.HeadMetaArgs.Args))
-	assert.Equal(t, 1, len(dnsConfigBlock.RequiredArgs.Args))
-	assert.Equal(t, "nameservers", dnsConfigBlock.RequiredArgs.Args[0].Name)
-	assert.Equal(t, 1, len(dnsConfigBlock.OptionalArgs.Args))
-	assert.Equal(t, "search_domains", dnsConfigBlock.OptionalArgs.Args[0].Name)
+	assert.Equal(t, 1, len(dnsConfigBlock.HeadMetaArgs))
+	assert.Equal(t, 1, len(dnsConfigBlock.RequiredArgs))
+	assert.Equal(t, "nameservers", dnsConfigBlock.RequiredArgs[0].Name)
+	assert.Equal(t, 1, len(dnsConfigBlock.OptionalArgs))
+	assert.Equal(t, "search_domains", dnsConfigBlock.OptionalArgs[0].Name)
 	assert.Equal(t, []string{"resource", "azurerm_container_group", "dns_config"}, dnsConfigBlock.Path)
 }
 
@@ -130,7 +130,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Equal(t, "container", resourceBlock.RequiredNestedBlocks.Blocks[0].Name)
@@ -161,7 +161,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -170,108 +170,9 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, "gpu_limit", gpuLimitBlock.Name)
 	assert.Equal(t, "gpu_limit", gpuLimitBlock.SortField)
 	assert.Nil(t, gpuLimitBlock.RequiredArgs)
-	assert.Equal(t, 2, len(gpuLimitBlock.OptionalArgs.Args))
-	assert.Equal(t, "count", gpuLimitBlock.OptionalArgs.Args[0].Name)
-	assert.Equal(t, "sku", gpuLimitBlock.OptionalArgs.Args[1].Name)
-}
-
-func TestNestedBlock_NotWellGaped(t *testing.T) {
-	inputs := []string{
-		`
-resource "azurerm_container_group" "example" {
-  location = azurerm_resource_group.example.location
-
-  container {
-    cpu    = "0.5"
-    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
-    memory = "1.5"
-    name   = "hello-world"
-	memory_limit = 1.5
-	gpu_limit {
-		count = 1
-		sku = "K80"
-	}
-  }
-}
-`,
-	}
-
-	for i := 0; i < len(inputs); i++ {
-		file, diag := pkg.ParseConfig([]byte(inputs[i]), "")
-		require.False(t, diag.HasErrors())
-		resourceBlock := pkg.BuildResourceBlock(file.GetBlock(i), file.File, func(block pkg.Block) error { return nil })
-		assert.False(t, resourceBlock.RequiredNestedBlocks.Blocks[0].CheckOrder())
-	}
-}
-
-func TestNestedBlock_WellFormatNestedBlock(t *testing.T) {
-	inputs := []string{`
-resource "azurerm_container_group" "example" {
-  location = azurerm_resource_group.example.location
-
-  container {
-    cpu    = "0.5"
-    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
-    memory = "1.5"
-    name   = "hello-world"
-	memory_limit = 1.5
-
-	dynamic "gpu" {
-		for_each = var.gpu == null ? [] : [1]
-
-		content {
-			count = var.gpu.count
-			sku   = var.gpu.sku
-		}
-	}
-	gpu_limit {
-		count = 1
-		sku = "K80"
-	}
-  }
-}
-`,
-		`
-resource "azurerm_container_group" "example" {
-  location = azurerm_resource_group.example.location
-
-  container {
-    cpu    = "0.5"
-	# comment
-    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
-    memory = "1.5"
-    name   = "hello-world"
-	memory_limit = 1.5
-
-	dynamic "gpu" {
-		for_each = var.gpu == null ? [] : [1]
-
-		content {
-			count = var.gpu.count
-			# comment
-			sku   = var.gpu.sku
-		}
-	}
-	gpu_limit {
-		count = 1
-		sku = "K80"
-	}
-  }
-}
-`}
-	for i := 0; i < len(inputs); i++ {
-		code := inputs[i]
-		file, diag := pkg.ParseConfig([]byte(code), "")
-		require.False(t, diag.HasErrors())
-		resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
-		assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
-		containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
-		assert.True(t, containerBlock.CheckOrder())
-		gpuBlock := containerBlock.OptionalNestedBlocks.Blocks[0]
-		assert.True(t, gpuBlock.CheckOrder())
-		gpuLimitBlock := containerBlock.OptionalNestedBlocks.Blocks[1]
-		assert.True(t, gpuLimitBlock.CheckOrder())
-	}
+	assert.Equal(t, 2, len(gpuLimitBlock.OptionalArgs))
+	assert.Equal(t, "count", gpuLimitBlock.OptionalArgs[0].Name)
+	assert.Equal(t, "sku", gpuLimitBlock.OptionalArgs[1].Name)
 }
 
 func TestNestedBlock_AutoFix_ReorderRequiredArgsByNames(t *testing.T) {
@@ -295,7 +196,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `container {
@@ -336,7 +237,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `container {
@@ -377,7 +278,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `container {
@@ -402,7 +303,7 @@ func TestNestedBlock_AutoFix_CommentsShouldBePreserved(t *testing.T) {
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
 
-  # This is container block
+  # This is container resourceBlock
   container {
 	# Optional arguments:
 	memory_limit = 1.5
@@ -426,14 +327,14 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
 
-# This is container block
+# This is container resourceBlock
   container {
 	# Required arguments:
 	cpu    = "0.5"

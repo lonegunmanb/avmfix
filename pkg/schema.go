@@ -15,8 +15,8 @@ import (
 	tls "github.com/lonegunmanb/terraform-tls-schema/v4/generated"
 )
 
-var resourceSchemas map[string]*tfjson.Schema = make(map[string]*tfjson.Schema, 0)
-var dataSourceSchemas map[string]*tfjson.Schema = make(map[string]*tfjson.Schema, 0)
+var resourceSchemas = make(map[string]*tfjson.Schema, 0)
+var dataSourceSchemas = make(map[string]*tfjson.Schema, 0)
 
 func init() {
 	linq.From(azurerm.Resources).

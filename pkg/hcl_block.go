@@ -38,7 +38,7 @@ func (b *HclBlock) Clear() {
 	b.WriteBlock.Body().Clear()
 }
 
-func (b *HclBlock) writeArgs(args *Args, attributes map[string]*hclwrite.Attribute) {
+func (b *HclBlock) writeArgs(args Args, attributes map[string]*hclwrite.Attribute) {
 	if args == nil {
 		return
 	}

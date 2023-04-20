@@ -29,9 +29,7 @@ func (f *HclFile) GetBlock(i int) *HclBlock {
 func (f *HclFile) AutoFix() {
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
 		if b.Type == "resource" || b.Type == "data" {
-			resourceBlock := BuildResourceBlock(f.GetBlock(i), f.File, func(block Block) error {
-				return nil
-			})
+			resourceBlock := BuildResourceBlock(f.GetBlock(i), f.File)
 			resourceBlock.AutoFix()
 		}
 	}
