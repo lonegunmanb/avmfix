@@ -9,6 +9,7 @@ import (
 type HclFile struct {
 	*hcl.File
 	WriteFile *hclwrite.File
+	FileName  string
 }
 
 func ParseConfig(config []byte, filename string) (*HclFile, hcl.Diagnostics) {
@@ -17,7 +18,11 @@ func ParseConfig(config []byte, filename string) (*HclFile, hcl.Diagnostics) {
 	if rDiag.HasErrors() || wDiag.HasErrors() {
 		return nil, rDiag.Extend(wDiag)
 	}
-	return &HclFile{file, writeFile}, hcl.Diagnostics{}
+	return &HclFile{
+		File:      file,
+		WriteFile: writeFile,
+		FileName:  filename,
+	}, hcl.Diagnostics{}
 }
 
 func (f *HclFile) GetBlock(i int) *HclBlock {
@@ -27,6 +32,11 @@ func (f *HclFile) GetBlock(i int) *HclBlock {
 }
 
 func (f *HclFile) AutoFix() {
+	if f.FileName == "outputs.tf" {
+		outputsFile := BuildOutputsFile(f)
+		outputsFile.AutoFix()
+		return
+	}
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
 		hclBlock := f.GetBlock(i)
 		if b.Type == "resource" || b.Type == "data" {
