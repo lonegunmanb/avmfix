@@ -142,6 +142,81 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
 
+func TestResourceBlockAutoFix_HeadMetaArgs(t *testing.T) {
+	code := `
+resource "azurerm_container_group" "example" {
+  provider            = azurerm.east
+  count               = 1
+  name                = "example-continst"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  ip_address_type     = "Public"
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+
+    ports {
+      port     = 443
+      protocol = "TCP"
+    }
+  }
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
+    memory = "1.5"
+    name   = "sidecar"
+  }
+
+  tags = {
+    environment = "testing"
+  }
+}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock.AutoFix()
+	expected := `
+resource "azurerm_container_group" "example" {
+  count               = 1
+  provider            = azurerm.east
+
+  location            = azurerm_resource_group.example.location
+  name                = "example-continst"
+  os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
+  dns_name_label      = "aci-label"
+  ip_address_type     = "Public"
+  tags = {
+    environment = "testing"
+  }
+
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    memory = "1.5"
+    name   = "hello-world"
+
+    ports {
+      port     = 443
+      protocol = "TCP"
+    }
+  }
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
+    memory = "1.5"
+    name   = "sidecar"
+  }
+}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
 func TestResourceBlock_AutoFix_DynamicNestedBlock(t *testing.T) {
 	code := `
 resource "azurerm_container_group" "example" {
@@ -308,6 +383,66 @@ data "azurerm_virtual_network" "example" {
 data "azurerm_virtual_network" "example" {
   name                = "production"
   resource_group_name = "networking"
+}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
+func TestResourceBlockAutoFix_DependsOn(t *testing.T) {
+	code := `
+resource "azurerm_resource_group" "example" {
+  depends_on = [var.depends_on]
+  name     = "example"
+  location = "West Europe"
+}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock.AutoFix()
+	expected := `
+resource "azurerm_resource_group" "example" {
+  location = "West Europe"
+  name     = "example"
+
+  depends_on = [var.depends_on]
+}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
+func TestResourceBlockAutoFix_Lifecycle(t *testing.T) {
+	code := `
+resource "azurerm_resource_group" "example" {
+  lifecycle {
+    precondition {
+      condition     = startswith(var.resource_group_name, "dev_")
+      error_message = "Resource Group name must starts with dev_"  
+    }
+    prevent_destroy = true
+  }
+  depends_on = [var.depends_on]
+  name     = var.resource_group_name
+  location = "West Europe"
+}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File, func(block pkg.Block) error { return nil })
+	resourceBlock.AutoFix()
+	expected := `
+resource "azurerm_resource_group" "example" {
+  location = "West Europe"
+  name     = var.resource_group_name
+  
+  depends_on = [var.depends_on]
+  
+  lifecycle {
+    prevent_destroy = true
+    
+    precondition {
+      condition     = startswith(var.resource_group_name, "dev_")
+      error_message = "Resource Group name must starts with dev_"  
+    }
+  }
 }`
 	fixed := string(file.WriteFile.Bytes())
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))

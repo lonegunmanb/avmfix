@@ -64,6 +64,14 @@ func (b *ResourceBlock) CheckOrder() bool {
 }
 
 func (b *ResourceBlock) AutoFix() {
+	schemas := resourceSchemas
+	if b.Path[0] == "data" {
+		schemas = dataSourceSchemas
+	}
+	_, ok := schemas[b.Type]
+	if !ok {
+		return
+	}
 	for _, nestedBlock := range b.nestedBlocks() {
 		nestedBlock.AutoFix()
 	}
@@ -71,16 +79,29 @@ func (b *ResourceBlock) AutoFix() {
 	attributes := blockToFix.WriteBlock.Body().Attributes()
 	nestedBlocks := blockToFix.WriteBlock.Body().Blocks()
 	blockToFix.Clear()
+	if b.HeadMetaArgs != nil {
+		blockToFix.writeNewLine()
+		blockToFix.writeArgs(&Args{Args: b.HeadMetaArgs.Args}, attributes)
+	}
 	if b.RequiredArgs != nil || b.OptionalArgs != nil {
 		blockToFix.writeNewLine()
 		blockToFix.writeArgs(b.RequiredArgs, attributes)
 		blockToFix.writeArgs(b.OptionalArgs, attributes)
 	}
-	if len(b.nestedBlocks()) > 0 {
+	if b.RequiredNestedBlocks != nil || b.OptionalNestedBlocks != nil {
 		blockToFix.writeNewLine()
 		blockToFix.writeNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
 		blockToFix.writeNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
 	}
+	if b.TailMetaArgs != nil {
+		blockToFix.writeNewLine()
+		blockToFix.writeArgs(&Args{Args: b.TailMetaArgs.Args}, attributes)
+	}
+	if b.TailMetaNestedBlocks != nil {
+		blockToFix.writeNewLine()
+		blockToFix.writeNestedBlocks(b.TailMetaNestedBlocks, nestedBlocks)
+	}
+
 }
 
 // ToString prints the sorted resource Block

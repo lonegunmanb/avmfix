@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"math"
 	"sort"
@@ -147,36 +146,6 @@ func (b *NestedBlock) AutoFix() {
 		blockToFix.writeNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
 		blockToFix.writeNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
 	}
-}
-
-func (b *HclBlock) writeArgs(args *Args, attributes map[string]*hclwrite.Attribute) {
-	if args == nil {
-		return
-	}
-
-	for _, arg := range args.SortByName() {
-		tokens := attributes[arg.Name].BuildTokens(hclwrite.Tokens{})
-		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
-	}
-}
-
-func (b *HclBlock) writeNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwrite.Block) {
-	if nbs == nil {
-		return
-	}
-	var orderedBlocks []*NestedBlock
-	linq.From(nbs.Blocks).OrderBy(func(i interface{}) interface{} {
-		return i.(*NestedBlock).SortField
-	}).ToSlice(&orderedBlocks)
-
-	for _, ob := range orderedBlocks {
-		tokens := originalBlocks[ob.Index].BuildTokens(hclwrite.Tokens{})
-		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
-	}
-}
-
-func (b *HclBlock) writeNewLine() {
-	b.WriteBlock.Body().AppendNewline()
 }
 
 func (b *NestedBlocks) add(arg *NestedBlock) {

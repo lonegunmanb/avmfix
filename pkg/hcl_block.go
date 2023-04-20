@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
@@ -8,12 +9,10 @@ import (
 type HclBlock struct {
 	*hclsyntax.Block
 	WriteBlock *hclwrite.Block
-	tokens     hclwrite.Tokens
 }
 
 func NewHclBlock(rb *hclsyntax.Block, wb *hclwrite.Block) *HclBlock {
 	r := &HclBlock{Block: rb, WriteBlock: wb}
-	r.tokens = r.WriteBlock.BuildTokens(hclwrite.Tokens{})
 	return r
 }
 
@@ -37,4 +36,34 @@ func (b *HclBlock) NestedBlocks() []*HclBlock {
 
 func (b *HclBlock) Clear() {
 	b.WriteBlock.Body().Clear()
+}
+
+func (b *HclBlock) writeArgs(args *Args, attributes map[string]*hclwrite.Attribute) {
+	if args == nil {
+		return
+	}
+
+	for _, arg := range args.SortByName() {
+		tokens := attributes[arg.Name].BuildTokens(hclwrite.Tokens{})
+		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
+	}
+}
+
+func (b *HclBlock) writeNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwrite.Block) {
+	if nbs == nil {
+		return
+	}
+	var orderedBlocks []*NestedBlock
+	linq.From(nbs.Blocks).OrderBy(func(i interface{}) interface{} {
+		return i.(*NestedBlock).SortField
+	}).ToSlice(&orderedBlocks)
+
+	for _, ob := range orderedBlocks {
+		tokens := originalBlocks[ob.Index].BuildTokens(hclwrite.Tokens{})
+		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
+	}
+}
+
+func (b *HclBlock) writeNewLine() {
+	b.WriteBlock.Body().AppendNewline()
 }

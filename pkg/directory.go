@@ -7,12 +7,14 @@ import (
 )
 
 func DirectoryAutoFix(dirPath string) error {
-	return filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		return err
+	}
 
-		if !info.IsDir() && strings.HasSuffix(path, ".tf") {
+	for _, file := range files {
+		if !file.IsDir() && strings.HasSuffix(file.Name(), ".tf") {
+			path := filepath.Join(dirPath, file.Name())
 			content, err := os.ReadFile(path)
 			if err != nil {
 				return err
@@ -25,11 +27,16 @@ func DirectoryAutoFix(dirPath string) error {
 
 			hclFile.AutoFix()
 
-			err = os.WriteFile(path, hclFile.WriteFile.Bytes(), info.Mode())
+			fileInfo, err := file.Info()
+			if err != nil {
+				return err
+			}
+
+			err = os.WriteFile(path, hclFile.WriteFile.Bytes(), fileInfo.Mode())
 			if err != nil {
 				return err
 			}
 		}
-		return nil
-	})
+	}
+	return nil
 }
