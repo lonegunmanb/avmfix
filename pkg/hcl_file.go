@@ -28,9 +28,13 @@ func (f *HclFile) GetBlock(i int) *HclBlock {
 
 func (f *HclFile) AutoFix() {
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
+		hclBlock := f.GetBlock(i)
 		if b.Type == "resource" || b.Type == "data" {
-			resourceBlock := BuildResourceBlock(f.GetBlock(i), f.File)
+			resourceBlock := BuildResourceBlock(hclBlock, f.File)
 			resourceBlock.AutoFix()
+		} else if b.Type == "locals" {
+			localsBlock := BuildLocalsBlock(hclBlock, f.File)
+			localsBlock.AutoFix()
 		}
 	}
 }

@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"github.com/hashicorp/hcl/v2"
-	"math"
 )
 
 // NestedBlock is a wrapper of the nested Block
@@ -62,19 +61,6 @@ func (b *NestedBlock) AutoFix() {
 
 func (b *NestedBlocks) add(arg *NestedBlock) {
 	b.Blocks = append(b.Blocks, arg)
-	if b.Range == nil {
-		b.Range = &hcl.Range{
-			Filename: arg.Range.Filename,
-			Start:    hcl.Pos{Line: math.MaxInt},
-			End:      hcl.Pos{Line: -1},
-		}
-	}
-	if b.Range.Start.Line > arg.Range.Start.Line {
-		b.Range.Start = arg.Range.Start
-	}
-	if b.Range.End.Line < arg.Range.End.Line {
-		b.Range.End = arg.Range.End
-	}
 }
 
 func (b *NestedBlock) nestedBlocks() []*NestedBlock {

@@ -106,7 +106,6 @@ type resourceBlock struct {
 	RequiredNestedBlocks *NestedBlocks
 	OptionalNestedBlocks *NestedBlocks
 	File                 *hcl.File
-	Range                hcl.Range
 	Path                 []string
 }
 
@@ -116,7 +115,6 @@ func newBlock(name string, b *HclBlock, f *hcl.File, path []string) *resourceBlo
 		HclBlock: b,
 		File:     f,
 		Path:     path,
-		Range:    b.Range(),
 	}
 }
 
