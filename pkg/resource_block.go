@@ -45,32 +45,42 @@ func (b *ResourceBlock) AutoFix() {
 		nestedBlock.AutoFix()
 	}
 	blockToFix := b.HclBlock
+	singleLineBlock := blockToFix.isSingleLineBlock()
+	empty := true
 	attributes := blockToFix.WriteBlock.Body().Attributes()
 	nestedBlocks := blockToFix.WriteBlock.Body().Blocks()
 	blockToFix.Clear()
 	if b.HeadMetaArgs != nil {
 		blockToFix.writeNewLine()
 		blockToFix.writeArgs(b.HeadMetaArgs.SortByName(), attributes)
+		empty = false
 	}
 	if b.RequiredArgs != nil || b.OptionalArgs != nil {
 		blockToFix.writeNewLine()
 		blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
 		blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
+		empty = false
 	}
 	if b.RequiredNestedBlocks != nil || b.OptionalNestedBlocks != nil {
 		blockToFix.writeNewLine()
 		blockToFix.writeNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
 		blockToFix.writeNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
+		empty = false
 	}
 	if b.TailMetaArgs != nil {
 		blockToFix.writeNewLine()
 		blockToFix.writeArgs(b.TailMetaArgs.SortByName(), attributes)
+		empty = false
 	}
 	if b.TailMetaNestedBlocks != nil {
 		blockToFix.writeNewLine()
 		blockToFix.writeNestedBlocks(b.TailMetaNestedBlocks, nestedBlocks)
+		empty = false
 	}
 
+	if singleLineBlock && !empty {
+		blockToFix.writeNewLine()
+	}
 }
 
 func (b *ResourceBlock) nestedBlocks() []*NestedBlock {

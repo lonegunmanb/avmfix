@@ -447,3 +447,49 @@ resource "azurerm_resource_group" "example" {
 	fixed := string(file.WriteFile.Bytes())
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
+
+func TestResourceBlockAutoFix_SingleLineLifecycle(t *testing.T) {
+	code := `resource "azurerm_key_vault" "kv" {
+  lifecycle { ignore_changes = [tags] }
+  name                     = local.keyvault_name
+}
+`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	expected := `resource "azurerm_key_vault" "kv" {
+  name                     = local.keyvault_name
+
+  lifecycle { 
+	ignore_changes = [tags] 
+  }
+}
+`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
+func TestResourceBlock_SingleLineResource(t *testing.T) {
+	code := `resource "random_pet" "test" { prefix = "abc" }`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	expected := `resource "random_pet" "test" {
+  prefix = "abc" 
+}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
+func TestResourceBlock_EmptyBlock(t *testing.T) {
+	code := `resource "random_pet" "test" {}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	expected := `resource "random_pet" "test" {}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}

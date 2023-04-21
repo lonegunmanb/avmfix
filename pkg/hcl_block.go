@@ -71,3 +71,13 @@ func (b *HclBlock) writeNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwri
 func (b *HclBlock) writeNewLine() {
 	b.WriteBlock.Body().AppendNewline()
 }
+
+func (b *HclBlock) isSingleLineBlock() bool {
+	tokens := b.WriteBlock.BuildTokens(hclwrite.Tokens{})
+	for i := len(tokens) - 1; i >= 1; i-- {
+		if tokens[i].Type == hclsyntax.TokenCBrace && tokens[i-1].Type != hclsyntax.TokenNewline {
+			return true
+		}
+	}
+	return false
+}

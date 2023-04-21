@@ -44,6 +44,8 @@ func (b *NestedBlock) AutoFix() {
 	if b.BlockType() == "dynamic" {
 		blockToFix = blockToFix.NestedBlocks()[0]
 	}
+	singleLineBlock := blockToFix.isSingleLineBlock()
+	empty := true
 	attributes := blockToFix.WriteBlock.Body().Attributes()
 	nestedBlocks := blockToFix.WriteBlock.Body().Blocks()
 	blockToFix.Clear()
@@ -51,11 +53,17 @@ func (b *NestedBlock) AutoFix() {
 		blockToFix.writeNewLine()
 		blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
 		blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
+		empty = false
 	}
 	if len(b.nestedBlocks()) > 0 {
 		blockToFix.writeNewLine()
 		blockToFix.writeNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
 		blockToFix.writeNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
+		empty = false
+	}
+
+	if singleLineBlock && !empty {
+		blockToFix.writeNewLine()
 	}
 }
 
