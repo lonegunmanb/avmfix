@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"sort"
 )
 
@@ -35,4 +37,9 @@ func removeIndex[T any](slice []T, index int) []T {
 		return slice
 	}
 	return append(slice[:index], slice[index+1:]...)
+}
+
+func endWithNewLine(b *hclwrite.Block) bool {
+	tokens := b.BuildTokens(hclwrite.Tokens{})
+	return tokens[len(tokens)-1].Type == hclsyntax.TokenNewline
 }

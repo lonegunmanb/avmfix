@@ -53,7 +53,7 @@ func (b *HclBlock) appendBlock(nb *hclwrite.Block) {
 	b.WriteBlock.Body().AppendBlock(nb)
 }
 
-func (b *HclBlock) writeNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwrite.Block) {
+func (b *HclBlock) appendNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwrite.Block) {
 	if nbs == nil {
 		return
 	}
@@ -68,7 +68,7 @@ func (b *HclBlock) writeNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwri
 	}
 }
 
-func (b *HclBlock) writeNewLine() {
+func (b *HclBlock) appendNewline() {
 	b.WriteBlock.Body().AppendNewline()
 }
 

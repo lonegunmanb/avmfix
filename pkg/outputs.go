@@ -30,8 +30,8 @@ func (b *OutputBlock) AutoFix() {
 func (b *OutputBlock) write() {
 	attributes := b.Block.WriteBlock.Body().Attributes()
 	b.Block.Clear()
-	b.Block.writeNewLine()
-	b.Block.writeArgs(b.Attributes.SortByName(), attributes)
+	b.Block.appendNewline()
+	b.Block.writeArgs(b.Attributes, attributes)
 }
 
 func (b *OutputBlock) removeUnnecessarySensitive() {
@@ -76,10 +76,14 @@ func (f *OutputsFile) AutoFix() {
 	}).ToSlice(&blocks)
 
 	f.File.WriteFile.Body().Clear()
+
 	for i, block := range blocks {
-		f.File.WriteFile.Body().AppendBlock(block.Block.WriteBlock)
-		if i < len(blocks)-1 {
-			f.File.WriteFile.Body().AppendNewline()
+		if i != 0 {
+			f.File.appendNewline()
+		}
+		f.File.appendBlock(block.Block)
+		if !endWithNewLine(block.Block.WriteBlock) {
+			f.File.appendNewline()
 		}
 	}
 }

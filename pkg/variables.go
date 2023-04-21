@@ -1,9 +1,11 @@
 package pkg
 
 import (
+	"fmt"
 	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 var variableAttributePriorities = map[string]int{
@@ -12,6 +14,11 @@ var variableAttributePriorities = map[string]int{
 	"description": 2,
 	"nullable":    3,
 	"sensitive":   4,
+}
+
+var newLineToken = &hclwrite.Token{
+	Type:  hclsyntax.TokenNewline,
+	Bytes: []byte("\n"),
 }
 
 type VariablesFile struct {
@@ -25,40 +32,32 @@ func BuildVariablesFile(f *HclFile) *VariablesFile {
 }
 
 func (f *VariablesFile) AutoFix() {
-	requiredVariables := []*VariableBlock{}
-	optionalVariables := []*VariableBlock{}
+	variableBlocks := make([]*VariableBlock, 0)
 	for i := 0; i < len(f.File.WriteFile.Body().Blocks()); i++ {
 		b := BuildVariableBlock(f.File.File, f.File.GetBlock(i))
 		b.AutoFix()
-		nullable, ok := b.Block.Attributes()["nullable"]
-		if !ok || nullable.IsNullable() {
-			optionalVariables = append(optionalVariables, b)
-			continue
-		}
-		requiredVariables = append(requiredVariables, b)
+		variableBlocks = append(variableBlocks, b)
 	}
-	linq.From(optionalVariables).OrderBy(func(i interface{}) interface{} {
-		return i.(*VariableBlock).Block.Labels[0]
-	}).ToSlice(&optionalVariables)
-	linq.From(requiredVariables).OrderBy(func(i interface{}) interface{} {
-		return i.(*VariableBlock).Block.Labels[0]
-	}).ToSlice(&requiredVariables)
+	linq.From(variableBlocks).OrderBy(func(i interface{}) interface{} {
+		variableBlock := i.(*VariableBlock)
+		name := variableBlock.Block.Labels[0]
+		isRequired := isRequiredVariableBlock(variableBlock.Block.Block)
+		prefix := "0"
+		if !isRequired {
+			prefix = "1"
+		}
+		return fmt.Sprintf("%s_%s", prefix, name)
+	}).ToSlice(&variableBlocks)
+
 	f.File.WriteFile.Body().Clear()
-	for i, variableBlock := range requiredVariables {
-		f.File.WriteFile.Body().AppendBlock(variableBlock.Block.WriteBlock)
-		if i < len(requiredVariables)-1 {
-			f.File.WriteFile.Body().AppendNewline()
+
+	for i, variableBlock := range variableBlocks {
+		if i != 0 {
+			f.File.appendNewline()
 		}
-	}
-
-	if len(requiredVariables) > 0 && len(optionalVariables) > 0 {
-		f.File.WriteFile.Body().AppendNewline()
-	}
-
-	for i, variableBlock := range optionalVariables {
-		f.File.WriteFile.Body().AppendBlock(variableBlock.Block.WriteBlock)
-		if i < len(requiredVariables)-1 {
-			f.File.WriteFile.Body().AppendNewline()
+		f.File.appendBlock(variableBlock.Block)
+		if !endWithNewLine(variableBlock.Block.WriteBlock) {
+			f.File.appendNewline()
 		}
 	}
 }
@@ -96,11 +95,11 @@ func (b *VariableBlock) write() {
 	attributes := b.Block.WriteBlock.Body().Attributes()
 	blocks := b.Block.WriteBlock.Body().Blocks()
 	b.Block.Clear()
-	b.Block.writeNewLine()
+	b.Block.appendNewline()
 	b.Block.writeArgs(b.Attributes, attributes)
 	if len(blocks) > 0 {
 		validationBlock := blocks[0]
-		b.Block.writeNewLine()
+		b.Block.appendNewline()
 		b.Block.appendBlock(validationBlock)
 	}
 }
@@ -131,4 +130,13 @@ func (b *VariableBlock) removeUnnecessarySensitive() {
 		}
 		return
 	}
+}
+
+func isRequiredVariableBlock(b *hclsyntax.Block) bool {
+	nullable, ok := b.Body.Attributes["nullable"]
+	if !ok {
+		return false
+	}
+	expr, ok := nullable.Expr.(*hclsyntax.LiteralValueExpr)
+	return ok && expr.Val.False()
 }

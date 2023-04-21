@@ -51,35 +51,35 @@ func (b *ResourceBlock) AutoFix() {
 	nestedBlocks := blockToFix.WriteBlock.Body().Blocks()
 	blockToFix.Clear()
 	if b.HeadMetaArgs != nil {
-		blockToFix.writeNewLine()
+		blockToFix.appendNewline()
 		blockToFix.writeArgs(b.HeadMetaArgs.SortByName(), attributes)
 		empty = false
 	}
 	if b.RequiredArgs != nil || b.OptionalArgs != nil {
-		blockToFix.writeNewLine()
+		blockToFix.appendNewline()
 		blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
 		blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
 		empty = false
 	}
 	if b.RequiredNestedBlocks != nil || b.OptionalNestedBlocks != nil {
-		blockToFix.writeNewLine()
-		blockToFix.writeNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
-		blockToFix.writeNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
+		blockToFix.appendNewline()
+		blockToFix.appendNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
+		blockToFix.appendNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
 		empty = false
 	}
 	if b.TailMetaArgs != nil {
-		blockToFix.writeNewLine()
+		blockToFix.appendNewline()
 		blockToFix.writeArgs(b.TailMetaArgs.SortByName(), attributes)
 		empty = false
 	}
 	if b.TailMetaNestedBlocks != nil {
-		blockToFix.writeNewLine()
-		blockToFix.writeNestedBlocks(b.TailMetaNestedBlocks, nestedBlocks)
+		blockToFix.appendNewline()
+		blockToFix.appendNestedBlocks(b.TailMetaNestedBlocks, nestedBlocks)
 		empty = false
 	}
 
 	if singleLineBlock && !empty {
-		blockToFix.writeNewLine()
+		blockToFix.appendNewline()
 	}
 }
 

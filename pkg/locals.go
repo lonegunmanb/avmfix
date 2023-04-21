@@ -22,6 +22,6 @@ func BuildLocalsBlock(block *HclBlock, file *hcl.File) *LocalsBlock {
 func (b *LocalsBlock) AutoFix() {
 	attributes := b.HclBlock.WriteBlock.Body().Attributes()
 	b.HclBlock.Clear()
-	b.HclBlock.writeNewLine()
+	b.HclBlock.appendNewline()
 	b.HclBlock.writeArgs(b.Attributes.SortByName(), attributes)
 }

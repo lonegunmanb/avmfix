@@ -56,7 +56,6 @@ output "test2" {
   # test2 description
   description = "test2"
 }
-
 output "test" {
   value = "test"
   description = "test"

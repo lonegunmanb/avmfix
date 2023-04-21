@@ -37,6 +37,11 @@ func (f *HclFile) AutoFix() {
 		outputsFile.AutoFix()
 		return
 	}
+	if f.FileName == "variables.tf" {
+		variablesFile := BuildVariablesFile(f)
+		variablesFile.AutoFix()
+		return
+	}
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
 		hclBlock := f.GetBlock(i)
 		if b.Type == "resource" || b.Type == "data" {
@@ -47,4 +52,12 @@ func (f *HclFile) AutoFix() {
 			localsBlock.AutoFix()
 		}
 	}
+}
+
+func (f *HclFile) appendNewline() {
+	f.WriteFile.Body().AppendNewline()
+}
+
+func (f *HclFile) appendBlock(b *HclBlock) {
+	f.WriteFile.Body().AppendBlock(b.WriteBlock)
 }
