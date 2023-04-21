@@ -1,0 +1,47 @@
+name: pr-check
+  
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ 'opened', 'synchronize' ]
+  push:  
+    branches:  
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+  statuses: write
+  security-events: write
+
+  
+jobs:  
+  build:  
+    runs-on: ubuntu-latest  
+  
+    steps:  
+    - name: Checkout code  
+      uses: actions/checkout@v3
+    - name: Install Go
+      uses: actions/setup-go@v4
+      with:  
+        go-version: '1.20.3'
+    - name: Run go mod tidy
+      run: go mod tidy
+    - name: Run tests for pkg package
+      run: go test -v github.com/${{ github.repository }}/pkg
+    - name: Run Gosec Security Scanner
+      uses: securego/gosec@master
+    - name: Run GolangCI-Lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: latest
+        skip-cache: true
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: "go"
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
