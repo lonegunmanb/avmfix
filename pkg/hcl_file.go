@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
+	"strings"
 )
 
 type HclFile struct {
@@ -32,12 +33,12 @@ func (f *HclFile) GetBlock(i int) *HclBlock {
 }
 
 func (f *HclFile) AutoFix() {
-	if f.FileName == "outputs.tf" {
+	if strings.HasSuffix(f.FileName, "outputs.tf") {
 		outputsFile := BuildOutputsFile(f)
 		outputsFile.AutoFix()
 		return
 	}
-	if f.FileName == "variables.tf" {
+	if strings.HasSuffix(f.FileName, "variables.tf") {
 		variablesFile := BuildVariablesFile(f)
 		variablesFile.AutoFix()
 		return
