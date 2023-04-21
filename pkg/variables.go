@@ -5,7 +5,6 @@ import (
 	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
-	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 var variableAttributePriorities = map[string]int{
@@ -14,11 +13,6 @@ var variableAttributePriorities = map[string]int{
 	"description": 2,
 	"nullable":    3,
 	"sensitive":   4,
-}
-
-var newLineToken = &hclwrite.Token{
-	Type:  hclsyntax.TokenNewline,
-	Bytes: []byte("\n"),
 }
 
 type VariablesFile struct {

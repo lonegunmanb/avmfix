@@ -16,10 +16,6 @@ type ResourceBlock struct {
 	TailMetaNestedBlocks *NestedBlocks
 }
 
-func (b *ResourceBlock) headMetaArgs() Args {
-	return b.HeadMetaArgs
-}
-
 // BuildResourceBlock Build the root Block wrapper using hclsyntax.Block
 func BuildResourceBlock(block *HclBlock, file *hcl.File) *ResourceBlock {
 	resourceType, resourceName := block.Labels[0], block.Labels[1]
