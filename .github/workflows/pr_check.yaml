@@ -13,7 +13,7 @@ permissions:
   pull-requests: read
   statuses: write
   security-events: write
-
+  actions: read
   
 jobs:  
   build:  
