@@ -48,7 +48,7 @@ func (b *ResourceBlock) AutoFix() {
 	blockToFix.Clear()
 	if b.HeadMetaArgs != nil {
 		blockToFix.appendNewline()
-		blockToFix.writeArgs(b.HeadMetaArgs.SortByName(), attributes)
+		blockToFix.writeArgs(b.HeadMetaArgs.SortHeadMetaArgs(), attributes)
 		empty = false
 	}
 	if b.RequiredArgs != nil || b.OptionalArgs != nil {

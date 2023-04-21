@@ -1,9 +1,16 @@
 package pkg
 
 import (
+	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
 	"sort"
 )
+
+var headMetaArgPriorities = map[string]string{
+	"provider": "0",
+	"count":    "1",
+	"for_each": "2",
+}
 
 // Arg is a wrapper of the attribute
 type Arg struct {
@@ -22,6 +29,18 @@ func (a Args) SortByName() Args {
 		return sortedArgs[i].Name < sortedArgs[j].Name
 	})
 	return sortedArgs
+}
+
+func (a Args) SortHeadMetaArgs() Args {
+	sorted := Args{}
+	linq.From(a).OrderBy(func(i interface{}) interface{} {
+		priority, ok := headMetaArgPriorities[i.(*Arg).Name]
+		if !ok {
+			return i.(*Arg).Name
+		}
+		return priority
+	}).ToSlice(&sorted)
+	return sorted
 }
 
 func buildAttrArg(sAttr *HclAttribute, file *hcl.File) *Arg {

@@ -182,8 +182,8 @@ resource "azurerm_container_group" "example" {
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_container_group" "example" {
-  count               = 1
   provider            = azurerm.east
+  count               = 1
 
   location            = azurerm_resource_group.example.location
   name                = "example-continst"
@@ -490,6 +490,27 @@ func TestResourceBlock_EmptyBlock(t *testing.T) {
 	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `resource "random_pet" "test" {}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
+func TestResourceBlock_ProviderShouldBeTheFirstMetaArgument(t *testing.T) {
+	code := `resource "azurerm_resource_group" "test" {
+count = 1
+provider = azurerm.test
+
+name = "test"
+}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	expected := `resource "azurerm_resource_group" "test" {
+provider = azurerm.test
+count = 1
+
+name = "test"
+}`
 	fixed := string(file.WriteFile.Bytes())
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
