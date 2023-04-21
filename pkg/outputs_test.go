@@ -8,8 +8,7 @@ import (
 )
 
 func TestOutputsFile_SortOutputAttribute(t *testing.T) {
-	output := `
-output "test" {
+	output := `output "test" {
   value = "test"
   sensitive = true
   description = "test"
@@ -20,8 +19,7 @@ output "test" {
 	outputBlock := pkg.BuildOutputsFile(f)
 	outputBlock.AutoFix()
 	fixed := string(f.WriteFile.Bytes())
-	expected := `
-output "test" {
+	expected := `output "test" {
   description = "test"
   sensitive = true
   value = "test"
@@ -31,8 +29,7 @@ output "test" {
 }
 
 func TestOutputsFile_RemoveUnnecessarySensitive(t *testing.T) {
-	output := `
-output "test" {
+	output := `output "test" {
   description = "test"
   sensitive = false
   value = "test"
@@ -43,10 +40,44 @@ output "test" {
 	outputBlock := pkg.BuildOutputsFile(f)
 	outputBlock.AutoFix()
 	fixed := string(f.WriteFile.Bytes())
-	expected := `
-output "test" {
+	expected := `output "test" {
   description = "test"
   value = "test"
+}
+`
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
+func TestOutputsFile_SortOutputsByName(t *testing.T) {
+	output := `# output test2
+output "test2" {
+  # test2 value
+  value = "test2"
+  # test2 description
+  description = "test2"
+}
+
+output "test" {
+  value = "test"
+  description = "test"
+}
+`
+	f, diag := pkg.ParseConfig([]byte(output), "outputs.tf")
+	require.False(t, diag.HasErrors())
+	outputsFile := pkg.BuildOutputsFile(f)
+	outputsFile.AutoFix()
+	fixed := string(f.WriteFile.Bytes())
+	expected := `output "test" {
+  description = "test"
+  value = "test"
+}
+
+# output test2
+output "test2" {
+  # test2 description
+  description = "test2"
+  # test2 value
+  value = "test2"
 }
 `
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))

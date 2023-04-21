@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
@@ -65,8 +66,22 @@ func BuildOutputsFile(f *HclFile) *OutputsFile {
 }
 
 func (f *OutputsFile) AutoFix() {
+	var blocks []*OutputBlock
 	for i := 0; i < len(f.File.WriteFile.Body().Blocks()); i++ {
 		b := BuildOutputBlock(f.File.File, f.File.GetBlock(i), i)
 		b.AutoFix()
+		blocks = append(blocks, b)
+	}
+
+	linq.From(blocks).OrderBy(func(i interface{}) interface{} {
+		return i.(*OutputBlock).Block.Labels[0]
+	}).ToSlice(&blocks)
+
+	f.File.WriteFile.Body().Clear()
+	for i, block := range blocks {
+		f.File.WriteFile.Body().AppendBlock(block.Block.WriteBlock)
+		if i < len(blocks)-1 {
+			f.File.WriteFile.Body().AppendNewline()
+		}
 	}
 }
