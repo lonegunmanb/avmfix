@@ -43,10 +43,14 @@ func (b *HclBlock) writeArgs(args Args, attributes map[string]*hclwrite.Attribut
 		return
 	}
 
-	for _, arg := range args.SortByName() {
+	for _, arg := range args {
 		tokens := attributes[arg.Name].BuildTokens(hclwrite.Tokens{})
 		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
 	}
+}
+
+func (b *HclBlock) appendBlock(nb *hclwrite.Block) {
+	b.WriteBlock.Body().AppendBlock(nb)
 }
 
 func (b *HclBlock) writeNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwrite.Block) {

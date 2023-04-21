@@ -49,8 +49,8 @@ func (b *NestedBlock) AutoFix() {
 	blockToFix.Clear()
 	if b.RequiredArgs != nil || b.OptionalArgs != nil {
 		blockToFix.writeNewLine()
-		blockToFix.writeArgs(b.RequiredArgs, attributes)
-		blockToFix.writeArgs(b.OptionalArgs, attributes)
+		blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
+		blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
 	}
 	if len(b.nestedBlocks()) > 0 {
 		blockToFix.writeNewLine()

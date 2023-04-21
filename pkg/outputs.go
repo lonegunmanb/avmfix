@@ -9,13 +9,11 @@ import (
 type OutputBlock struct {
 	Block      *HclBlock
 	Attributes Args
-	Index      int
 }
 
-func BuildOutputBlock(f *hcl.File, b *HclBlock, index int) *OutputBlock {
+func BuildOutputBlock(f *hcl.File, b *HclBlock) *OutputBlock {
 	r := &OutputBlock{
 		Block: b,
-		Index: index,
 	}
 	for _, attribute := range attributesByLines(b.Attributes()) {
 		r.Attributes = append(r.Attributes, buildAttrArg(attribute, f))
@@ -33,7 +31,7 @@ func (b *OutputBlock) write() {
 	attributes := b.Block.WriteBlock.Body().Attributes()
 	b.Block.Clear()
 	b.Block.writeNewLine()
-	b.Block.writeArgs(b.Attributes, attributes)
+	b.Block.writeArgs(b.Attributes.SortByName(), attributes)
 }
 
 func (b *OutputBlock) removeUnnecessarySensitive() {
@@ -68,7 +66,7 @@ func BuildOutputsFile(f *HclFile) *OutputsFile {
 func (f *OutputsFile) AutoFix() {
 	var blocks []*OutputBlock
 	for i := 0; i < len(f.File.WriteFile.Body().Blocks()); i++ {
-		b := BuildOutputBlock(f.File.File, f.File.GetBlock(i), i)
+		b := BuildOutputBlock(f.File.File, f.File.GetBlock(i))
 		b.AutoFix()
 		blocks = append(blocks, b)
 	}

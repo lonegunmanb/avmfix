@@ -17,3 +17,8 @@ func NewHclAttribute(attribute *hclsyntax.Attribute, writeAttribute *hclwrite.At
 	}
 	return r
 }
+
+func (a *HclAttribute) IsNullable() bool {
+	expr, ok := a.Expr.(*hclsyntax.LiteralValueExpr)
+	return ok && expr.Val.True()
+}

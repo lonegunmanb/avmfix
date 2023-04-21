@@ -50,12 +50,12 @@ func (b *ResourceBlock) AutoFix() {
 	blockToFix.Clear()
 	if b.HeadMetaArgs != nil {
 		blockToFix.writeNewLine()
-		blockToFix.writeArgs(b.HeadMetaArgs, attributes)
+		blockToFix.writeArgs(b.HeadMetaArgs.SortByName(), attributes)
 	}
 	if b.RequiredArgs != nil || b.OptionalArgs != nil {
 		blockToFix.writeNewLine()
-		blockToFix.writeArgs(b.RequiredArgs, attributes)
-		blockToFix.writeArgs(b.OptionalArgs, attributes)
+		blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
+		blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
 	}
 	if b.RequiredNestedBlocks != nil || b.OptionalNestedBlocks != nil {
 		blockToFix.writeNewLine()
@@ -64,7 +64,7 @@ func (b *ResourceBlock) AutoFix() {
 	}
 	if b.TailMetaArgs != nil {
 		blockToFix.writeNewLine()
-		blockToFix.writeArgs(b.TailMetaArgs, attributes)
+		blockToFix.writeArgs(b.TailMetaArgs.SortByName(), attributes)
 	}
 	if b.TailMetaNestedBlocks != nil {
 		blockToFix.writeNewLine()
