@@ -11,7 +11,7 @@ func TestOutputsFile_SortOutputAttribute(t *testing.T) {
 	output := `
 output "test" {
   value = "test"
-  sensitive = false
+  sensitive = true
   description = "test"
 }
 `
@@ -23,7 +23,29 @@ output "test" {
 	expected := `
 output "test" {
   description = "test"
+  sensitive = true
+  value = "test"
+}
+`
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
+func TestOutputsFile_RemoveUnnecessarySensitive(t *testing.T) {
+	output := `
+output "test" {
+  description = "test"
   sensitive = false
+  value = "test"
+}
+`
+	f, diag := pkg.ParseConfig([]byte(output), "outputs.tf")
+	require.False(t, diag.HasErrors())
+	outputBlock := pkg.BuildOutputsFile(f)
+	outputBlock.AutoFix()
+	fixed := string(f.WriteFile.Bytes())
+	expected := `
+output "test" {
+  description = "test"
   value = "test"
 }
 `

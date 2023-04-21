@@ -8,7 +8,6 @@ import (
 type HclAttribute struct {
 	*hclsyntax.Attribute
 	WriteAttribute *hclwrite.Attribute
-	tokens         hclwrite.Tokens
 }
 
 func NewHclAttribute(attribute *hclsyntax.Attribute, writeAttribute *hclwrite.Attribute) *HclAttribute {
@@ -16,6 +15,5 @@ func NewHclAttribute(attribute *hclsyntax.Attribute, writeAttribute *hclwrite.At
 		Attribute:      attribute,
 		WriteAttribute: writeAttribute,
 	}
-	r.tokens = r.WriteAttribute.BuildTokens(hclwrite.Tokens{})
 	return r
 }

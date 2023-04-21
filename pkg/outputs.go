@@ -1,6 +1,9 @@
 package pkg
 
-import "github.com/hashicorp/hcl/v2"
+import (
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
+)
 
 type OutputBlock struct {
 	Block      *HclBlock
@@ -20,10 +23,35 @@ func BuildOutputBlock(f *hcl.File, b *HclBlock, index int) *OutputBlock {
 }
 
 func (b *OutputBlock) AutoFix() {
+	b.removeUnnecessarySensitive()
+	b.sortArguments()
+	b.write()
+}
+
+func (b *OutputBlock) write() {
 	attributes := b.Block.WriteBlock.Body().Attributes()
 	b.Block.Clear()
 	b.Block.writeNewLine()
-	b.Block.writeArgs(b.Attributes.SortByName(), attributes)
+	b.Block.writeArgs(b.Attributes, attributes)
+}
+
+func (b *OutputBlock) removeUnnecessarySensitive() {
+	for i := 0; i < len(b.Attributes); i++ {
+		attr := b.Attributes[i]
+		if attr.Name != "sensitive" {
+			continue
+		}
+		literal, ok := attr.Attribute.Expr.(*hclsyntax.LiteralValueExpr)
+		if !ok || !literal.Val.False() {
+			continue
+		}
+		b.Attributes = removeIndex(b.Attributes, i)
+		return
+	}
+}
+
+func (b *OutputBlock) sortArguments() {
+	b.Attributes = b.Attributes.SortByName()
 }
 
 type OutputsFile struct {
