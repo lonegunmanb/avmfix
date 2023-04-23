@@ -105,7 +105,7 @@ func (b *VariableBlock) removeUnnecessaryNullable() {
 			continue
 		}
 		literal, ok := attr.Attribute.Expr.(*hclsyntax.LiteralValueExpr)
-		if ok && literal.Val.False() {
+		if ok && literal.Val.True() {
 			b.Attributes = removeIndex(b.Attributes, i)
 		}
 		return
@@ -127,10 +127,6 @@ func (b *VariableBlock) removeUnnecessarySensitive() {
 }
 
 func isRequiredVariableBlock(b *hclsyntax.Block) bool {
-	nullable, ok := b.Body.Attributes["nullable"]
-	if !ok {
-		return true
-	}
-	expr, ok := nullable.Expr.(*hclsyntax.LiteralValueExpr)
-	return ok && expr.Val.False()
+	_, ok := b.Body.Attributes["default"]
+	return !ok
 }

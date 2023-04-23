@@ -1,5 +1,7 @@
 # Azure Verified Module Autofix Tool
 
+![](https://img.shields.io/github/actions/workflow/status/lonegunmanb/azure-verified-module-fix/pr_check.yaml?label=Build&style=for-the-badge)
+
 [Azure Verified Modules](https://github.com/Azure/terraform-azure-modules) are a set of well maintained, consistent and trusted Terraform modules that maintained by Microsoft.
 
 The Azure Verified Module Autofix Tool is a utility that can help you ensure your Terraform modules are in compliance with the [Azure Verified Modules Codex](https://github.com/Azure/terraform-azure-modules/blob/main/codex/README.md). By analyzing your code, the tool can identify some issues and automatically fix them to meet the required standards.

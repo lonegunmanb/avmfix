@@ -13,7 +13,7 @@ func TestVariablesFile_VariableBlockAttributeSort(t *testing.T) {
     condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
     error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
   }
-  nullable    = true
+  nullable    = false
   sensitive   = true
   default     = "ami-123456"
   description = "The id of the machine image (AMI) to use for the server."
@@ -29,7 +29,7 @@ func TestVariablesFile_VariableBlockAttributeSort(t *testing.T) {
   type        = string
   default     = "ami-123456"
   description = "The id of the machine image (AMI) to use for the server."
-  nullable    = true
+  nullable    = false
   sensitive   = true
   
   validation {
@@ -44,12 +44,14 @@ func TestVariablesFile_VariableBlockAttributeSort(t *testing.T) {
 func TestVariablesFile_RequiredVariableShouldHavePriority(t *testing.T) {
 	code := `variable "test" {
   description = "test"
+  default     = null
   type        = string
   nullable    = true
 }
 
 variable "test2" {
   description = "test2"
+  default     = null
   type        = string
   nullable    = true
 }
@@ -78,18 +80,19 @@ variable "test4" {
 variable "test4" {
   type        = string
   description = "test4"
+  nullable    = false
 }
 
 variable "test" {
   type        = string
+  default     = null
   description = "test"
-  nullable    = true
 }
 
 variable "test2" {
   type        = string
+  default     = null
   description = "test2"
-  nullable    = true
 }
 `
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
@@ -99,7 +102,7 @@ func TestVariablesFile_RemoveUnnecessaryNullable(t *testing.T) {
 	code := `variable "image_id" {
   type        = string
   description = "The id of the machine image (AMI) to use for the server."
-  nullable    = false
+  nullable    = true
 }
 `
 	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
