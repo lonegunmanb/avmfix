@@ -514,3 +514,17 @@ name = "test"
 	fixed := string(file.WriteFile.Bytes())
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
+
+func TestResourceBlock_WellFormattedDatasource(t *testing.T) {
+	code := `# Enabling vm extensions - Log Analytics for arc and vulnerability assessment
+data "azurerm_policy_definition" "vm_policies" {
+  for_each = contains(var.mdc_plans_list, "VirtualMachines") ? local.virtual_machine_policies : {}
+
+  display_name = each.value.definition_display_name
+}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	assert.Equal(t, formatHcl(code), formatHcl(string(file.WriteFile.Bytes())))
+}

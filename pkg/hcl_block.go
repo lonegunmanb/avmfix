@@ -74,10 +74,14 @@ func (b *HclBlock) appendNewline() {
 
 func (b *HclBlock) isSingleLineBlock() bool {
 	tokens := b.WriteBlock.BuildTokens(hclwrite.Tokens{})
+	cBrace := false
 	for i := len(tokens) - 1; i >= 1; i-- {
-		if tokens[i].Type == hclsyntax.TokenCBrace && tokens[i-1].Type != hclsyntax.TokenNewline {
-			return true
+		if tokens[i].Type == hclsyntax.TokenCBrace {
+			cBrace = true
+		}
+		if cBrace && tokens[i-1].Type == hclsyntax.TokenNewline {
+			return false
 		}
 	}
-	return false
+	return true
 }
