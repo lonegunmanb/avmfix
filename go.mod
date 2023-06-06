@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
-	github.com/hashicorp/hcl/v2 v2.16.2
+	github.com/hashicorp/hcl/v2 v2.17.0
 	github.com/hashicorp/terraform-json v0.16.0
 	github.com/lonegunmanb/terraform-azapi-schema v1.6.0
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.39.0
