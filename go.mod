@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.17.0
 	github.com/hashicorp/terraform-json v0.17.1
 	github.com/lonegunmanb/terraform-azapi-schema v1.8.0
-	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.40.0
+	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.41.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.67.0
 	github.com/lonegunmanb/terraform-local-schema/v2 v2.4.0
 	github.com/lonegunmanb/terraform-null-schema/v3 v3.2.1
