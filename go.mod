@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
-	github.com/hashicorp/hcl/v2 v2.17.0
+	github.com/hashicorp/hcl/v2 v2.18.0
 	github.com/hashicorp/terraform-json v0.17.1
 	github.com/lonegunmanb/terraform-azapi-schema v1.9.0
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.41.0
@@ -21,6 +21,7 @@ require (
 require (
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
