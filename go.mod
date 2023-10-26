@@ -1,6 +1,6 @@
 module github.com/lonegunmanb/azure-verified-module-fix
 
-go 1.20
+go 1.21.2
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
@@ -24,6 +24,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/lonegunmanb/terraform-modtm-schema v0.1.8 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.14.0 // indirect

@@ -9,6 +9,7 @@ import (
 	azuread "github.com/lonegunmanb/terraform-azuread-schema/v2/generated"
 	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v3/generated"
 	local "github.com/lonegunmanb/terraform-local-schema/v2/generated"
+	modtm "github.com/lonegunmanb/terraform-modtm-schema/generated"
 	null "github.com/lonegunmanb/terraform-null-schema/v3/generated"
 	random "github.com/lonegunmanb/terraform-random-schema/v3/generated"
 	template "github.com/lonegunmanb/terraform-template-schema/v2/generated"
@@ -28,7 +29,8 @@ func init() {
 		Concat(linq.From(tls.Resources)).
 		Concat(linq.From(azapi.Resources)).
 		Concat(linq.From(time.Resources)).
-		Concat(linq.From(random.Resources)).ToMap(&resourceSchemas)
+		Concat(linq.From(random.Resources)).
+		Concat(linq.From(modtm.Resources)).ToMap(&resourceSchemas)
 	linq.From(azurerm.DataSources).
 		Concat(linq.From(azuread.DataSources)).
 		Concat(linq.From(null.DataSources)).
@@ -37,7 +39,8 @@ func init() {
 		Concat(linq.From(tls.DataSources)).
 		Concat(linq.From(azapi.DataSources)).
 		Concat(linq.From(time.DataSources)).
-		Concat(linq.From(random.DataSources)).ToMap(&dataSourceSchemas)
+		Concat(linq.From(random.DataSources)).
+		Concat(linq.From(modtm.DataSources)).ToMap(&dataSourceSchemas)
 }
 
 func queryBlockSchema(path []string) *tfjson.SchemaBlock {
