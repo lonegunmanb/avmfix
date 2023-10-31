@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/terraform-json v0.17.1
 	github.com/lonegunmanb/terraform-azapi-schema v1.9.0
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.45.0
-	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.77.0
+	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.78.0
 	github.com/lonegunmanb/terraform-local-schema/v2 v2.4.0
 	github.com/lonegunmanb/terraform-modtm-schema v0.1.8
 	github.com/lonegunmanb/terraform-null-schema/v3 v3.2.1
