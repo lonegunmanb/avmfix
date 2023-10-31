@@ -5,9 +5,12 @@ import (
 
 	"github.com/ahmetb/go-linq/v3"
 	tfjson "github.com/hashicorp/terraform-json"
+	alicloud "github.com/lonegunmanb/terraform-alicloud-schema/generated"
+	aws "github.com/lonegunmanb/terraform-aws-schema/v5/generated"
 	azapi "github.com/lonegunmanb/terraform-azapi-schema/generated"
 	azuread "github.com/lonegunmanb/terraform-azuread-schema/v2/generated"
 	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v3/generated"
+	gcp "github.com/lonegunmanb/terraform-google-schema/v4/generated"
 	local "github.com/lonegunmanb/terraform-local-schema/v2/generated"
 	modtm "github.com/lonegunmanb/terraform-modtm-schema/generated"
 	null "github.com/lonegunmanb/terraform-null-schema/v3/generated"
@@ -23,6 +26,10 @@ var dataSourceSchemas = make(map[string]*tfjson.Schema, 0)
 func init() {
 	linq.From(azurerm.Resources).
 		Concat(linq.From(azuread.Resources)).
+		Concat(linq.From(alicloud.Resources)).
+		Concat(linq.From(azapi.Resources)).
+		Concat(linq.From(aws.Resources)).
+		Concat(linq.From(gcp.Resources)).
 		Concat(linq.From(null.Resources)).
 		Concat(linq.From(local.Resources)).
 		Concat(linq.From(template.Resources)).
@@ -33,6 +40,10 @@ func init() {
 		Concat(linq.From(modtm.Resources)).ToMap(&resourceSchemas)
 	linq.From(azurerm.DataSources).
 		Concat(linq.From(azuread.DataSources)).
+		Concat(linq.From(alicloud.DataSources)).
+		Concat(linq.From(azapi.DataSources)).
+		Concat(linq.From(aws.DataSources)).
+		Concat(linq.From(gcp.DataSources)).
 		Concat(linq.From(null.DataSources)).
 		Concat(linq.From(local.DataSources)).
 		Concat(linq.From(template.DataSources)).
