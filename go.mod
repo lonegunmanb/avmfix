@@ -6,7 +6,7 @@ require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
 	github.com/hashicorp/hcl/v2 v2.19.1
 	github.com/hashicorp/terraform-json v0.17.1
-	github.com/lonegunmanb/terraform-alicloud-schema v1.211.2
+	github.com/lonegunmanb/terraform-alicloud-schema v1.212.0
 	github.com/lonegunmanb/terraform-aws-schema/v5 v5.23.1
 	github.com/lonegunmanb/terraform-azapi-schema v1.9.0
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.45.0
