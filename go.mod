@@ -1,6 +1,6 @@
 module github.com/lonegunmanb/azure-verified-module-fix
 
-go 1.21.2
+go 1.21
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
