@@ -28,8 +28,8 @@ github.com/lonegunmanb/terraform-aws-schema/v5 v5.25.0 h1:tWniHKMC0bhgRqoBK8TAuY
 github.com/lonegunmanb/terraform-aws-schema/v5 v5.25.0/go.mod h1:FVgQdhlldwtBriP2YLylsXnvhynH2F5hokMaBhnJs1o=
 github.com/lonegunmanb/terraform-azapi-schema v1.10.0 h1:4NRunq4PNXCXtMbXXiphdrVRhzJTF6dZUDRGO88Fufs=
 github.com/lonegunmanb/terraform-azapi-schema v1.10.0/go.mod h1:qVjfIYAVJO7rL1zqAhfhtQhtkLEOqNZuU7B7qn23kWo=
-github.com/lonegunmanb/terraform-azuread-schema/v2 v2.45.0 h1:aSN3xpj1pOO0P12xRsYJo6yWtY4tNqGkAgvaDs7cu8A=
-github.com/lonegunmanb/terraform-azuread-schema/v2 v2.45.0/go.mod h1:aqlKnZLHcrns6uC4MpCfJ8oDHHTJJy+nTKZ0qgxlDCM=
+github.com/lonegunmanb/terraform-azuread-schema/v2 v2.46.0 h1:XDU5aqO4QzWMYgv1fBBEVNuCFDD8xjCMCvGkX91D22M=
+github.com/lonegunmanb/terraform-azuread-schema/v2 v2.46.0/go.mod h1:iDkPqepz03VVx67oHxQGrSIraEUvOJQceWUIC0xMkKw=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.80.0 h1:usO3YFKmjvApGCPXmob6xfntYvfKkhJYAV2kTpKBtoc=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.80.0/go.mod h1:XrYn3UKiduOuozyewM8DcBkNpmelzmTk0VE+NUVUgOI=
 github.com/lonegunmanb/terraform-google-schema/v4 v4.84.0 h1:aP8Exm16FOegCpQq2fXdJS8GUlsIqxZ0GCrdB27O/J4=
@@ -58,8 +58,8 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/zclconf/go-cty v1.14.1 h1:t9fyA35fwjjUMcmL5hLER+e/rEPqrbCK1/OSE4SI9KA=
 github.com/zclconf/go-cty v1.14.1/go.mod h1:VvMs5i0vgZdhYawQNq5kePSpLAoz8u1xvZgrPIxfnZE=
-golang.org/x/text v0.13.0 h1:ablQoSUd0tRdKxZewP80B+BaqeKJuVhuRxj/dkrun3k=
-golang.org/x/text v0.13.0/go.mod h1:TvPlkZtksWOMsz7fbANvkp4WM8x/WCo/om8BMLbz+aE=
+golang.org/x/text v0.14.0 h1:ScX5w1eTa3QqT8oi6+ziP7dTV1S2+ALU0bI+0zXKWiQ=
+golang.org/x/text v0.14.0/go.mod h1:18ZOQIKpY8NJVqYksKHtTdi31H5itFRjB5/qKTNYzSU=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
