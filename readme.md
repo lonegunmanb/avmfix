@@ -39,3 +39,22 @@ Replace `/path/to/your/terraform/module` with the path to the directory containi
 The tool will analyze the specified directory and automatically apply fixes for any issues it identifies, according to the Azure Verified Modules Codex. If the process completes successfully, you will see the message "DirectoryAutoFix completed successfully." If an error occurs during the process, the tool will display an error message.
 
 Keep in mind that `avmfix` may not be able to resolve all issues automatically. Manual intervention may be required for some problems. Regularly review and update your Terraform modules according to the Azure Verified Modules Codex to maintain high-quality modules.
+
+# Supported Providers
+
+`avmfix` currently supports variable block description generation for the following providers:
+* Alicloud (`alicloud`)
+* AWS (`aws`)
+* AzAPI (`azapi`)
+* Azure Resource Manager (`azurerm`)
+* Azure Active Directory (`azuread`)
+* Google Cloud Platform (`google`)
+* Helm (`helm`)
+* Kubernetes (`kubernetes`)
+* Local (`local`)
+* Modtm (`modtm`)
+* Null (`null`)
+* Random (`random`)
+* Template (`template`)
+* Time (`time`)
+* Tls (`tls`)

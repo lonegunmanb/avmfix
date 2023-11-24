@@ -1,6 +1,7 @@
 module github.com/lonegunmanb/azure-verified-module-fix
 
-go 1.21
+go 1.21.2
+
 toolchain go1.21.4
 
 require (
@@ -13,6 +14,8 @@ require (
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.46.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.81.0
 	github.com/lonegunmanb/terraform-google-schema/v4 v4.84.0
+	github.com/lonegunmanb/terraform-helm-schema/v2 v2.11.0
+	github.com/lonegunmanb/terraform-kubernetes-schema/v2 v2.23.0
 	github.com/lonegunmanb/terraform-local-schema/v2 v2.4.0
 	github.com/lonegunmanb/terraform-modtm-schema v0.1.8
 	github.com/lonegunmanb/terraform-null-schema/v3 v3.2.1

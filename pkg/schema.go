@@ -11,6 +11,8 @@ import (
 	azuread "github.com/lonegunmanb/terraform-azuread-schema/v2/generated"
 	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v3/generated"
 	gcp "github.com/lonegunmanb/terraform-google-schema/v4/generated"
+	helm "github.com/lonegunmanb/terraform-helm-schema/v2/generated"
+	kubernetes "github.com/lonegunmanb/terraform-kubernetes-schema/v2/generated"
 	local "github.com/lonegunmanb/terraform-local-schema/v2/generated"
 	modtm "github.com/lonegunmanb/terraform-modtm-schema/generated"
 	null "github.com/lonegunmanb/terraform-null-schema/v3/generated"
@@ -30,6 +32,8 @@ func init() {
 		Concat(linq.From(azapi.Resources)).
 		Concat(linq.From(aws.Resources)).
 		Concat(linq.From(gcp.Resources)).
+		Concat(linq.From(helm.Resources)).
+		Concat(linq.From(kubernetes.Resources)).
 		Concat(linq.From(null.Resources)).
 		Concat(linq.From(local.Resources)).
 		Concat(linq.From(template.Resources)).
@@ -44,6 +48,8 @@ func init() {
 		Concat(linq.From(azapi.DataSources)).
 		Concat(linq.From(aws.DataSources)).
 		Concat(linq.From(gcp.DataSources)).
+		Concat(linq.From(helm.DataSources)).
+		Concat(linq.From(kubernetes.DataSources)).
 		Concat(linq.From(null.DataSources)).
 		Concat(linq.From(local.DataSources)).
 		Concat(linq.From(template.DataSources)).
