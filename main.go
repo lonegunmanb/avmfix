@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
+	"github.com/lonegunmanb/avmfix/pkg"
 )
 
 func main() {

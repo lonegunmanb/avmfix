@@ -1,4 +1,4 @@
-module github.com/lonegunmanb/azure-verified-module-fix
+module github.com/lonegunmanb/avmfix
 
 go 1.21.2
 

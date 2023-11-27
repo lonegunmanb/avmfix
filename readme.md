@@ -23,7 +23,7 @@ We're adding more autofix capabilities to the tool, so stay tuned for updates!
 ## Installation
 
 ```bash
-go install github.com/lonegunmanb/azure-verified-module-fix/avmfix@latest
+go install github.com/lonegunmanb/avmfix@latest
 ```
 
 # How to use
