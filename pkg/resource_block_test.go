@@ -3,7 +3,7 @@ package pkg_test
 import (
 	"testing"
 
-	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
+	"github.com/lonegunmanb/avmfix/pkg"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

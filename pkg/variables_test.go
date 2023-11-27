@@ -1,10 +1,11 @@
 package pkg_test
 
 import (
-	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
+	"testing"
+
+	"github.com/lonegunmanb/avmfix/pkg"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestVariablesFile_VariableBlockAttributeSort(t *testing.T) {

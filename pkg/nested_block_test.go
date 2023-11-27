@@ -1,11 +1,11 @@
 package pkg_test
 
 import (
-	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclwrite"
 	"testing"
 
-	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclwrite"
+	"github.com/lonegunmanb/avmfix/pkg"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

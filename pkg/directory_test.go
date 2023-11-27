@@ -1,12 +1,13 @@
 package pkg_test
 
 import (
-	"github.com/lonegunmanb/azure-verified-module-fix/pkg"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/lonegunmanb/avmfix/pkg"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_FileAutoFix(t *testing.T) {
