@@ -92,9 +92,10 @@ func (b *VariableBlock) write() {
 	b.Block.appendNewline()
 	b.Block.writeArgs(b.Attributes, attributes)
 	if len(blocks) > 0 {
-		validationBlock := blocks[0]
 		b.Block.appendNewline()
-		b.Block.appendBlock(validationBlock)
+	}
+	for _, nb := range blocks {
+		b.Block.appendBlock(nb)
 	}
 }
 

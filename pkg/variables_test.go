@@ -222,3 +222,46 @@ variable "vnet" {
 `
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
+
+func TestVariablesFile_MultipleValidations(t *testing.T) {
+	code := `variable "image_id" {
+  type        = string
+  default     = "ami-123456"
+  description = "The id of the machine image (AMI) to use for the server."
+  nullable    = false
+  sensitive   = true
+
+  validation {
+    condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
+    error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
+  }
+  validation {
+    condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
+    error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
+  }
+}
+`
+	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
+	require.False(t, diag.HasErrors())
+	variablesFile := pkg.BuildVariablesFile(f)
+	variablesFile.AutoFix()
+	fixed := string(f.WriteFile.Bytes())
+	expected := `variable "image_id" {
+  type        = string
+  default     = "ami-123456"
+  description = "The id of the machine image (AMI) to use for the server."
+  nullable    = false
+  sensitive   = true
+
+  validation {
+    condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
+    error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
+  }
+  validation {
+    condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
+    error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
+  }
+}
+`
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
