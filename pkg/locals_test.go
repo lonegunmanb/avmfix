@@ -58,3 +58,33 @@ locals {
 `
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
+
+func Test_MultipleLocalBlocksShouldBeSortedSeparated(t *testing.T) {
+	code := `
+locals {
+  b = "b"
+  a = "a"
+}
+
+locals {
+  d = "d"
+  c = "c"
+}
+`
+	f, diag := pkg.ParseConfig([]byte(code), "locals.tf")
+	require.False(t, diag.HasErrors())
+	f.AutoFix()
+	fixed := string(f.WriteFile.Bytes())
+	expected := `
+locals {
+  a = "a"
+  b = "b"
+}
+
+locals {
+  c = "c"
+  d = "d"
+}
+`
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
