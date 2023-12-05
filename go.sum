@@ -50,8 +50,8 @@ github.com/lonegunmanb/terraform-random-schema/v3 v3.5.1 h1:1/sLn0mfSjtCDRGxV1o4
 github.com/lonegunmanb/terraform-random-schema/v3 v3.5.1/go.mod h1:xKxDL668MXgHZVL4H+VzwKPYY5GDvtdNYmU6KvjAGcg=
 github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0 h1:dbD4+ResOG4234ysG9HHXyZaYGynHefPzO70Rk/ktcs=
 github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0/go.mod h1:FXrD523CXVw67Yn5xmlppTub47/1/UI+/SZjKq8G6X4=
-github.com/lonegunmanb/terraform-time-schema v0.9.1 h1:YVaHU0qvBAXbRcihOyHv+qzoV8US8BvnNpmUi8b636w=
-github.com/lonegunmanb/terraform-time-schema v0.9.1/go.mod h1:11zE0UeIJeh4alMAjr7gb6h5baAt4iRQOsN6iWPjE+g=
+github.com/lonegunmanb/terraform-time-schema v0.9.2 h1:zm5WSO7nQZSEboNnMsDx09vm9RnjYaUL73+ib5xE3YM=
+github.com/lonegunmanb/terraform-time-schema v0.9.2/go.mod h1:XdTogVnZQ5JljTiJ67MEzes9XA6shwBeHMJJtIjYoR8=
 github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.5 h1:dSPXsKD3hjezryDadNpd4K/A+u4TJs3iF1nMX6bMzbk=
 github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.5/go.mod h1:X0XUHDrNbafOzS8iq4brAOsJJGzm4luQl0Hhoi87Ti0=
 github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 h1:DpOJ2HYzCv8LZP15IdmG+YdwD2luVPHITV96TkirNBM=
