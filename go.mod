@@ -22,7 +22,7 @@ require (
 	github.com/lonegunmanb/terraform-null-schema/v3 v3.2.2
 	github.com/lonegunmanb/terraform-random-schema/v3 v3.5.1
 	github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0
-	github.com/lonegunmanb/terraform-time-schema v0.9.2
+	github.com/lonegunmanb/terraform-time-schema v0.10.0
 	github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.5
 	github.com/stretchr/testify v1.8.4
 )
