@@ -45,6 +45,7 @@ Keep in mind that `avmfix` may not be able to resolve all issues automatically. 
 `avmfix` currently supports variable block description generation for the following providers:
 * Alicloud (`alicloud`)
 * AWS (`aws`)
+* AWS Cloud Control API (`awscc`)
 * AzAPI (`azapi`)
 * Azure Resource Manager (`azurerm`)
 * Azure Active Directory (`azuread`)

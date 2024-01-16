@@ -7,6 +7,7 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 	alicloud "github.com/lonegunmanb/terraform-alicloud-schema/generated"
 	aws "github.com/lonegunmanb/terraform-aws-schema/v5/generated"
+	awscc "github.com/lonegunmanb/terraform-awscc-schema/generated"
 	azapi "github.com/lonegunmanb/terraform-azapi-schema/generated"
 	azuread "github.com/lonegunmanb/terraform-azuread-schema/v2/generated"
 	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v3/generated"
@@ -32,6 +33,7 @@ func init() {
 		Concat(linq.From(alicloud.Resources)).
 		Concat(linq.From(azapi.Resources)).
 		Concat(linq.From(aws.Resources)).
+		Concat(linq.From(awscc.Resources)).
 		Concat(linq.From(bytebase.Resources)).
 		Concat(linq.From(gcp.Resources)).
 		Concat(linq.From(helm.Resources)).
@@ -50,6 +52,7 @@ func init() {
 		Concat(linq.From(azapi.DataSources)).
 		Concat(linq.From(bytebase.DataSources)).
 		Concat(linq.From(aws.DataSources)).
+		Concat(linq.From(awscc.DataSources)).
 		Concat(linq.From(gcp.DataSources)).
 		Concat(linq.From(helm.DataSources)).
 		Concat(linq.From(kubernetes.DataSources)).
