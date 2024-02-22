@@ -31,8 +31,8 @@ func TestOutputsFile_SortOutputAttribute(t *testing.T) {
 
 func TestOutputsFile_RemoveUnnecessarySensitive(t *testing.T) {
 	output := `output "test" {
-  description = "test"
   sensitive = false
+  description = "test"
   value = "test"
 }
 `

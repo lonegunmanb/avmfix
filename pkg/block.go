@@ -88,8 +88,8 @@ func buildNestedBlocks(b block, nestedBlocks []*HclBlock) {
 			b.addOptionalNestedBlock(nb)
 			continue
 		}
-		nbSchema, isAzNestedBlock := blockSchema.NestedBlocks[nb.Name]
-		if isAzNestedBlock && nbSchema.MinItems > 0 {
+		nbSchema, knownBlock := blockSchema.NestedBlocks[nb.Name]
+		if knownBlock && nbSchema.MinItems > 0 {
 			b.addRequiredNestedBlock(nb)
 		} else {
 			b.addOptionalNestedBlock(nb)

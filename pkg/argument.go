@@ -34,10 +34,7 @@ func (a Args) SortByName() Args {
 func (a Args) SortHeadMetaArgs() Args {
 	sorted := Args{}
 	linq.From(a).OrderBy(func(i interface{}) interface{} {
-		priority, ok := headMetaArgPriorities[i.(*Arg).Name]
-		if !ok {
-			return i.(*Arg).Name
-		}
+		priority := headMetaArgPriorities[i.(*Arg).Name]
 		return priority
 	}).ToSlice(&sorted)
 	return sorted
