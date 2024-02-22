@@ -42,7 +42,7 @@ func (b *OutputBlock) removeUnnecessarySensitive() {
 		}
 		literal, ok := attr.Attribute.Expr.(*hclsyntax.LiteralValueExpr)
 		if !ok || !literal.Val.False() {
-			continue
+			return
 		}
 		b.Attributes = removeIndex(b.Attributes, i)
 		return

@@ -59,20 +59,20 @@ func (b *ResourceBlock) AutoFix() {
 	}
 	if b.RequiredNestedBlocks != nil || b.OptionalNestedBlocks != nil {
 		blockToFix.appendNewline()
-		blockToFix.appendNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
-		blockToFix.appendNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
 		empty = false
 	}
+	blockToFix.appendNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
+	blockToFix.appendNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
 	if b.TailMetaArgs != nil {
 		blockToFix.appendNewline()
-		blockToFix.writeArgs(b.TailMetaArgs.SortByName(), attributes)
 		empty = false
 	}
+	blockToFix.writeArgs(b.TailMetaArgs.SortByName(), attributes)
 	if b.TailMetaNestedBlocks != nil {
 		blockToFix.appendNewline()
-		blockToFix.appendNestedBlocks(b.TailMetaNestedBlocks, nestedBlocks)
 		empty = false
 	}
+	blockToFix.appendNestedBlocks(b.TailMetaNestedBlocks, nestedBlocks)
 
 	if singleLineBlock && !empty {
 		blockToFix.appendNewline()

@@ -51,16 +51,16 @@ func (b *NestedBlock) AutoFix() {
 	blockToFix.Clear()
 	if b.RequiredArgs != nil || b.OptionalArgs != nil {
 		blockToFix.appendNewline()
-		blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
-		blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
 		empty = false
 	}
+	blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
+	blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
 	if len(b.nestedBlocks()) > 0 {
 		blockToFix.appendNewline()
-		blockToFix.appendNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
-		blockToFix.appendNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
 		empty = false
 	}
+	blockToFix.appendNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
+	blockToFix.appendNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
 
 	if singleLineBlock && !empty {
 		blockToFix.appendNewline()

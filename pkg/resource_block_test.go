@@ -217,6 +217,59 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
 
+func TestResourceBlock_TailMetaNestedBlockShouldBePutAtResourceBlockTail(t *testing.T) {
+	code := `
+resource "azurerm_kubernetes_cluster" "example" {
+  lifecycle {
+    prevent_destroy = true
+  }
+  service_mesh_profile {
+    mode = "Istio"
+  }
+}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	expected := `
+resource "azurerm_kubernetes_cluster" "example" {
+  service_mesh_profile {
+    mode = "Istio"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
+func TestResourceBlock_TailMetaArgOrder(t *testing.T) {
+	code := `
+resource "azurerm_kubernetes_cluster" "example" {
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  depends_on = [azurerm_resource_group.this]
+}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	expected := `
+resource "azurerm_kubernetes_cluster" "example" {
+  depends_on = [azurerm_resource_group.this]
+  
+  lifecycle {
+    prevent_destroy = true
+  }
+}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
 func TestResourceBlock_AutoFix_DynamicNestedBlock(t *testing.T) {
 	code := `
 resource "azurerm_container_group" "example" {
@@ -515,6 +568,35 @@ name = "test"
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
 
+func TestResourceBlock_UnknownNestedBlockShouldBeTreatedAsOptionalBlock(t *testing.T) {
+	code := `resource "azurerm_kubernetes_cluster" "test" {
+    an_unknown_block {
+      unknown_argument = 1
+    }
+	default_node_pool {
+      name       = "default"
+      vm_size    = "Standard_D2_v2"
+      node_count = 1
+    }
+}`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	expected := `resource "azurerm_kubernetes_cluster" "test" {
+	default_node_pool {
+      name       = "default"
+      vm_size    = "Standard_D2_v2"
+      node_count = 1
+    }
+    an_unknown_block {
+      unknown_argument = 1
+    }
+}`
+	fixed := string(file.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+}
+
 func TestResourceBlock_WellFormattedDatasource(t *testing.T) {
 	code := `# Enabling vm extensions - Log Analytics for arc and vulnerability assessment
 data "azurerm_policy_definition" "vm_policies" {
@@ -527,4 +609,24 @@ data "azurerm_policy_definition" "vm_policies" {
 	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	assert.Equal(t, formatHcl(code), formatHcl(string(file.WriteFile.Bytes())))
+}
+
+func TestResourceBlock_DatasourceShouldBeFixed(t *testing.T) {
+	code := `
+data "azurerm_resources" "spokes" {
+  type = "Microsoft.Network/virtualNetworks"
+  resource_group_name = "spokes_rg"
+}
+`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	want := `
+data "azurerm_resources" "spokes" {
+  resource_group_name = "spokes_rg"
+  type = "Microsoft.Network/virtualNetworks"
+}
+`
+	assert.Equal(t, formatHcl(want), formatHcl(string(file.WriteFile.Bytes())))
 }
