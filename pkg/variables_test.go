@@ -1,6 +1,7 @@
 package pkg_test
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/lonegunmanb/avmfix/pkg"
@@ -9,24 +10,24 @@ import (
 )
 
 func TestVariablesFile_VariableBlockAttributeSort(t *testing.T) {
-	code := `variable "image_id" {
+	cases := []struct {
+		input    string
+		expected string
+	}{
+		{
+			input: `variable "image_id" {
   validation {
     condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
     error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
   }
-  nullable    = false
   sensitive   = true
-  default     = "ami-123456"
+  nullable    = false
   description = "The id of the machine image (AMI) to use for the server."
+  default     = "ami-123456"
   type        = string
 }
-`
-	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
-	require.False(t, diag.HasErrors())
-	variablesFile := pkg.BuildVariablesFile(f)
-	variablesFile.AutoFix()
-	fixed := string(f.WriteFile.Bytes())
-	expected := `variable "image_id" {
+`,
+			expected: `variable "image_id" {
   type        = string
   default     = "ami-123456"
   description = "The id of the machine image (AMI) to use for the server."
@@ -38,8 +39,21 @@ func TestVariablesFile_VariableBlockAttributeSort(t *testing.T) {
     error_message = "The image_id value must be a valid AMI id, starting with \"ami-\"."
   }
 }
-`
-	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+`,
+		},
+	}
+	for i, c := range cases {
+		input := c.input
+		expected := c.expected
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			f, diag := pkg.ParseConfig([]byte(input), "variables.tf")
+			require.False(t, diag.HasErrors())
+			variablesFile := pkg.BuildVariablesFile(f)
+			variablesFile.AutoFix()
+			fixed := string(f.WriteFile.Bytes())
+			assert.Equal(t, formatHcl(expected), formatHcl(fixed))
+		})
+	}
 }
 
 func TestVariablesFile_RequiredVariableShouldHavePriority(t *testing.T) {
@@ -101,9 +115,9 @@ variable "test2" {
 
 func TestVariablesFile_RemoveUnnecessaryNullable(t *testing.T) {
 	code := `variable "image_id" {
+  nullable    = true
   type        = string
   description = "The id of the machine image (AMI) to use for the server."
-  nullable    = true
 }
 `
 	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
