@@ -25,7 +25,7 @@ require (
 	github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0
 	github.com/lonegunmanb/terraform-time-schema v0.10.0
 	github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.5
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
