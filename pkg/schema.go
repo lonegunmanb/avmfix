@@ -12,7 +12,7 @@ import (
 	azuread "github.com/lonegunmanb/terraform-azuread-schema/v2/generated"
 	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v3/generated"
 	bytebase "github.com/lonegunmanb/terraform-bytebase-schema/generated"
-	gcp "github.com/lonegunmanb/terraform-google-schema/v4/generated"
+	gcp "github.com/lonegunmanb/terraform-google-schema/v5/generated"
 	helm "github.com/lonegunmanb/terraform-helm-schema/v2/generated"
 	kubernetes "github.com/lonegunmanb/terraform-kubernetes-schema/v2/generated"
 	local "github.com/lonegunmanb/terraform-local-schema/v2/generated"
