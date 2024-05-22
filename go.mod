@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/terraform-json v0.21.0
 	github.com/lonegunmanb/terraform-alicloud-schema v1.223.1
 	github.com/lonegunmanb/terraform-aws-schema/v5 v5.50.0
-	github.com/lonegunmanb/terraform-awscc-schema v0.76.0
+	github.com/lonegunmanb/terraform-awscc-schema v0.77.0
 	github.com/lonegunmanb/terraform-azapi-schema v1.13.1
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.50.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.104.0
