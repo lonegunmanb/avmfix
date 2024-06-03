@@ -23,7 +23,7 @@ require (
 	github.com/lonegunmanb/terraform-null-schema/v3 v3.2.2
 	github.com/lonegunmanb/terraform-random-schema/v3 v3.6.2
 	github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0
-	github.com/lonegunmanb/terraform-time-schema v0.11.1
+	github.com/lonegunmanb/terraform-time-schema v0.11.2
 	github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.5
 	github.com/stretchr/testify v1.9.0
 )
@@ -33,7 +33,7 @@ require (
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
