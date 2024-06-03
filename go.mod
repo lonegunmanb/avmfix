@@ -13,7 +13,7 @@ require (
 	github.com/lonegunmanb/terraform-awscc-schema v0.78.0
 	github.com/lonegunmanb/terraform-azapi-schema v1.13.1
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.50.0
-	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.104.0
+	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.106.1
 	github.com/lonegunmanb/terraform-bytebase-schema v0.0.9
 	github.com/lonegunmanb/terraform-google-schema/v5 v5.30.0
 	github.com/lonegunmanb/terraform-helm-schema/v2 v2.13.2
@@ -33,7 +33,7 @@ require (
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
