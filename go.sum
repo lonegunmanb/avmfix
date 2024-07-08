@@ -22,8 +22,8 @@ github.com/lonegunmanb/terraform-aws-schema/v5 v5.56.1 h1:Z/kNwZqP/5tWIzNgk1vdrA
 github.com/lonegunmanb/terraform-aws-schema/v5 v5.56.1/go.mod h1:MvQqD3Wx/3juy1zqw/ij9X7zjT4Z6kHp7ngqUIrXwPw=
 github.com/lonegunmanb/terraform-awscc-schema v1.4.0 h1:Htc702tzrAO2xEay+r4TlLGSIrRA2FBt/AuKf/37W20=
 github.com/lonegunmanb/terraform-awscc-schema v1.4.0/go.mod h1:j9PJRHSEum8/3atwkoGBWBW/j6rJX7JTthhAl3ZZVRA=
-github.com/lonegunmanb/terraform-azapi-schema v1.13.1 h1:w8JxngKvMyLFJUaJfzVav8cU/WkKl5ITiI9QbwUfJcM=
-github.com/lonegunmanb/terraform-azapi-schema v1.13.1/go.mod h1:a5Xi8vuxGnKjO2yU6m82tCVH7XBP5oMma+2TX0R/rgw=
+github.com/lonegunmanb/terraform-azapi-schema v1.14.0 h1:m5K9/RoG+4GddYkfvZrRhBro1NvfIT6kfol7G2h/y10=
+github.com/lonegunmanb/terraform-azapi-schema v1.14.0/go.mod h1:Fpq+Ep7G+er2i/MzYKtX/p0pCtegsHf4WKQgekIZgCE=
 github.com/lonegunmanb/terraform-azuread-schema/v2 v2.53.1 h1:7AahHoa9QsPPsTA2/EUeJC+plzYE2IvcemiOsFVtvN8=
 github.com/lonegunmanb/terraform-azuread-schema/v2 v2.53.1/go.mod h1:TBR8nmt28suLnRaEsoVF2ssn5J8bZRqYeN83kHV3mys=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.111.0 h1:ib6iX7s9bLFBSCIAJIDUN+DnQ/UDyIP2glCvQuJbGaI=
