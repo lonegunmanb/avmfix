@@ -19,7 +19,7 @@ require (
 	github.com/lonegunmanb/terraform-helm-schema/v2 v2.14.0
 	github.com/lonegunmanb/terraform-kubernetes-schema/v2 v2.31.0
 	github.com/lonegunmanb/terraform-local-schema/v2 v2.5.1
-	github.com/lonegunmanb/terraform-modtm-schema v0.3.0
+	github.com/lonegunmanb/terraform-modtm-schema v0.3.2
 	github.com/lonegunmanb/terraform-null-schema/v3 v3.2.2
 	github.com/lonegunmanb/terraform-random-schema/v3 v3.6.2
 	github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0
