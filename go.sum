@@ -26,8 +26,8 @@ github.com/lonegunmanb/terraform-azapi-schema v1.14.0 h1:m5K9/RoG+4GddYkfvZrRhBr
 github.com/lonegunmanb/terraform-azapi-schema v1.14.0/go.mod h1:Fpq+Ep7G+er2i/MzYKtX/p0pCtegsHf4WKQgekIZgCE=
 github.com/lonegunmanb/terraform-azuread-schema/v2 v2.53.1 h1:7AahHoa9QsPPsTA2/EUeJC+plzYE2IvcemiOsFVtvN8=
 github.com/lonegunmanb/terraform-azuread-schema/v2 v2.53.1/go.mod h1:TBR8nmt28suLnRaEsoVF2ssn5J8bZRqYeN83kHV3mys=
-github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.114.0 h1:cc8Bdsj0PMbv/UIq7SJJB2sDqalKCZxtZx04/xg6TnU=
-github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.114.0/go.mod h1:QgrOfV/3MnvWPbK6iSjUOgrR/m/zriVT/2yIlAdbzHc=
+github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.115.0 h1:BmvLSwNNhNjXyKOXH2VkDpcCV8yZxMJ3KLMgZmQLe1g=
+github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.115.0/go.mod h1:7pfXsxWT9j7wffXjE3iGUsVaKDb7Q1SJgE4Ir/ziRbM=
 github.com/lonegunmanb/terraform-bytebase-schema v0.0.9 h1:VnwghcbQLnherQCRHnlaqS+UhBDirGkFDZ5lv1coqjQ=
 github.com/lonegunmanb/terraform-bytebase-schema v0.0.9/go.mod h1:QGwRX3GwqSDyd5r+2Q2qXtLLKzcGlAN7Y8eDdAcg4Lc=
 github.com/lonegunmanb/terraform-google-schema/v5 v5.39.1 h1:kwPiC5ZllNQGVCK43XZ8liw6wkoRlk41Wqx1Ri8NSGk=
@@ -60,12 +60,12 @@ github.com/zclconf/go-cty v1.14.4 h1:uXXczd9QDGsgu0i/QFR/hzI5NYCHLf6NQw/atrbnhq8
 github.com/zclconf/go-cty v1.14.4/go.mod h1:VvMs5i0vgZdhYawQNq5kePSpLAoz8u1xvZgrPIxfnZE=
 github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940 h1:4r45xpDWB6ZMSMNJFMOjqrGHynW3DIBuR2H9j0ug+Mo=
 github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940/go.mod h1:CmBdvvj3nqzfzJ6nTCIwDTPZ56aVGvDrmztiO5g3qrM=
-golang.org/x/mod v0.19.0 h1:fEdghXQSo20giMthA7cd28ZC+jts4amQ3YMXiP5oMQ8=
-golang.org/x/mod v0.19.0/go.mod h1:hTbmBsO62+eylJbnUtE2MGJUyE7QWk4xUqPFrRgJ+7c=
+golang.org/x/mod v0.20.0 h1:utOm6MM3R3dnawAiJgn0y+xvuYRsm1RKM/4giyfDgV0=
+golang.org/x/mod v0.20.0/go.mod h1:hTbmBsO62+eylJbnUtE2MGJUyE7QWk4xUqPFrRgJ+7c=
 golang.org/x/sync v0.3.0 h1:ftCYgMx6zT/asHUrPw8BLLscYtGznsLAnjq5RH9P66E=
 golang.org/x/sync v0.3.0/go.mod h1:FU7BRWz2tNW+3quACPkgCx/L+uEAv1htQ0V83Z9Rj+Y=
-golang.org/x/sys v0.18.0 h1:DBdB3niSjOA/O0blCZBqDefyWNYveAYMNF1Wum0DYQ4=
-golang.org/x/sys v0.18.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
+golang.org/x/sys v0.20.0 h1:Od9JTbYCk261bKm4M/mw7AklTlFYIa0bIp9BgSm1S8Y=
+golang.org/x/sys v0.20.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
 golang.org/x/text v0.14.0 h1:ScX5w1eTa3QqT8oi6+ziP7dTV1S2+ALU0bI+0zXKWiQ=
 golang.org/x/text v0.14.0/go.mod h1:18ZOQIKpY8NJVqYksKHtTdi31H5itFRjB5/qKTNYzSU=
 golang.org/x/tools v0.13.0 h1:Iey4qkscZuv0VvIt8E0neZjtPVQFSc870HQ448QgEmQ=
