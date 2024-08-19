@@ -17,7 +17,7 @@ require (
 	github.com/lonegunmanb/terraform-bytebase-schema v0.0.9
 	github.com/lonegunmanb/terraform-google-schema/v5 v5.40.0
 	github.com/lonegunmanb/terraform-helm-schema/v2 v2.14.1
-	github.com/lonegunmanb/terraform-kubernetes-schema/v2 v2.31.0
+	github.com/lonegunmanb/terraform-kubernetes-schema/v2 v2.32.0
 	github.com/lonegunmanb/terraform-local-schema/v2 v2.5.1
 	github.com/lonegunmanb/terraform-modtm-schema v0.3.2
 	github.com/lonegunmanb/terraform-null-schema/v3 v3.2.2
