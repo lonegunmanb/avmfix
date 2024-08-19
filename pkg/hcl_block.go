@@ -34,28 +34,31 @@ func (b *HclBlock) NestedBlocks() []*HclBlock {
 	return r
 }
 
-func (b *HclBlock) Clear() {
+func (b *HclBlock) Clear() *HclBlock {
 	b.WriteBlock.Body().Clear()
+	return b
 }
 
-func (b *HclBlock) writeArgs(args Args, attributes map[string]*hclwrite.Attribute) {
+func (b *HclBlock) writeArgs(args Args, attributes map[string]*hclwrite.Attribute) *HclBlock {
 	if args == nil {
-		return
+		return b
 	}
 
 	for _, arg := range args {
 		tokens := attributes[arg.Name].BuildTokens(hclwrite.Tokens{})
 		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
 	}
+	return b
 }
 
-func (b *HclBlock) appendBlock(nb *hclwrite.Block) {
+func (b *HclBlock) appendBlock(nb *hclwrite.Block) *HclBlock {
 	b.WriteBlock.Body().AppendBlock(nb)
+	return b
 }
 
-func (b *HclBlock) appendNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwrite.Block) {
+func (b *HclBlock) appendNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwrite.Block) *HclBlock {
 	if nbs == nil {
-		return
+		return b
 	}
 	var orderedBlocks []*NestedBlock
 	linq.From(nbs.Blocks).OrderBy(func(i interface{}) interface{} {
@@ -66,10 +69,20 @@ func (b *HclBlock) appendNestedBlocks(nbs *NestedBlocks, originalBlocks []*hclwr
 		tokens := originalBlocks[ob.Index].BuildTokens(hclwrite.Tokens{})
 		b.WriteBlock.Body().AppendUnstructuredTokens(tokens)
 	}
+	return b
 }
 
-func (b *HclBlock) appendNewline() {
+func (b *HclBlock) appendNewline() *HclBlock {
 	b.WriteBlock.Body().AppendNewline()
+	return b
+}
+
+func (b *HclBlock) appendAttribute(attribute *HclAttribute) *HclBlock {
+	if attribute == nil {
+		return b
+	}
+	b.WriteBlock.Body().AppendUnstructuredTokens(attribute.WriteAttribute.BuildTokens(hclwrite.Tokens{}))
+	return b
 }
 
 func (b *HclBlock) isSingleLineBlock() bool {

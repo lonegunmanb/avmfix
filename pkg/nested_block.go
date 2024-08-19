@@ -42,7 +42,17 @@ func (b *NestedBlock) AutoFix() {
 	}
 	blockToFix := b.HclBlock
 	if b.BlockType() == "dynamic" {
-		blockToFix = blockToFix.NestedBlocks()[0]
+		contentBlock := blockToFix.NestedBlocks()[0]
+		// Enforce dynamic block's meta arguments' order
+		forEach := blockToFix.Attributes()["for_each"]
+		iterator := blockToFix.Attributes()["iterator"]
+		blockToFix.Clear().
+			appendNewline().
+			appendAttribute(forEach).
+			appendAttribute(iterator).
+			appendNewline().
+			appendBlock(contentBlock.WriteBlock)
+		blockToFix = contentBlock
 	}
 	singleLineBlock := blockToFix.isSingleLineBlock()
 	empty := true
@@ -53,14 +63,14 @@ func (b *NestedBlock) AutoFix() {
 		blockToFix.appendNewline()
 		empty = false
 	}
-	blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
-	blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
+	blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes).
+		writeArgs(b.OptionalArgs.SortByName(), attributes)
 	if len(b.nestedBlocks()) > 0 {
 		blockToFix.appendNewline()
 		empty = false
 	}
-	blockToFix.appendNestedBlocks(b.RequiredNestedBlocks, nestedBlocks)
-	blockToFix.appendNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
+	blockToFix.appendNestedBlocks(b.RequiredNestedBlocks, nestedBlocks).
+		appendNestedBlocks(b.OptionalNestedBlocks, nestedBlocks)
 
 	if singleLineBlock && !empty {
 		blockToFix.appendNewline()
@@ -82,7 +92,10 @@ func (b *NestedBlock) nestedBlocks() []*NestedBlock {
 }
 
 func (b *NestedBlock) isHeadMeta(argName string) bool {
-	return b.BlockType() == "dynamic" && argName == "for_each"
+	if b.BlockType() != "dynamic" {
+		return false
+	}
+	return argName == "iterator" || argName == "for_each"
 }
 
 func (b *NestedBlock) isTailMeta(argName string) bool {

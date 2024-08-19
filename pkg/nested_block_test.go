@@ -358,6 +358,56 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, formatHcl(expected), formatHcl(s))
 }
 
+func TestNestedBlock_AutoFix_DynamicBlockWithIterator(t *testing.T) {
+	code := `
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+
+  dynamic "container" {
+  iterator = con
+  for_each = ["hello-world"]
+  content {
+      name   = con.value
+      image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+      cpu    = "0.5"
+      memory = "1.5"
+	  memory_limit = 1.5
+	
+	  gpu_limit {
+		  count = 1
+	      sku = "K80"
+	  }
+    }
+  }
+}
+`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
+	cb.AutoFix()
+	expected := `dynamic "container" {
+    for_each = ["hello-world"]
+    iterator = con
+
+    content {
+      cpu    = "0.5"
+      image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+      memory = "1.5"
+      name   = con.value
+	  memory_limit = 1.5
+	
+	  gpu_limit {
+		  count = 1
+		  sku = "K80"
+	  }
+    }
+}
+`
+	s := string(cb.HclBlock.WriteBlock.BuildTokens(hclwrite.Tokens{}).Bytes())
+	assert.Equal(t, formatHcl(expected), formatHcl(s))
+}
+
 func formatHcl(input string) string {
 	// Create a new HCL file from the input string
 	f, _ := hclwrite.ParseConfig([]byte(input), "", hcl.InitialPos)
