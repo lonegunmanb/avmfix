@@ -13,7 +13,7 @@ require (
 	github.com/lonegunmanb/terraform-awscc-schema v1.8.0
 	github.com/lonegunmanb/terraform-azapi-schema v1.15.0
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.53.1
-	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.115.0
+	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0
 	github.com/lonegunmanb/terraform-bytebase-schema v0.0.9
 	github.com/lonegunmanb/terraform-google-schema/v5 v5.41.0
 	github.com/lonegunmanb/terraform-helm-schema/v2 v2.15.0
