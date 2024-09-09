@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.22.0
 	github.com/hashicorp/terraform-json v0.22.1
 	github.com/lonegunmanb/terraform-alicloud-schema v1.229.1
-	github.com/lonegunmanb/terraform-aws-schema/v5 v5.65.0
+	github.com/lonegunmanb/terraform-aws-schema/v5 v5.66.0
 	github.com/lonegunmanb/terraform-awscc-schema v1.12.0
 	github.com/lonegunmanb/terraform-azapi-schema v1.15.0
 	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.53.1
