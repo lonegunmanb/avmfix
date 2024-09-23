@@ -24,7 +24,7 @@ require (
 	github.com/lonegunmanb/terraform-random-schema/v3 v3.6.2
 	github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0
 	github.com/lonegunmanb/terraform-time-schema v0.12.0
-	github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.5
+	github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.6
 	github.com/stretchr/testify v1.9.0
 )
 
