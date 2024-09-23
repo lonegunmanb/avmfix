@@ -42,8 +42,8 @@ github.com/lonegunmanb/terraform-modtm-schema v0.3.2 h1:acXmX9EMdb0WnkbSVA3H5zbM
 github.com/lonegunmanb/terraform-modtm-schema v0.3.2/go.mod h1:HUIzoT/4o4H2x6Cm+IwgiwfcqBoVilPAy7tFhcD8MuE=
 github.com/lonegunmanb/terraform-null-schema/v3 v3.2.3 h1:v5AEVjmUk+oKu/n5RvQ0c9JCzsSf+AqqCtxkHSXY22E=
 github.com/lonegunmanb/terraform-null-schema/v3 v3.2.3/go.mod h1:18tPc9Shaz7uP91utiSoxNFZ2hKEi7FYmi1gAT/s680=
-github.com/lonegunmanb/terraform-random-schema/v3 v3.6.2 h1:leImFF4FXfFIsFxJ596IKK+uBaQEJ4BJUHV1u0InI7U=
-github.com/lonegunmanb/terraform-random-schema/v3 v3.6.2/go.mod h1:LwdzsEe4Jhw8Ir2sMZsGPY/X9lq514ux0N9s3nEbC/U=
+github.com/lonegunmanb/terraform-random-schema/v3 v3.6.3 h1:4SNTBShFteN8pgB3c8ssHSVV5Z4lQHxEbhprYfdtas0=
+github.com/lonegunmanb/terraform-random-schema/v3 v3.6.3/go.mod h1:1vRYHQVWUNc8faiNJfcW2enekiAynlope/6WtF1GS50=
 github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0 h1:dbD4+ResOG4234ysG9HHXyZaYGynHefPzO70Rk/ktcs=
 github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0/go.mod h1:FXrD523CXVw67Yn5xmlppTub47/1/UI+/SZjKq8G6X4=
 github.com/lonegunmanb/terraform-time-schema v0.12.0 h1:G0GzhgGD65ORPbyZamAACxj7NMEDdYAZQZqn4N7C5BM=
