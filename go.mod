@@ -21,7 +21,7 @@ require (
 	github.com/lonegunmanb/terraform-local-schema/v2 v2.5.2
 	github.com/lonegunmanb/terraform-modtm-schema v0.3.2
 	github.com/lonegunmanb/terraform-null-schema/v3 v3.2.3
-	github.com/lonegunmanb/terraform-random-schema/v3 v3.6.2
+	github.com/lonegunmanb/terraform-random-schema/v3 v3.6.3
 	github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0
 	github.com/lonegunmanb/terraform-time-schema v0.12.0
 	github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.6
