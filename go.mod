@@ -1,7 +1,8 @@
 module github.com/lonegunmanb/avmfix
 
-go 1.21.2
-toolchain go1.22.5
+go 1.23.0
+
+toolchain go1.23.3
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
@@ -11,7 +12,7 @@ require (
 	github.com/lonegunmanb/terraform-aws-schema/v5 v5.75.0
 	github.com/lonegunmanb/terraform-awscc-schema v1.20.0
 	github.com/lonegunmanb/terraform-azapi-schema v1.15.0
-	github.com/lonegunmanb/terraform-azuread-schema/v2 v2.53.1
+	github.com/lonegunmanb/terraform-azuread-schema/v3 v3.0.2
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0
 	github.com/lonegunmanb/terraform-bytebase-schema v0.0.9
 	github.com/lonegunmanb/terraform-google-schema/v5 v5.44.2

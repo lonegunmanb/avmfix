@@ -9,7 +9,7 @@ import (
 	aws "github.com/lonegunmanb/terraform-aws-schema/v5/generated"
 	awscc "github.com/lonegunmanb/terraform-awscc-schema/generated"
 	azapi "github.com/lonegunmanb/terraform-azapi-schema/generated"
-	azuread "github.com/lonegunmanb/terraform-azuread-schema/v2/generated"
+	azuread "github.com/lonegunmanb/terraform-azuread-schema/v3/generated"
 	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v3/generated"
 	bytebase "github.com/lonegunmanb/terraform-bytebase-schema/generated"
 	gcp "github.com/lonegunmanb/terraform-google-schema/v5/generated"
