@@ -6,7 +6,7 @@ toolchain go1.23.3
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
-	github.com/hashicorp/hcl/v2 v2.22.0
+	github.com/hashicorp/hcl/v2 v2.23.0
 	github.com/hashicorp/terraform-json v0.23.0
 	github.com/lonegunmanb/terraform-alicloud-schema v1.233.0
 	github.com/lonegunmanb/terraform-aws-schema/v5 v5.75.0
