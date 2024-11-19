@@ -51,6 +51,9 @@ func (f *HclFile) AutoFix() {
 		} else if b.Type == "locals" {
 			localsBlock := BuildLocalsBlock(hclBlock, f.File)
 			localsBlock.AutoFix()
+		} else if b.Type == "terraform" {
+			terraformBlock := BuildTerraformBlock(hclBlock, f.File)
+			terraformBlock.AutoFix()
 		}
 	}
 }
