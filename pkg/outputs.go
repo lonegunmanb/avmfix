@@ -75,7 +75,7 @@ func (f *OutputsFile) AutoFix() {
 		return i.(*OutputBlock).Block.Labels[0]
 	}).ToSlice(&blocks)
 
-	f.File.WriteFile.Body().Clear()
+	f.File.ClearWriteFile()
 
 	for i, block := range blocks {
 		if i != 0 {

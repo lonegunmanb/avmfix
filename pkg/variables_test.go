@@ -280,3 +280,17 @@ func TestVariablesFile_MultipleValidations(t *testing.T) {
 `
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
+
+func TestVariablesFile_MustPreservePotentialSeperatedFirstLineComment(t *testing.T) {
+	input := `# tfint-ignore-file: terraform-standard_module_structure
+
+variable "image_id" {
+}
+`
+	f, diag := pkg.ParseConfig([]byte(input), "variables.tf")
+	require.False(t, diag.HasErrors())
+	variablesFile := pkg.BuildVariablesFile(f)
+	variablesFile.AutoFix()
+	fixed := string(f.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(input), formatHcl(fixed))
+}

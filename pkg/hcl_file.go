@@ -1,10 +1,11 @@
 package pkg
 
 import (
+	"strings"
+	
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
-	"strings"
 )
 
 type HclFile struct {
@@ -64,4 +65,13 @@ func (f *HclFile) appendNewline() {
 
 func (f *HclFile) appendBlock(b *HclBlock) {
 	f.WriteFile.Body().AppendBlock(b.WriteBlock)
+}
+
+func (f *HclFile) ClearWriteFile() {
+	for name, _ := range f.WriteFile.Body().Attributes() {
+		f.WriteFile.Body().RemoveAttribute(name)
+	}
+	for _, b := range f.WriteFile.Body().Blocks() {
+		f.WriteFile.Body().RemoveBlock(b)
+	}
 }

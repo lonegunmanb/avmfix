@@ -43,7 +43,7 @@ func (f *VariablesFile) AutoFix() {
 		return fmt.Sprintf("%s_%s", prefix, name)
 	}).ToSlice(&variableBlocks)
 
-	f.File.WriteFile.Body().Clear()
+	f.File.ClearWriteFile()
 
 	for i, variableBlock := range variableBlocks {
 		if i != 0 {

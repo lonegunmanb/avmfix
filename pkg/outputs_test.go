@@ -82,3 +82,17 @@ output "test2" {
 `
 	assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 }
+
+func TestOutputsFile_MustPreservePotentialSeperatedFirstLineComment(t *testing.T) {
+	output := `# tfint-ignore-file: terraform-standard_module_structure
+
+output "image_id" {
+}
+`
+	f, diag := pkg.ParseConfig([]byte(output), "outputs.tf")
+	require.False(t, diag.HasErrors())
+	outputBlock := pkg.BuildOutputsFile(f)
+	outputBlock.AutoFix()
+	fixed := string(f.WriteFile.Bytes())
+	assert.Equal(t, formatHcl(output), formatHcl(fixed))
+}
