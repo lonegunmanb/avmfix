@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"strings"
-	
+
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
@@ -74,4 +74,32 @@ func (f *HclFile) ClearWriteFile() {
 	for _, b := range f.WriteFile.Body().Blocks() {
 		f.WriteFile.Body().RemoveBlock(b)
 	}
+	// There might be some seperated comments, like tflint ignore annotation in the head, we must preserve them.
+	tokens := f.WriteFile.BuildTokens(nil)
+	newTokens := f.trimRedundantNewLines(tokens)
+
+	f.WriteFile.Body().Clear()
+	f.WriteFile.Body().AppendUnstructuredTokens(newTokens)
+}
+
+func (f *HclFile) trimRedundantNewLines(tokens hclwrite.Tokens) hclwrite.Tokens {
+	var newTokens hclwrite.Tokens
+	for i := 0; i < len(tokens)-1; i++ {
+		current := tokens[i]
+		next := tokens[i+1]
+		if (current.Type == hclsyntax.TokenNewline) && (next.Type == hclsyntax.TokenQuotedNewline || next.Type == hclsyntax.TokenNewline) {
+			continue
+		}
+		newTokens = append(newTokens, current)
+	}
+	tokens = newTokens
+	firstNonNewLine := len(tokens)
+	for i := 0; i < len(tokens)-1; i++ {
+		if tokens[i].Type != hclsyntax.TokenNewline {
+			firstNonNewLine = i
+			break
+		}
+	}
+	newTokens = tokens[firstNonNewLine:]
+	return newTokens
 }
