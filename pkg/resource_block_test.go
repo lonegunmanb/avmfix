@@ -19,7 +19,7 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	assert.Equal(t, "example", resourceBlock.Name)
 	assert.Equal(t, "azurerm_resource_group", resourceBlock.Type)
 	assert.Equal(t, 2, len(resourceBlock.RequiredArgs))
@@ -56,7 +56,7 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	assert.Equal(t, 2, len(resourceBlock.HeadMetaArgs))
 	assert.Equal(t, "count", resourceBlock.HeadMetaArgs[0].Name)
 	assert.Equal(t, "provider", resourceBlock.HeadMetaArgs[1].Name)
@@ -106,7 +106,7 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -178,7 +178,7 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -229,7 +229,7 @@ resource "azurerm_kubernetes_cluster" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_kubernetes_cluster" "example" {
@@ -256,7 +256,7 @@ resource "azurerm_kubernetes_cluster" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_kubernetes_cluster" "example" {
@@ -302,7 +302,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -378,7 +378,7 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 # Multi-Line Comments
@@ -430,7 +430,7 @@ data "azurerm_virtual_network" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 data "azurerm_virtual_network" "example" {
@@ -450,7 +450,7 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_resource_group" "example" {
@@ -479,7 +479,7 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `
 resource "azurerm_resource_group" "example" {
@@ -509,7 +509,7 @@ func TestResourceBlockAutoFix_SingleLineLifecycle(t *testing.T) {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `resource "azurerm_key_vault" "kv" {
   name                     = local.keyvault_name
@@ -527,7 +527,7 @@ func TestResourceBlock_SingleLineResource(t *testing.T) {
 	code := `resource "random_pet" "test" { prefix = "abc" }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `resource "random_pet" "test" {
   prefix = "abc" 
@@ -540,7 +540,7 @@ func TestResourceBlock_EmptyBlock(t *testing.T) {
 	code := `resource "random_pet" "test" {}`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `resource "random_pet" "test" {}`
 	fixed := string(file.WriteFile.Bytes())
@@ -556,7 +556,7 @@ name = "test"
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `resource "azurerm_resource_group" "test" {
 provider = azurerm.test
@@ -581,7 +581,7 @@ func TestResourceBlock_UnknownNestedBlockShouldBeTreatedAsOptionalBlock(t *testi
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	expected := `resource "azurerm_kubernetes_cluster" "test" {
 	default_node_pool {
@@ -606,7 +606,7 @@ data "azurerm_policy_definition" "vm_policies" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	assert.Equal(t, formatHcl(code), formatHcl(string(file.WriteFile.Bytes())))
 }
@@ -620,7 +620,7 @@ data "azurerm_resources" "spokes" {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	want := `
 data "azurerm_resources" "spokes" {
@@ -644,7 +644,7 @@ ephemeral "aws_kms_secrets" "example" {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	resourceBlock.AutoFix()
 	want := `
 ephemeral "aws_kms_secrets" "example" {

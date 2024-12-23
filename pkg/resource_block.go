@@ -16,8 +16,8 @@ type ResourceBlock struct {
 	TailMetaNestedBlocks *NestedBlocks
 }
 
-// BuildResourceBlock Build the root Block wrapper using hclsyntax.Block
-func BuildResourceBlock(block *HclBlock, file *hcl.File) *ResourceBlock {
+// BuildBlockWithSchema Build the root Block wrapper using hclsyntax.Block
+func BuildBlockWithSchema(block *HclBlock, file *hcl.File) *ResourceBlock {
 	resourceType, resourceName := block.Labels[0], block.Labels[1]
 	b := &ResourceBlock{
 		resourceBlock: newBlock(resourceName, block, file, []string{block.Type, resourceType}),
@@ -29,7 +29,7 @@ func BuildResourceBlock(block *HclBlock, file *hcl.File) *ResourceBlock {
 }
 
 func (b *ResourceBlock) AutoFix() {
-	schemas := fixableTypes[b.Path[0]]
+	schemas := blockTypesWithSchema[b.Path[0]]
 	_, ok := schemas[b.Type]
 	if !ok {
 		return

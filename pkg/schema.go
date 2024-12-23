@@ -27,7 +27,7 @@ import (
 var resourceSchemas = make(map[string]*tfjson.Schema, 0)
 var dataSourceSchemas = make(map[string]*tfjson.Schema, 0)
 var ephemeralResourceSchemas = make(map[string]*tfjson.Schema, 0)
-var fixableTypes = map[string]map[string]*tfjson.Schema{
+var blockTypesWithSchema = map[string]map[string]*tfjson.Schema{
 	"resource":  resourceSchemas,
 	"data":      dataSourceSchemas,
 	"ephemeral": ephemeralResourceSchemas,
@@ -76,7 +76,7 @@ func init() {
 }
 
 func queryBlockSchema(path []string) *tfjson.SchemaBlock {
-	schemas, ok := fixableTypes[path[0]]
+	schemas, ok := blockTypesWithSchema[path[0]]
 	if !ok {
 		return nil
 	}
