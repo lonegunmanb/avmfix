@@ -23,7 +23,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
@@ -59,7 +59,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -98,7 +98,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
@@ -129,7 +129,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Equal(t, "container", resourceBlock.RequiredNestedBlocks.Blocks[0].Name)
@@ -160,7 +160,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -195,7 +195,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `container {
@@ -236,7 +236,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `container {
@@ -277,7 +277,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `container {
@@ -326,7 +326,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `
@@ -383,7 +383,7 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
 	cb.AutoFix()
 	expected := `dynamic "container" {

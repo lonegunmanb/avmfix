@@ -46,15 +46,16 @@ func (f *HclFile) AutoFix() {
 	}
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
 		hclBlock := f.GetBlock(i)
-		if b.Type == "resource" || b.Type == "data" {
-			resourceBlock := BuildResourceBlock(hclBlock, f.File)
-			resourceBlock.AutoFix()
+		var ab AutoFixBlock
+		if _, ok := blockTypesWithSchema[b.Type]; ok {
+			ab = BuildBlockWithSchema(hclBlock, f.File)
 		} else if b.Type == "locals" {
-			localsBlock := BuildLocalsBlock(hclBlock, f.File)
-			localsBlock.AutoFix()
+			ab = BuildLocalsBlock(hclBlock, f.File)
 		} else if b.Type == "terraform" {
-			terraformBlock := BuildTerraformBlock(hclBlock, f.File)
-			terraformBlock.AutoFix()
+			ab = BuildTerraformBlock(hclBlock, f.File)
+		}
+		if ab != nil {
+			ab.AutoFix()
 		}
 	}
 }
