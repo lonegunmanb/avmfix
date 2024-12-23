@@ -630,3 +630,31 @@ data "azurerm_resources" "spokes" {
 `
 	assert.Equal(t, formatHcl(want), formatHcl(string(file.WriteFile.Bytes())))
 }
+
+func TestEphemeralResource(t *testing.T) {
+	code := `
+ephemeral "aws_kms_secrets" "example" {
+  secret {
+    key_id               = "ab123456-c012-4567-890a-deadbeef123"
+    encryption_algorithm = "RSAES_OAEP_SHA_256"
+    payload = "AQECAHgaPa0J8WadplGCqqVAr4HNvDaFSQ+NaiwIBhmm6qDSFwAAAGIwYAYJKoZIhvcNAQcGoFMwUQIBADBMBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDI+LoLdvYv8l41OhAAIBEIAfx49FFJCLeYrkfMfAw6XlnxP23MmDBdqP8dPp28OoAQ=="
+    name    = "app_specific_secret"
+  }
+}
+`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildResourceBlock(file.GetBlock(0), file.File)
+	resourceBlock.AutoFix()
+	want := `
+ephemeral "aws_kms_secrets" "example" {
+  secret {
+    name    = "app_specific_secret"
+    payload = "AQECAHgaPa0J8WadplGCqqVAr4HNvDaFSQ+NaiwIBhmm6qDSFwAAAGIwYAYJKoZIhvcNAQcGoFMwUQIBADBMBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDI+LoLdvYv8l41OhAAIBEIAfx49FFJCLeYrkfMfAw6XlnxP23MmDBdqP8dPp28OoAQ=="
+    encryption_algorithm = "RSAES_OAEP_SHA_256"
+    key_id               = "ab123456-c012-4567-890a-deadbeef123"
+  }
+}
+`
+	assert.Equal(t, formatHcl(want), formatHcl(string(file.WriteFile.Bytes())))
+}
