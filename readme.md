@@ -59,3 +59,5 @@ Keep in mind that `avmfix` may not be able to resolve all issues automatically. 
 * Template (`template`)
 * Time (`time`)
 * Tls (`tls`)
+
+`avmfix` also supports `ephemeral` resource block fix now.
