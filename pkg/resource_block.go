@@ -29,10 +29,7 @@ func BuildResourceBlock(block *HclBlock, file *hcl.File) *ResourceBlock {
 }
 
 func (b *ResourceBlock) AutoFix() {
-	schemas := resourceSchemas
-	if b.Path[0] == "data" {
-		schemas = dataSourceSchemas
-	}
+	schemas := fixableTypes[b.Path[0]]
 	_, ok := schemas[b.Type]
 	if !ok {
 		return

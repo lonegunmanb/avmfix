@@ -10,7 +10,7 @@ import (
 	awscc "github.com/lonegunmanb/terraform-awscc-schema/generated"
 	azapi "github.com/lonegunmanb/terraform-azapi-schema/generated"
 	azuread "github.com/lonegunmanb/terraform-azuread-schema/v3/generated"
-	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v3/generated"
+	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v4/generated"
 	bytebase "github.com/lonegunmanb/terraform-bytebase-schema/generated"
 	gcp "github.com/lonegunmanb/terraform-google-schema/v6/generated"
 	helm "github.com/lonegunmanb/terraform-helm-schema/v2/generated"
@@ -26,6 +26,12 @@ import (
 
 var resourceSchemas = make(map[string]*tfjson.Schema, 0)
 var dataSourceSchemas = make(map[string]*tfjson.Schema, 0)
+var ephemeralResourceSchemas = make(map[string]*tfjson.Schema, 0)
+var fixableTypes = map[string]map[string]*tfjson.Schema{
+	"resource":  resourceSchemas,
+	"data":      dataSourceSchemas,
+	"ephemeral": ephemeralResourceSchemas,
+}
 
 func init() {
 	linq.From(azurerm.Resources).
@@ -64,21 +70,20 @@ func init() {
 		Concat(linq.From(time.DataSources)).
 		Concat(linq.From(random.DataSources)).
 		Concat(linq.From(modtm.DataSources)).ToMap(&dataSourceSchemas)
+	linq.From(azurerm.EphemeralResources).
+		Concat(linq.From(aws.EphemeralResources)).
+		Concat(linq.From(gcp.EphemeralResources)).ToMap(&ephemeralResourceSchemas)
 }
 
 func queryBlockSchema(path []string) *tfjson.SchemaBlock {
-	if path[0] != "resource" && path[0] != "data" {
+	schemas, ok := fixableTypes[path[0]]
+	if !ok {
 		return nil
 	}
 	if len(path) < 2 {
 		panic(fmt.Sprintf("invalid path:%v", path))
 	}
-	root := resourceSchemas
-	if path[0] == "data" {
-		root = dataSourceSchemas
-	}
-
-	b, ok := root[path[1]]
+	b, ok := schemas[path[1]]
 	if !ok {
 		return nil
 	}
