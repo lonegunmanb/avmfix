@@ -49,11 +49,22 @@ func (f *HclFile) AutoFix() {
 		var ab AutoFixBlock
 		if _, ok := blockTypesWithSchema[b.Type]; ok {
 			ab = BuildBlockWithSchema(hclBlock, f.File)
-		} else if b.Type == "locals" {
-			ab = BuildLocalsBlock(hclBlock, f.File)
-		} else if b.Type == "terraform" {
-			ab = BuildTerraformBlock(hclBlock, f.File)
 		}
+		switch b.Type {
+		case "moved":
+			{
+				ab = BuildMovedBlock(hclBlock, f.File)
+			}
+		case "locals":
+			{
+				ab = BuildLocalsBlock(hclBlock, f.File)
+			}
+		case "terraform":
+			{
+				ab = BuildTerraformBlock(hclBlock, f.File)
+			}
+		}
+		
 		if ab != nil {
 			ab.AutoFix()
 		}
