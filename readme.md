@@ -17,6 +17,7 @@ For now, the autofix tool can fix the following issues:
 * [`output` should be arranged alphabetically](https://github.com/Azure/terraform-azure-modules/blob/main/codex/logic_code/outputs.md#output-should-be-arranged-alphabetically)
 * Do not declare `sensitive = false` for `output`
 * [`local` should be arranged alphabetically](https://github.com/Azure/terraform-azure-modules/blob/main/codex/logic_code/locals.tf.md#local-should-be-arranged-alphabetically)
+* Orders in `moved` block. (`from` then `to`)
 
 We're adding more autofix capabilities to the tool, so stay tuned for updates!
 
