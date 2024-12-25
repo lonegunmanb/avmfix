@@ -5,7 +5,7 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
-var _ block = &ResourceBlock{}
+var _ blockWithSchema = &ResourceBlock{}
 var _ rootBlock = &ResourceBlock{}
 
 // ResourceBlock is the wrapper of a resource Block
@@ -14,6 +14,10 @@ type ResourceBlock struct {
 	Type                 string
 	TailMetaArgs         Args
 	TailMetaNestedBlocks *NestedBlocks
+}
+
+func (b *ResourceBlock) schemaBlock() *tfjson.SchemaBlock {
+	return queryBlockSchema(b.path())
 }
 
 // BuildBlockWithSchema Build the root Block wrapper using hclsyntax.Block
@@ -102,4 +106,19 @@ func (b *ResourceBlock) addTailMetaNestedBlock(nb *NestedBlock) {
 		b.TailMetaNestedBlocks = &NestedBlocks{}
 	}
 	b.TailMetaNestedBlocks.add(nb)
+}
+
+var headMetaArgPriority = map[string]int{"for_each": 0, "count": 0, "provider": 1}
+var tailMetaArgPriority = map[string]int{"lifecycle": 0, "depends_on": 1}
+
+// IsTailMeta checks whether a name represents a type of tail Meta arg
+func (b *ResourceBlock) isTailMeta(argNameOrNestedBlockType string) bool {
+	_, isTailMeta := tailMetaArgPriority[argNameOrNestedBlockType]
+	return isTailMeta
+}
+
+// IsHeadMeta checks whether a name represents a type of head Meta arg
+func (b *ResourceBlock) isHeadMeta(argNameOrNestedBlockType string) bool {
+	_, isHeadMeta := headMetaArgPriority[argNameOrNestedBlockType]
+	return isHeadMeta
 }

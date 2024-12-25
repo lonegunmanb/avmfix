@@ -55,6 +55,10 @@ func (f *HclFile) AutoFix() {
 			{
 				ab = BuildMovedBlock(hclBlock, f.File)
 			}
+		case "removed":
+			{
+				ab = BuildRemovedBlock(hclBlock, f.File)
+			}
 		case "locals":
 			{
 				ab = BuildLocalsBlock(hclBlock, f.File)
@@ -64,7 +68,7 @@ func (f *HclFile) AutoFix() {
 				ab = BuildTerraformBlock(hclBlock, f.File)
 			}
 		}
-		
+
 		if ab != nil {
 			ab.AutoFix()
 		}

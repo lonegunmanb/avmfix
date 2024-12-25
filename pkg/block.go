@@ -1,17 +1,17 @@
 package pkg
 
 import (
-	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
-	"strings"
+	tfjson "github.com/hashicorp/terraform-json"
 )
 
 // Block is an interface offering general APIs on resource/nested Block
-type block interface {
+type blockWithSchema interface {
 	file() *hcl.File
 	path() []string
-	isHeadMeta(argName string) bool
-	isTailMeta(argName string) bool
+	schemaBlock() *tfjson.SchemaBlock
+	isHeadMeta(argNameOrNestedBlockType string) bool
+	isTailMeta(argNameOrNestedBlockType string) bool
 	addHeadMetaArg(arg *Arg)
 	addOptionalAttr(arg *Arg)
 	addRequiredAttr(arg *Arg)
@@ -24,32 +24,8 @@ type rootBlock interface {
 	addTailMetaNestedBlock(nb *NestedBlock)
 }
 
-func buildNestedBlock(parent block, index int, nestedBlock *HclBlock) *NestedBlock {
-	nestedBlockName := nestedBlock.Type
-	sortField := nestedBlock.Type
-	if nestedBlock.Type == "dynamic" {
-		nestedBlockName = nestedBlock.Labels[0]
-		sortField = strings.Join(nestedBlock.Labels, "")
-	}
-	path := append(parent.path(), nestedBlockName)
-	nb := &NestedBlock{
-		resourceBlock: newBlock(nestedBlockName, nestedBlock, parent.file(), path),
-		SortField:     sortField,
-		Index:         index,
-	}
-	attributes := nestedBlock.Attributes()
-	blocks := nestedBlock.NestedBlocks()
-	if nb.BlockType() == "dynamic" {
-		linq.From(attributes).Concat(linq.From(nestedBlock.NestedBlocks()[0].Attributes())).ToMap(&attributes)
-		blocks = blocks[0].NestedBlocks()
-	}
-	buildArgs(nb, attributes)
-	buildNestedBlocks(nb, blocks)
-	return nb
-}
-
-func buildArgs(b block, attributes map[string]*HclAttribute) {
-	argSchemas := queryBlockSchema(b.path())
+func buildArgs(b blockWithSchema, attributes map[string]*HclAttribute) {
+	argSchemas := b.schemaBlock()
 	for _, attr := range attributesByLines(attributes) {
 		attrName := attr.Name
 		arg := buildAttrArg(attr, b.file())
@@ -75,8 +51,8 @@ func buildArgs(b block, attributes map[string]*HclAttribute) {
 	}
 }
 
-func buildNestedBlocks(b block, nestedBlocks []*HclBlock) {
-	blockSchema := queryBlockSchema(b.path())
+func buildNestedBlocks(b blockWithSchema, nestedBlocks []*HclBlock) {
+	blockSchema := b.schemaBlock()
 	for i, nestedBlock := range nestedBlocks {
 		nb := buildNestedBlock(b, i, nestedBlock)
 		rb, rootBlock := b.(rootBlock)

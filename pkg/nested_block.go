@@ -1,8 +1,38 @@
 package pkg
 
 import (
+	"strings"
+
+	"github.com/ahmetb/go-linq/v3"
 	"github.com/hashicorp/hcl/v2"
+	tfjson "github.com/hashicorp/terraform-json"
 )
+
+func buildNestedBlock(parent blockWithSchema, index int, nestedBlock *HclBlock) *NestedBlock {
+	nestedBlockName := nestedBlock.Type
+	sortField := nestedBlock.Type
+	if nestedBlock.Type == "dynamic" {
+		nestedBlockName = nestedBlock.Labels[0]
+		sortField = strings.Join(nestedBlock.Labels, "")
+	}
+	path := append(parent.path(), nestedBlockName)
+	nb := &NestedBlock{
+		resourceBlock: newBlock(nestedBlockName, nestedBlock, parent.file(), path),
+		SortField:     sortField,
+		Index:         index,
+	}
+	attributes := nestedBlock.Attributes()
+	blocks := nestedBlock.NestedBlocks()
+	if nb.BlockType() == "dynamic" {
+		linq.From(attributes).Concat(linq.From(nestedBlock.NestedBlocks()[0].Attributes())).ToMap(&attributes)
+		blocks = blocks[0].NestedBlocks()
+	}
+	buildArgs(nb, attributes)
+	buildNestedBlocks(nb, blocks)
+	return nb
+}
+
+var _ blockWithSchema = &NestedBlock{}
 
 // NestedBlock is a wrapper of the nested Block
 type NestedBlock struct {
@@ -11,11 +41,13 @@ type NestedBlock struct {
 	Index     int
 }
 
-var _ block = &NestedBlock{}
-
 // DefRange gets the definition range of the nested Block
 func (b *NestedBlock) DefRange() hcl.Range {
 	return b.HclBlock.DefRange()
+}
+
+func (b *NestedBlock) schemaBlock() *tfjson.SchemaBlock {
+	return queryBlockSchema(b.Path)
 }
 
 // NestedBlocks is the collection of nestedBlocks with the same type
@@ -43,9 +75,10 @@ func (b *NestedBlock) AutoFix() {
 	blockToFix := b.HclBlock
 	if b.BlockType() == "dynamic" {
 		contentBlock := blockToFix.NestedBlocks()[0]
-		// Enforce dynamic block's meta arguments' order
+		// Enforce dynamic blockWithSchema's meta arguments' order
 		forEach := blockToFix.Attributes()["for_each"]
 		iterator := blockToFix.Attributes()["iterator"]
+		// Fix dynamic blockWithSchema then proceed into the content blockWithSchema
 		blockToFix.Clear().
 			appendNewline().
 			appendAttribute(forEach).
@@ -91,13 +124,13 @@ func (b *NestedBlock) nestedBlocks() []*NestedBlock {
 	return nbs
 }
 
-func (b *NestedBlock) isHeadMeta(argName string) bool {
+func (b *NestedBlock) isHeadMeta(argNameOrNestedBlockType string) bool {
 	if b.BlockType() != "dynamic" {
 		return false
 	}
-	return argName == "iterator" || argName == "for_each"
+	return argNameOrNestedBlockType == "iterator" || argNameOrNestedBlockType == "for_each"
 }
 
-func (b *NestedBlock) isTailMeta(argName string) bool {
+func (b *NestedBlock) isTailMeta(argNameOrNestedBlockType string) bool {
 	return false
 }
