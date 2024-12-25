@@ -54,11 +54,13 @@ func (b *OutputBlock) sortArguments() {
 }
 
 type OutputsFile struct {
+	dir  *directory
 	File *HclFile
 }
 
 func BuildOutputsFile(f *HclFile) *OutputsFile {
 	return &OutputsFile{
+		dir:  f.dir,
 		File: f,
 	}
 }
@@ -66,7 +68,12 @@ func BuildOutputsFile(f *HclFile) *OutputsFile {
 func (f *OutputsFile) AutoFix() {
 	var blocks []*OutputBlock
 	for i := 0; i < len(f.File.WriteFile.Body().Blocks()); i++ {
-		b := BuildOutputBlock(f.File.File, f.File.GetBlock(i))
+		block := f.File.GetBlock(i)
+		if block.Type != "output" {
+			f.dir.AppendBlockToFile("main.tf", block)
+			continue
+		}
+		b := BuildOutputBlock(f.File.File, block)
 		b.AutoFix()
 		blocks = append(blocks, b)
 	}
