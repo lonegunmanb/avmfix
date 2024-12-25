@@ -84,3 +84,104 @@ func Test_FileAutoFix(t *testing.T) {
 }`
 	assert.Equal(t, formatHcl(expected), formatHcl(string(fixedFile)))
 }
+
+func TestNonVariableBlockInVariablesDotTfFileShouldBeMovedIntoMainDotTfFile(t *testing.T) {
+	temp, err := os.MkdirTemp("", "autofix*")
+	require.NoError(t, err)
+	defer func() {
+		_ = os.RemoveAll(temp)
+	}()
+	mainFilePath := filepath.Join(temp, "main.tf")
+	_, err = os.Create(mainFilePath)
+	require.NoError(t, err)
+	variablesPath := filepath.Join(temp, "variables.tf")
+	variablesFile, err := os.Create(variablesPath)
+	require.NoError(t, err)
+	_, err = variablesFile.WriteString(`locals {
+}
+
+variable "test" {}`)
+	require.NoError(t, err)
+	err = pkg.DirectoryAutoFix(temp)
+	require.NoError(t, err)
+	mainContent, err := os.ReadFile(mainFilePath)
+	require.NoError(t, err)
+	expectMain := `locals {
+}
+`
+	assert.Equal(t, formatHcl(expectMain), formatHcl(string(mainContent)))
+	expectVariable := `variable "test" {
+}
+`
+	variablesContent, err := os.ReadFile(variablesPath)
+	require.NoError(t, err)
+	assert.Equal(t, formatHcl(expectVariable), formatHcl(string(variablesContent)))
+}
+
+func TestNonVariableBlockInVariablesDotTfFileShouldBeMovedIntoMainDotTfFileAndFixed(t *testing.T) {
+	temp, err := os.MkdirTemp("", "autofix*")
+	require.NoError(t, err)
+	defer func() {
+		_ = os.RemoveAll(temp)
+	}()
+	mainFilePath := filepath.Join(temp, "main.tf")
+	_, err = os.Create(mainFilePath)
+	require.NoError(t, err)
+	variablesPath := filepath.Join(temp, "variables.tf")
+	variablesFile, err := os.Create(variablesPath)
+	require.NoError(t, err)
+	_, err = variablesFile.WriteString(`locals {
+  b = "b"
+  a = "a"
+}
+
+variable "test" {}`)
+	require.NoError(t, err)
+	err = pkg.DirectoryAutoFix(temp)
+	require.NoError(t, err)
+	mainContent, err := os.ReadFile(mainFilePath)
+	require.NoError(t, err)
+	expectMain := `locals {
+  a = "a"
+  b = "b"
+}
+`
+	assert.Equal(t, formatHcl(expectMain), formatHcl(string(mainContent)))
+	expectVariable := `variable "test" {
+}
+`
+	variablesContent, err := os.ReadFile(variablesPath)
+	require.NoError(t, err)
+	assert.Equal(t, formatHcl(expectVariable), formatHcl(string(variablesContent)))
+}
+
+func TestNonVariableBlockInVariablesDotTfFileShouldBeMovedIntoNewCreatedMainDotTf(t *testing.T) {
+	temp, err := os.MkdirTemp("", "autofix*")
+	require.NoError(t, err)
+	defer func() {
+		_ = os.RemoveAll(temp)
+	}()
+	variablesPath := filepath.Join(temp, "variables.tf")
+	variablesFile, err := os.Create(variablesPath)
+	require.NoError(t, err)
+	_, err = variablesFile.WriteString(`locals {
+}
+
+variable "test" {}`)
+	require.NoError(t, err)
+	err = pkg.DirectoryAutoFix(temp)
+	require.NoError(t, err)
+	mainFilePath := filepath.Join(temp, "main.tf")
+	mainContent, err := os.ReadFile(mainFilePath)
+	require.NoError(t, err)
+	expectMain := `locals {
+}
+`
+	assert.Equal(t, formatHcl(expectMain), formatHcl(string(mainContent)))
+	expectVariable := `variable "test" {
+}
+`
+	variablesContent, err := os.ReadFile(variablesPath)
+	require.NoError(t, err)
+	assert.Equal(t, formatHcl(expectVariable), formatHcl(string(variablesContent)))
+}

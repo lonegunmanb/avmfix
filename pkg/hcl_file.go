@@ -10,6 +10,7 @@ import (
 
 type HclFile struct {
 	*hcl.File
+	dir       *directory
 	WriteFile *hclwrite.File
 	FileName  string
 }
@@ -118,4 +119,12 @@ func (f *HclFile) trimRedundantNewLines(tokens hclwrite.Tokens) hclwrite.Tokens 
 	}
 	newTokens = tokens[firstNonNewLine:]
 	return newTokens
+}
+
+func (f *HclFile) endWithNewLine() bool {
+	tokens := f.WriteFile.BuildTokens(nil)
+	if len(tokens) == 0 || tokens[0].Type == hclsyntax.TokenEOF {
+		return true
+	}
+	return tokens[len(tokens)-2].Type == hclsyntax.TokenNewline
 }

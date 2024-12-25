@@ -16,11 +16,13 @@ var variableAttributePriorities = map[string]int{
 }
 
 type VariablesFile struct {
+	dir  *directory
 	File *HclFile
 }
 
 func BuildVariablesFile(f *HclFile) *VariablesFile {
 	return &VariablesFile{
+		dir:  f.dir,
 		File: f,
 	}
 }
@@ -28,7 +30,12 @@ func BuildVariablesFile(f *HclFile) *VariablesFile {
 func (f *VariablesFile) AutoFix() {
 	variableBlocks := make([]*VariableBlock, 0)
 	for i := 0; i < len(f.File.WriteFile.Body().Blocks()); i++ {
-		b := BuildVariableBlock(f.File.File, f.File.GetBlock(i))
+		block := f.File.GetBlock(i)
+		if block.Type != "variable" {
+			f.dir.AppendBlockToFile("main.tf", block)
+			continue
+		}
+		b := BuildVariableBlock(f.File.File, block)
 		b.AutoFix()
 		variableBlocks = append(variableBlocks, b)
 	}
