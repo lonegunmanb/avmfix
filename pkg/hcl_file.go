@@ -85,7 +85,7 @@ func (f *HclFile) appendBlock(b *HclBlock) {
 }
 
 func (f *HclFile) ClearWriteFile() {
-	for name, _ := range f.WriteFile.Body().Attributes() {
+	for name := range f.WriteFile.Body().Attributes() {
 		f.WriteFile.Body().RemoveAttribute(name)
 	}
 	for _, b := range f.WriteFile.Body().Blocks() {

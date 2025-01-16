@@ -33,7 +33,7 @@ jobs:
     - name: Run Gosec Security Scanner
       uses: securego/gosec@master
     - name: Run GolangCI-Lint
-      uses: golangci/golangci-lint-action@v3
+      uses: golangci/golangci-lint-action@v3.7.1
       with:
         version: latest
         skip-cache: true
