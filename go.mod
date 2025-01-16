@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.23.0
 	github.com/hashicorp/terraform-json v0.24.0
 	github.com/lonegunmanb/terraform-alicloud-schema v1.240.0
-	github.com/lonegunmanb/terraform-aws-schema/v5 v5.82.2-b
+	github.com/lonegunmanb/terraform-aws-schema/v5 v5.83.0
 	github.com/lonegunmanb/terraform-awscc-schema v1.24.0
 	github.com/lonegunmanb/terraform-azapi-schema v1.15.0
 	github.com/lonegunmanb/terraform-azuread-schema/v3 v3.0.2
@@ -38,8 +38,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.15.1 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/tools v0.13.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
