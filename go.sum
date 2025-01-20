@@ -16,8 +16,8 @@ github.com/hashicorp/hcl/v2 v2.23.0 h1:Fphj1/gCylPxHutVSEOf2fBOh1VE4AuLV7+kbJf3q
 github.com/hashicorp/hcl/v2 v2.23.0/go.mod h1:62ZYHrXgPoX8xBnzl8QzbWq4dyDsDtfCRgIq1rbJEvA=
 github.com/hashicorp/terraform-json v0.24.0 h1:rUiyF+x1kYawXeRth6fKFm/MdfBS6+lW4NbeATsYz8Q=
 github.com/hashicorp/terraform-json v0.24.0/go.mod h1:Nfj5ubo9xbu9uiAoZVBsNOjvNKB66Oyrvtit74kC7ow=
-github.com/lonegunmanb/terraform-alicloud-schema v1.240.0 h1:NLj6OIQeahw7Wj2qn4W6EGNk2Mtw7T+kCgZ+2WCNPCM=
-github.com/lonegunmanb/terraform-alicloud-schema v1.240.0/go.mod h1:4VcSMRyaeebgix29LEpJHqeJj23RUwL2znNyRBBZ0rk=
+github.com/lonegunmanb/terraform-alicloud-schema v1.241.0 h1:Esy8veABRq/dJ3ETR5LL0J3mO/ifddkD9adFcbVPu0A=
+github.com/lonegunmanb/terraform-alicloud-schema v1.241.0/go.mod h1:q3aG6pJLbxCLSAiFUd5WuHRETBQVMORnoWpuNw0DOkU=
 github.com/lonegunmanb/terraform-aws-schema/v5 v5.84.0 h1:bUaa9YM72j87hvcvnjXXHiekvjZOEVKBLlsrEGGfXto=
 github.com/lonegunmanb/terraform-aws-schema/v5 v5.84.0/go.mod h1:VoGCzFKXvqBAiW9F/91vD+ktkaCV6+o6inP+l8ILxY0=
 github.com/lonegunmanb/terraform-awscc-schema v1.25.0 h1:IfV23zC3guCxooLbA4GQHWdZIR+AVXns6JJEVZtUx80=
