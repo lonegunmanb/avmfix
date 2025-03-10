@@ -20,8 +20,8 @@ github.com/lonegunmanb/terraform-alicloud-schema v1.243.0 h1:BiVu6PpZKSLfJf7j/XG
 github.com/lonegunmanb/terraform-alicloud-schema v1.243.0/go.mod h1:64zG9c6aayubYfxuJghguf/mmeUbaD76gpegnllqJ+0=
 github.com/lonegunmanb/terraform-aws-schema/v5 v5.88.0 h1:7XO3Rus6CP6E3OirppPTBCXtN/R0Xc+DKjKcbUs7oPg=
 github.com/lonegunmanb/terraform-aws-schema/v5 v5.88.0/go.mod h1:nxN7uuOmvFZQAZBUlMI2S+uKtGtU54ojTkoVLDLN4Tc=
-github.com/lonegunmanb/terraform-awscc-schema v1.31.0 h1:taNDTCRlrjkpmyICK3bXreGJV2grQoV+2HQIFU+kQTw=
-github.com/lonegunmanb/terraform-awscc-schema v1.31.0/go.mod h1:KoOK6601nkiil4yVw87NNXeqSmZ40BGJEjxQEbed3aw=
+github.com/lonegunmanb/terraform-awscc-schema v1.32.0 h1:ePynQYsoNTOhFqHtKt45q/mADFGk9Jy1d6DWKKp2uXo=
+github.com/lonegunmanb/terraform-awscc-schema v1.32.0/go.mod h1:EFSsnVXZStlZElpiqEozidsXtwbmDNBtYrXdpyYLq2U=
 github.com/lonegunmanb/terraform-azapi-schema v1.15.0 h1:n5oGrSU1NerlGH/3bVNHdNl24fNfV3N3JtK2QEhxpIE=
 github.com/lonegunmanb/terraform-azapi-schema v1.15.0/go.mod h1:4R6XwnGKA6WtylAGuKmEVYH5Mf58Eeu2HfwVgrnkylM=
 github.com/lonegunmanb/terraform-azuread-schema/v3 v3.1.0 h1:6vpquIiP6TVbCc8EWCOXaJk2e5DvNr1mGLfBsFMgz9Y=
@@ -62,10 +62,10 @@ github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940 h1:4r45xpDWB6
 github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940/go.mod h1:CmBdvvj3nqzfzJ6nTCIwDTPZ56aVGvDrmztiO5g3qrM=
 golang.org/x/mod v0.23.0 h1:Zb7khfcRGKk+kqfxFaP5tZqCnDZMjC5VtUBs87Hr6QM=
 golang.org/x/mod v0.23.0/go.mod h1:6SkKJ3Xj0I0BrPOZoBy3bdMptDDU9oJrpohJ3eWZ1fY=
-golang.org/x/sync v0.10.0 h1:3NQrjDixjgGwUOCaF8w2+VYHv0Ve/vGYSbdkTa98gmQ=
-golang.org/x/sync v0.10.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=
-golang.org/x/text v0.21.0 h1:zyQAAkrwaneQ066sspRyJaG9VNi/YJ1NfzcGB3hZ/qo=
-golang.org/x/text v0.21.0/go.mod h1:4IBbMaMmOPCJ8SecivzSH54+73PCFmPWxNTLm+vZkEQ=
+golang.org/x/sync v0.11.0 h1:GGz8+XQP4FvTTrjZPzNKTMFtSXH80RAzG+5ghFPgK9w=
+golang.org/x/sync v0.11.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=
+golang.org/x/text v0.22.0 h1:bofq7m3/HAFvbF51jz3Q9wLg3jkvSPuiZu/pD1XwgtM=
+golang.org/x/text v0.22.0/go.mod h1:YRoo4H8PVmsu+E3Ou7cqLVH8oXWIHVoX0jqUWALQhfY=
 golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d h1:vU5i/LfpvrRCpgM/VPfJLg5KjxD3E+hfT1SH+d9zLwg=
 golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d/go.mod h1:aiJjzUbINMkxbQROHiO6hDPo2LHcIPhhQsa9DLh0yGk=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
