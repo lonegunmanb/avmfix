@@ -26,8 +26,8 @@ github.com/lonegunmanb/terraform-azapi-schema v1.15.0 h1:n5oGrSU1NerlGH/3bVNHdNl
 github.com/lonegunmanb/terraform-azapi-schema v1.15.0/go.mod h1:4R6XwnGKA6WtylAGuKmEVYH5Mf58Eeu2HfwVgrnkylM=
 github.com/lonegunmanb/terraform-azuread-schema/v3 v3.1.0 h1:6vpquIiP6TVbCc8EWCOXaJk2e5DvNr1mGLfBsFMgz9Y=
 github.com/lonegunmanb/terraform-azuread-schema/v3 v3.1.0/go.mod h1:pA3KqRghx/8P6XT+tqK2LTyQGwP2CU5vM2FU1rYLkow=
-github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.23.0 h1:4s/9Bl3xmS9giORa/8Uo28w89ugKiwUSe8LUtL6s0K8=
-github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.23.0/go.mod h1:htq2FmLUl3mXsMimPSUXGSLH7vHL2BF9FblsbOkfaKE=
+github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.24.0 h1:1WESE+bMcSWPI7Mle6hmRzAHsF6XH2rawhffVY3mVrM=
+github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.24.0/go.mod h1:0yEugEixdTeR/mi7pko4bK8+Jxowgee5TQHE3drZL5E=
 github.com/lonegunmanb/terraform-bytebase-schema v0.0.9 h1:VnwghcbQLnherQCRHnlaqS+UhBDirGkFDZ5lv1coqjQ=
 github.com/lonegunmanb/terraform-bytebase-schema v0.0.9/go.mod h1:QGwRX3GwqSDyd5r+2Q2qXtLLKzcGlAN7Y8eDdAcg4Lc=
 github.com/lonegunmanb/terraform-google-schema/v6 v6.25.0 h1:Chbw9yx0N1PA+pBojKaS4SC17Y2nJbz2IaUjruPkkro=
@@ -60,8 +60,8 @@ github.com/zclconf/go-cty v1.16.1 h1:a5TZEPzBFFR53udlIKApXzj8JIF4ZNQ6abH79z5R1S0
 github.com/zclconf/go-cty v1.16.1/go.mod h1:VvMs5i0vgZdhYawQNq5kePSpLAoz8u1xvZgrPIxfnZE=
 github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940 h1:4r45xpDWB6ZMSMNJFMOjqrGHynW3DIBuR2H9j0ug+Mo=
 github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940/go.mod h1:CmBdvvj3nqzfzJ6nTCIwDTPZ56aVGvDrmztiO5g3qrM=
-golang.org/x/mod v0.23.0 h1:Zb7khfcRGKk+kqfxFaP5tZqCnDZMjC5VtUBs87Hr6QM=
-golang.org/x/mod v0.23.0/go.mod h1:6SkKJ3Xj0I0BrPOZoBy3bdMptDDU9oJrpohJ3eWZ1fY=
+golang.org/x/mod v0.24.0 h1:ZfthKaKaT4NrhGVZHO1/WDTwGES4De8KtWO0SIbNJMU=
+golang.org/x/mod v0.24.0/go.mod h1:IXM97Txy2VM4PJ3gI61r1YEk/gAj6zAHN3AdZt6S9Ww=
 golang.org/x/sync v0.11.0 h1:GGz8+XQP4FvTTrjZPzNKTMFtSXH80RAzG+5ghFPgK9w=
 golang.org/x/sync v0.11.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=
 golang.org/x/text v0.22.0 h1:bofq7m3/HAFvbF51jz3Q9wLg3jkvSPuiZu/pD1XwgtM=
