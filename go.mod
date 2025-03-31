@@ -2,13 +2,13 @@ module github.com/lonegunmanb/avmfix
 
 go 1.23.0
 
-toolchain go1.23.3
+toolchain go1.24.1
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
 	github.com/hashicorp/hcl/v2 v2.23.0
 	github.com/hashicorp/terraform-json v0.24.0
-	github.com/lonegunmanb/terraform-alicloud-schema v1.244.0
+	github.com/lonegunmanb/terraform-alicloud-schema v1.246.0
 	github.com/lonegunmanb/terraform-aws-schema/v5 v5.92.0
 	github.com/lonegunmanb/terraform-awscc-schema v1.33.0
 	github.com/lonegunmanb/terraform-azapi-schema v1.15.0
