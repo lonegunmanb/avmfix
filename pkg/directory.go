@@ -26,16 +26,6 @@ type fileMode interface {
 	Mode() os.FileMode
 }
 
-var _ fileMode = (*dirEntryMode)(nil)
-
-type dirEntryMode struct {
-	os.FileInfo
-}
-
-func (f *dirEntryMode) Mode() os.FileMode {
-	return f.Mode()
-}
-
 type directory struct {
 	dirPath    string
 	tfFiles    map[string]*HclFile
