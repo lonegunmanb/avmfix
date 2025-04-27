@@ -1,10 +1,14 @@
 package pkg
 
 import (
+	"github.com/spf13/afero"
+	"maps"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+var Fs = afero.NewOsFs()
 
 func DirectoryAutoFix(dirPath string) error {
 	d := newDirectory(dirPath)
@@ -25,11 +29,11 @@ type fileMode interface {
 var _ fileMode = (*dirEntryMode)(nil)
 
 type dirEntryMode struct {
-	os.DirEntry
+	os.FileInfo
 }
 
 func (f *dirEntryMode) Mode() os.FileMode {
-	return f.Type()
+	return f.Mode()
 }
 
 type directory struct {
@@ -42,7 +46,8 @@ func (d *directory) AutoFix() error {
 	if err := d.loadTfFiles(); err != nil {
 		return err
 	}
-	for _, hclFile := range d.tfFiles {
+	// Use clone here since d.tfFile might be changed during AutoFix, while the content hasn't been updated.
+	for _, hclFile := range maps.Clone(d.tfFiles) {
 		hclFile.AutoFix()
 
 		if err := d.writeFileToDisk(hclFile); err != nil {
@@ -69,8 +74,7 @@ func (d *directory) AppendBlockToFile(destFileName string, block *HclBlock) {
 func (d *directory) writeFileToDisk(hclFile *HclFile) error {
 	baseName := filepath.Base(hclFile.FileName)
 	mode := d.dirEntries[baseName].Mode()
-
-	err := os.WriteFile(hclFile.FileName, hclFile.WriteFile.Bytes(), mode)
+	err := afero.WriteFile(Fs, hclFile.FileName, hclFile.WriteFile.Bytes(), mode)
 	if err != nil {
 		return err
 	}
@@ -78,14 +82,14 @@ func (d *directory) writeFileToDisk(hclFile *HclFile) error {
 }
 
 func (d *directory) loadTfFiles() error {
-	files, err := os.ReadDir(d.dirPath)
+	files, err := afero.ReadDir(Fs, d.dirPath)
 	if err != nil {
 		return err
 	}
 	for _, file := range files {
 		if !file.IsDir() && strings.HasSuffix(file.Name(), ".tf") {
 			path := filepath.Join(d.dirPath, file.Name())
-			content, err := os.ReadFile(path)
+			content, err := afero.ReadFile(Fs, path)
 			if err != nil {
 				return err
 			}
@@ -96,7 +100,7 @@ func (d *directory) loadTfFiles() error {
 			}
 			hclFile.dir = d
 			d.tfFiles[file.Name()] = hclFile
-			d.dirEntries[file.Name()] = &dirEntryMode{DirEntry: file}
+			d.dirEntries[file.Name()] = file
 		}
 	}
 	return nil
@@ -104,8 +108,12 @@ func (d *directory) loadTfFiles() error {
 
 func (d *directory) ensureDestFile(destFileName string) error {
 	destFilePath := filepath.Join(d.dirPath, destFileName)
-	if _, err := os.Stat(destFilePath); os.IsNotExist(err) {
-		file, err := os.Create(destFilePath)
+	exist, err := afero.Exists(Fs, destFilePath)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		file, err := Fs.Create(destFilePath)
 		if err != nil {
 			// handle error
 			return err

@@ -1,24 +1,18 @@
 package pkg_test
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/lonegunmanb/avmfix/pkg"
+	"github.com/prashantv/gostub"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_FileAutoFix(t *testing.T) {
-	temp, err := os.MkdirTemp("", "autofix*")
-	require.NoError(t, err)
-	file, err := os.Create(filepath.Join(temp, "main.tf"))
-	require.NoError(t, err)
-	defer func() {
-		_ = os.RemoveAll(temp)
-	}()
-	_, err = file.WriteString(`resource "azurerm_container_group" "example" {
+	mockFs := fakeFs(map[string]string{
+		"main.tf": `resource "azurerm_container_group" "example" {
   name                = "example-continst"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
@@ -47,11 +41,13 @@ func Test_FileAutoFix(t *testing.T) {
   tags = {
     environment = "testing"
   }
-}`)
+}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix("")
 	require.NoError(t, err)
-	err = pkg.DirectoryAutoFix(temp)
-	require.NoError(t, err)
-	fixedFile, err := os.ReadFile(filepath.Join(temp, "main.tf"))
+	fixedFile, err := afero.ReadFile(mockFs, "main.tf")
 	require.NoError(t, err)
 	expected := `resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
@@ -86,25 +82,18 @@ func Test_FileAutoFix(t *testing.T) {
 }
 
 func TestNonVariableBlockInVariablesDotTfFileShouldBeMovedIntoMainDotTfFile(t *testing.T) {
-	temp, err := os.MkdirTemp("", "autofix*")
-	require.NoError(t, err)
-	defer func() {
-		_ = os.RemoveAll(temp)
-	}()
-	mainFilePath := filepath.Join(temp, "main.tf")
-	_, err = os.Create(mainFilePath)
-	require.NoError(t, err)
-	variablesPath := filepath.Join(temp, "variables.tf")
-	variablesFile, err := os.Create(variablesPath)
-	require.NoError(t, err)
-	_, err = variablesFile.WriteString(`locals {
+	mockFs := fakeFs(map[string]string{
+		"main.tf": "",
+		"variables.tf": `locals {
 }
 
-variable "test" {}`)
+variable "test" {}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix("")
 	require.NoError(t, err)
-	err = pkg.DirectoryAutoFix(temp)
-	require.NoError(t, err)
-	mainContent, err := os.ReadFile(mainFilePath)
+	mainContent, err := afero.ReadFile(mockFs, "main.tf")
 	require.NoError(t, err)
 	expectMain := `locals {
 }
@@ -113,33 +102,26 @@ variable "test" {}`)
 	expectVariable := `variable "test" {
 }
 `
-	variablesContent, err := os.ReadFile(variablesPath)
+	variablesContent, err := afero.ReadFile(mockFs, "variables.tf")
 	require.NoError(t, err)
 	assert.Equal(t, formatHcl(expectVariable), formatHcl(string(variablesContent)))
 }
 
 func TestNonVariableBlockInVariablesDotTfFileShouldBeMovedIntoMainDotTfFileAndFixed(t *testing.T) {
-	temp, err := os.MkdirTemp("", "autofix*")
-	require.NoError(t, err)
-	defer func() {
-		_ = os.RemoveAll(temp)
-	}()
-	mainFilePath := filepath.Join(temp, "main.tf")
-	_, err = os.Create(mainFilePath)
-	require.NoError(t, err)
-	variablesPath := filepath.Join(temp, "variables.tf")
-	variablesFile, err := os.Create(variablesPath)
-	require.NoError(t, err)
-	_, err = variablesFile.WriteString(`locals {
+	mockFs := fakeFs(map[string]string{
+		"main.tf": "",
+		"variables.tf": `locals {
   b = "b"
   a = "a"
 }
 
-variable "test" {}`)
+variable "test" {}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix("")
 	require.NoError(t, err)
-	err = pkg.DirectoryAutoFix(temp)
-	require.NoError(t, err)
-	mainContent, err := os.ReadFile(mainFilePath)
+	mainContent, err := afero.ReadFile(mockFs, "main.tf")
 	require.NoError(t, err)
 	expectMain := `locals {
   a = "a"
@@ -150,29 +132,23 @@ variable "test" {}`)
 	expectVariable := `variable "test" {
 }
 `
-	variablesContent, err := os.ReadFile(variablesPath)
+	variablesContent, err := afero.ReadFile(mockFs, "variables.tf")
 	require.NoError(t, err)
 	assert.Equal(t, formatHcl(expectVariable), formatHcl(string(variablesContent)))
 }
 
 func TestNonVariableBlockInVariablesDotTfFileShouldBeMovedIntoNewCreatedMainDotTf(t *testing.T) {
-	temp, err := os.MkdirTemp("", "autofix*")
-	require.NoError(t, err)
-	defer func() {
-		_ = os.RemoveAll(temp)
-	}()
-	variablesPath := filepath.Join(temp, "variables.tf")
-	variablesFile, err := os.Create(variablesPath)
-	require.NoError(t, err)
-	_, err = variablesFile.WriteString(`locals {
+	mockFs := fakeFs(map[string]string{
+		"variables.tf": `locals {
 }
 
-variable "test" {}`)
+variable "test" {}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix("")
 	require.NoError(t, err)
-	err = pkg.DirectoryAutoFix(temp)
-	require.NoError(t, err)
-	mainFilePath := filepath.Join(temp, "main.tf")
-	mainContent, err := os.ReadFile(mainFilePath)
+	mainContent, err := afero.ReadFile(mockFs, "main.tf")
 	require.NoError(t, err)
 	expectMain := `locals {
 }
@@ -181,31 +157,24 @@ variable "test" {}`)
 	expectVariable := `variable "test" {
 }
 `
-	variablesContent, err := os.ReadFile(variablesPath)
+	variablesContent, err := afero.ReadFile(mockFs, "variables.tf")
 	require.NoError(t, err)
 	assert.Equal(t, formatHcl(expectVariable), formatHcl(string(variablesContent)))
 }
 
 func TestNonOutputBlockInOutputsDotTfFileShouldBeMovedIntoMainDotTfFile(t *testing.T) {
-	temp, err := os.MkdirTemp("", "autofix*")
-	require.NoError(t, err)
-	defer func() {
-		_ = os.RemoveAll(temp)
-	}()
-	mainFilePath := filepath.Join(temp, "main.tf")
-	_, err = os.Create(mainFilePath)
-	require.NoError(t, err)
-	outputsPath := filepath.Join(temp, "outputs.tf")
-	outputsFile, err := os.Create(outputsPath)
-	require.NoError(t, err)
-	_, err = outputsFile.WriteString(`locals {
+	mockFs := fakeFs(map[string]string{
+		"main.tf": "",
+		"outputs.tf": `locals {
 }
 
-output "test" {}`)
+output "test" {}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix("")
 	require.NoError(t, err)
-	err = pkg.DirectoryAutoFix(temp)
-	require.NoError(t, err)
-	mainContent, err := os.ReadFile(mainFilePath)
+	mainContent, err := afero.ReadFile(mockFs, "main.tf")
 	require.NoError(t, err)
 	expectMain := `locals {
 }
@@ -214,33 +183,26 @@ output "test" {}`)
 	expectOutput := `output "test" {
 }
 `
-	outputsContent, err := os.ReadFile(outputsPath)
+	outputsContent, err := afero.ReadFile(mockFs, "outputs.tf")
 	require.NoError(t, err)
 	assert.Equal(t, formatHcl(expectOutput), formatHcl(string(outputsContent)))
 }
 
 func TestNonOutputBlockInOutputsDotTfFileShouldBeMovedIntoMainDotTfFileAndFixed(t *testing.T) {
-	temp, err := os.MkdirTemp("", "autofix*")
-	require.NoError(t, err)
-	defer func() {
-		_ = os.RemoveAll(temp)
-	}()
-	mainFilePath := filepath.Join(temp, "main.tf")
-	_, err = os.Create(mainFilePath)
-	require.NoError(t, err)
-	outputsPath := filepath.Join(temp, "outputs.tf")
-	outputsFile, err := os.Create(outputsPath)
-	require.NoError(t, err)
-	_, err = outputsFile.WriteString(`locals {
+	mockFs := fakeFs(map[string]string{
+		"main.tf": "",
+		"outputs.tf": `locals {
   b = "b"
   a = "a"
 }
 
-output "test" {}`)
+output "test" {}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix("")
 	require.NoError(t, err)
-	err = pkg.DirectoryAutoFix(temp)
-	require.NoError(t, err)
-	mainContent, err := os.ReadFile(mainFilePath)
+	mainContent, err := afero.ReadFile(mockFs, "main.tf")
 	require.NoError(t, err)
 	expectMain := `locals {
   a = "a"
@@ -251,29 +213,23 @@ output "test" {}`)
 	expectOutput := `output "test" {
 }
 `
-	outputsContent, err := os.ReadFile(outputsPath)
+	outputsContent, err := afero.ReadFile(mockFs, "outputs.tf")
 	require.NoError(t, err)
 	assert.Equal(t, formatHcl(expectOutput), formatHcl(string(outputsContent)))
 }
 
 func TestNonOutputBlockInOutputsDotTfFileShouldBeMovedIntoNewCreatedMainDotTf(t *testing.T) {
-	temp, err := os.MkdirTemp("", "autofix*")
-	require.NoError(t, err)
-	defer func() {
-		_ = os.RemoveAll(temp)
-	}()
-	outputsPath := filepath.Join(temp, "outputs.tf")
-	outputsFile, err := os.Create(outputsPath)
-	require.NoError(t, err)
-	_, err = outputsFile.WriteString(`locals {
+	mockFs := fakeFs(map[string]string{
+		"outputs.tf": `locals {
 }
 
-output "test" {}`)
+output "test" {}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix("")
 	require.NoError(t, err)
-	err = pkg.DirectoryAutoFix(temp)
-	require.NoError(t, err)
-	mainFilePath := filepath.Join(temp, "main.tf")
-	mainContent, err := os.ReadFile(mainFilePath)
+	mainContent, err := afero.ReadFile(mockFs, "main.tf")
 	require.NoError(t, err)
 	expectMain := `locals {
 }
@@ -282,7 +238,105 @@ output "test" {}`)
 	expectOutput := `output "test" {
 }
 `
-	outputsContent, err := os.ReadFile(outputsPath)
+	outputsContent, err := afero.ReadFile(mockFs, "outputs.tf")
 	require.NoError(t, err)
 	assert.Equal(t, formatHcl(expectOutput), formatHcl(string(outputsContent)))
+}
+
+func TestVariableBlockInMainDotTfFileShouldBeMovedIntoVariableDotTf(t *testing.T) {
+	variableBlock := `variable "test" {}`
+	mockFs := fakeFs(map[string]string{
+		"main.tf": variableBlock,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix("")
+	require.NoError(t, err)
+	file, err := afero.ReadFile(mockFs, "variables.tf")
+	require.NoError(t, err)
+	assert.Equal(t, `variable "test" {
+}
+`, formatHcl(string(file)))
+}
+
+func TestOutputBlockInMainDotTfFileShouldBeMovedIntoOutputsDotTf(t *testing.T) {
+	outputBlock := `output "example_output" {}`
+	mockFs := fakeFs(map[string]string{
+		"main.tf": outputBlock,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+
+	err := pkg.DirectoryAutoFix("")
+	require.NoError(t, err)
+
+	file, err := afero.ReadFile(mockFs, "outputs.tf")
+	require.NoError(t, err)
+	assert.Equal(t, `output "example_output" {
+}
+`, formatHcl(string(file)))
+}
+
+func TestVariableBlockInVariablesDotTfFileShouldNotBeMoved(t *testing.T) {
+	mockFs := fakeFs(map[string]string{
+		"variables.tf":            `variable "test" {}`,
+		"deprecated_variables.tf": `variable "test2" {}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+
+	err := pkg.DirectoryAutoFix("")
+	require.NoError(t, err)
+
+	variablesContent, err := afero.ReadFile(mockFs, "variables.tf")
+	require.NoError(t, err)
+	assert.Equal(t, `variable "test" {
+}
+`, formatHcl(string(variablesContent)))
+
+	variablesContent, err = afero.ReadFile(mockFs, "deprecated_variables.tf")
+	require.NoError(t, err)
+	assert.Equal(t, `variable "test2" {
+}
+`, formatHcl(string(variablesContent)))
+
+	mainExist, err := afero.Exists(mockFs, "main.tf")
+	require.NoError(t, err)
+	assert.False(t, mainExist)
+}
+
+func TestOutputBlockInOutputsDotTfFileShouldNotBeMoved(t *testing.T) {
+	mockFs := fakeFs(map[string]string{
+		"outputs.tf":            `output "example_output" {}`,
+		"deprecated_outputs.tf": `output "example_output2" {}`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+
+	err := pkg.DirectoryAutoFix("")
+	require.NoError(t, err)
+
+	outputsContent, err := afero.ReadFile(mockFs, "outputs.tf")
+	require.NoError(t, err)
+	assert.Equal(t, `output "example_output" {
+}
+`, formatHcl(string(outputsContent)))
+
+	outputsContent, err = afero.ReadFile(mockFs, "deprecated_outputs.tf")
+	require.NoError(t, err)
+	assert.Equal(t, `output "example_output2" {
+}
+`, formatHcl(string(outputsContent)))
+
+	exists, err := afero.Exists(mockFs, "main.tf")
+	require.NoError(t, err)
+	assert.False(t, exists)
+}
+
+func fakeFs(files map[string]string) afero.Fs {
+	fs := afero.NewMemMapFs()
+	for path, content := range files {
+		_ = afero.WriteFile(fs, path, []byte(content), 0644)
+	}
+	return fs
 }

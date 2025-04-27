@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"strings"
+	"regexp"
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -34,13 +34,16 @@ func (f *HclFile) GetBlock(i int) *HclBlock {
 	return NewHclBlock(block, writeBlock)
 }
 
+var outputsFileRegex = regexp.MustCompile(`.*?outputs.*?\.tf$`)
+var variablesFileRegex = regexp.MustCompile(`.*?variables.*?\.tf$`)
+
 func (f *HclFile) AutoFix() {
-	if strings.HasSuffix(f.FileName, "outputs.tf") {
+	if outputsFileRegex.MatchString(f.FileName) {
 		outputsFile := BuildOutputsFile(f)
 		outputsFile.AutoFix()
 		return
 	}
-	if strings.HasSuffix(f.FileName, "variables.tf") {
+	if variablesFileRegex.MatchString(f.FileName) {
 		variablesFile := BuildVariablesFile(f)
 		variablesFile.AutoFix()
 		return
@@ -67,6 +70,16 @@ func (f *HclFile) AutoFix() {
 		case "terraform":
 			{
 				ab = BuildTerraformBlock(hclBlock, f.File)
+			}
+		case "variable":
+			{
+				f.dir.AppendBlockToFile("variables.tf", hclBlock)
+				_ = f.RemoveBlock(hclBlock)
+			}
+		case "output":
+			{
+				f.dir.AppendBlockToFile("outputs.tf", hclBlock)
+				_ = f.RemoveBlock(hclBlock)
 			}
 		}
 
@@ -97,6 +110,10 @@ func (f *HclFile) ClearWriteFile() {
 
 	f.WriteFile.Body().Clear()
 	f.WriteFile.Body().AppendUnstructuredTokens(newTokens)
+}
+
+func (f *HclFile) RemoveBlock(b *HclBlock) bool {
+	return f.WriteFile.Body().RemoveBlock(b.WriteBlock)
 }
 
 func (f *HclFile) trimRedundantNewLines(tokens hclwrite.Tokens) hclwrite.Tokens {
