@@ -17,7 +17,7 @@ func NewHclBlock(rb *hclsyntax.Block, wb *hclwrite.Block) *HclBlock {
 }
 
 func (b *HclBlock) Attributes() map[string]*HclAttribute {
-	attributes := b.Block.Body.Attributes
+	attributes := b.Body.Attributes
 	r := make(map[string]*HclAttribute, len(attributes))
 	for name, attribute := range attributes {
 		r[name] = NewHclAttribute(attribute, b.WriteBlock.Body().GetAttribute(name))
@@ -26,7 +26,7 @@ func (b *HclBlock) Attributes() map[string]*HclAttribute {
 }
 
 func (b *HclBlock) NestedBlocks() []*HclBlock {
-	blocks := b.Block.Body.Blocks
+	blocks := b.Body.Blocks
 	r := make([]*HclBlock, len(blocks))
 	for i, block := range blocks {
 		r[i] = NewHclBlock(block, b.WriteBlock.Body().Blocks()[i])

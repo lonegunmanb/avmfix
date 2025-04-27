@@ -112,7 +112,7 @@ func (b *VariableBlock) removeUnnecessaryNullable() {
 		if attr.Name != "nullable" {
 			continue
 		}
-		literal, ok := attr.Attribute.Expr.(*hclsyntax.LiteralValueExpr)
+		literal, ok := attr.Expr.(*hclsyntax.LiteralValueExpr)
 		if ok && literal.Val.True() {
 			b.Attributes = removeIndex(b.Attributes, i)
 		}
@@ -126,7 +126,7 @@ func (b *VariableBlock) removeUnnecessarySensitive() {
 		if attr.Name != "sensitive" {
 			continue
 		}
-		literal, ok := attr.Attribute.Expr.(*hclsyntax.LiteralValueExpr)
+		literal, ok := attr.Expr.(*hclsyntax.LiteralValueExpr)
 		if ok && literal.Val.False() {
 			b.Attributes = removeIndex(b.Attributes, i)
 		}

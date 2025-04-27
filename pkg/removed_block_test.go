@@ -96,7 +96,7 @@ func Test_RemovedBlock_AutoFix(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			file, diag := pkg.ParseConfig([]byte(c.input), "")
 			require.False(t, diag.HasErrors())
-			var movedBlock pkg.AutoFixBlock = pkg.BuildRemovedBlock(file.GetBlock(0), file.File)
+			movedBlock := pkg.BuildRemovedBlock(file.GetBlock(0), file.File)
 			movedBlock.AutoFix()
 			fixed := string(file.WriteFile.Bytes())
 			assert.Equal(t, formatHcl(c.expected), formatHcl(fixed))

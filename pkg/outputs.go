@@ -40,7 +40,7 @@ func (b *OutputBlock) removeUnnecessarySensitive() {
 		if attr.Name != "sensitive" {
 			continue
 		}
-		literal, ok := attr.Attribute.Expr.(*hclsyntax.LiteralValueExpr)
+		literal, ok := attr.Expr.(*hclsyntax.LiteralValueExpr)
 		if !ok || !literal.Val.False() {
 			return
 		}
