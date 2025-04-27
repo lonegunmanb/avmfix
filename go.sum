@@ -54,6 +54,8 @@ github.com/lonegunmanb/terraform-null-schema/v3 v3.2.3 h1:v5AEVjmUk+oKu/n5RvQ0c9
 github.com/lonegunmanb/terraform-null-schema/v3 v3.2.3/go.mod h1:18tPc9Shaz7uP91utiSoxNFZ2hKEi7FYmi1gAT/s680=
 github.com/lonegunmanb/terraform-null-schema/v3 v3.2.4 h1:nYl7xeQEa/Zt0shgQZGFUinBonZkDPrO8T815uMxodQ=
 github.com/lonegunmanb/terraform-null-schema/v3 v3.2.4/go.mod h1:u/uSM6+Djhqho/UFpqGKo2t3iQG+EREqZMGysJvzew4=
+github.com/lonegunmanb/terraform-random-schema/v3 v3.7.1-ephemeral h1:WRyuF/9tirZEaZrkEYTwdF7VaI80twBJ4TJkQc3LKyc=
+github.com/lonegunmanb/terraform-random-schema/v3 v3.7.1-ephemeral/go.mod h1:GiWQAfSUSBUAZYPMWByBhlT7olBay40aL9BhGmjMPtA=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.1 h1:kHW53yyYIN0fgfBTl2zhGv426P4UQnxIs4BXlYxjNyo=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.1/go.mod h1:xulGCRXaSpm2mlFQTNFvgmwVfugv+e78vLZ78Ivn0F4=
 github.com/lonegunmanb/terraform-template-schema/v2 v2.2.0 h1:dbD4+ResOG4234ysG9HHXyZaYGynHefPzO70Rk/ktcs=
@@ -62,6 +64,8 @@ github.com/lonegunmanb/terraform-time-schema v0.13.0 h1:V4eCkgekQdET1VK/eIbEUnT9
 github.com/lonegunmanb/terraform-time-schema v0.13.0/go.mod h1:i2XUotIqjBzAdHLf8NFgheVxuHGVz3CPvc0WgmjKEuc=
 github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.6 h1:IGCZw9w+QKGiGs727SFa3Lrms+I/f8yIsWbtl9Dptk4=
 github.com/lonegunmanb/terraform-tls-schema/v4 v4.0.6/go.mod h1:x7Dbb+lhxw/a3uQj2ZXLu7GsCBIDDpKkq9zyYnbYpec=
+github.com/lonegunmanb/terraform-tls-schema/v4 v4.1.0-ephemeral h1:rkDfVjxYLJQtt4uZu7OetNw3Qh+ep/JiVJ9ybr+WNHo=
+github.com/lonegunmanb/terraform-tls-schema/v4 v4.1.0-ephemeral/go.mod h1:8mIM8d8Ha5TOJn4DhFUCKDStmFYTF7Xaj8WA4IihKxc=
 github.com/lonegunmanb/terraform-tls-schema/v4 v4.1.0 h1:yKcpwXvaC7zUPsGXToolcBGwmFxvcRnkxixji/Vc3HQ=
 github.com/lonegunmanb/terraform-tls-schema/v4 v4.1.0/go.mod h1:ofPPq7WHhGejDjHb3BavZX4ZwenH9koU31c0aTzC1e4=
 github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 h1:DpOJ2HYzCv8LZP15IdmG+YdwD2luVPHITV96TkirNBM=

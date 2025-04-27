@@ -72,7 +72,9 @@ func init() {
 		Concat(linq.From(modtm.DataSources)).ToMap(&dataSourceSchemas)
 	linq.From(azurerm.EphemeralResources).
 		Concat(linq.From(aws.EphemeralResources)).
-		Concat(linq.From(gcp.EphemeralResources)).ToMap(&ephemeralResourceSchemas)
+		Concat(linq.From(gcp.EphemeralResources)).
+		Concat(linq.From(random.EphemeralResources)).
+		Concat(linq.From(tls.EphemeralResources)).ToMap(&ephemeralResourceSchemas)
 }
 
 func queryBlockSchema(path []string) *tfjson.SchemaBlock {
