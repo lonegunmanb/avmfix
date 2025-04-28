@@ -28,12 +28,13 @@ func BuildTerraformBlock(block *HclBlock, file *hcl.File) *TerraformBlock {
 	return r
 }
 
-func (b *TerraformBlock) AutoFix() {
+func (b *TerraformBlock) AutoFix() error {
 	if b.RequiredProvidersBlock == nil {
-		return
+		return nil
 	}
 	attributes := b.RequiredProvidersBlock.WriteBlock.Body().Attributes()
 	b.RequiredProvidersBlock.Clear()
 	b.RequiredProvidersBlock.appendNewline()
 	b.RequiredProvidersBlock.writeArgs(b.providers.SortByName(), attributes)
+	return nil
 }

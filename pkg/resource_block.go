@@ -16,8 +16,8 @@ type ResourceBlock struct {
 	TailMetaNestedBlocks *NestedBlocks
 }
 
-func (b *ResourceBlock) schemaBlock() *tfjson.SchemaBlock {
-	return queryBlockSchema(b.path())
+func (b *ResourceBlock) schemaBlock() (*tfjson.SchemaBlock, error) {
+	return queryBlockSchema(b.path()), nil
 }
 
 // BuildBlockWithSchema Build the root Block wrapper using hclsyntax.Block
@@ -32,11 +32,11 @@ func BuildBlockWithSchema(block *HclBlock, file *hcl.File) *ResourceBlock {
 	return b
 }
 
-func (b *ResourceBlock) AutoFix() {
+func (b *ResourceBlock) AutoFix() error {
 	schemas := blockTypesWithSchema[b.Path[0]]
 	_, ok := schemas[b.Type]
 	if !ok {
-		return
+		return nil
 	}
 	for _, nestedBlock := range b.nestedBlocks() {
 		nestedBlock.AutoFix()
@@ -78,6 +78,7 @@ func (b *ResourceBlock) AutoFix() {
 	if singleLineBlock && !empty {
 		blockToFix.appendNewline()
 	}
+	return nil
 }
 
 func (b *ResourceBlock) nestedBlocks() []*NestedBlock {

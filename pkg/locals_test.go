@@ -73,7 +73,8 @@ locals {
 `
 	f, diag := pkg.ParseConfig([]byte(code), "locals.tf")
 	require.False(t, diag.HasErrors())
-	f.AutoFix()
+	err := f.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `
 locals {

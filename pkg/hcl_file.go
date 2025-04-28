@@ -37,16 +37,16 @@ func (f *HclFile) GetBlock(i int) *HclBlock {
 var outputsFileRegex = regexp.MustCompile(`.*?outputs.*?\.tf$`)
 var variablesFileRegex = regexp.MustCompile(`.*?variables.*?\.tf$`)
 
-func (f *HclFile) AutoFix() {
+func (f *HclFile) AutoFix() error {
 	if outputsFileRegex.MatchString(f.FileName) {
 		outputsFile := BuildOutputsFile(f)
 		outputsFile.AutoFix()
-		return
+		return nil
 	}
 	if variablesFileRegex.MatchString(f.FileName) {
 		variablesFile := BuildVariablesFile(f)
 		variablesFile.AutoFix()
-		return
+		return nil
 	}
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
 		hclBlock := f.GetBlock(i)
@@ -55,6 +55,14 @@ func (f *HclFile) AutoFix() {
 			ab = BuildBlockWithSchema(hclBlock, f.File)
 		}
 		switch b.Type {
+		case "module":
+			{
+				var err error
+				ab, err = BuildModuleBlock(hclBlock, f.dir.path, f.File)
+				if err != nil {
+					return err
+				}
+			}
 		case "moved":
 			{
 				ab = BuildMovedBlock(hclBlock, f.File)
@@ -83,10 +91,14 @@ func (f *HclFile) AutoFix() {
 			}
 		}
 
-		if ab != nil {
-			ab.AutoFix()
+		if ab == nil {
+			continue
+		}
+		if err := ab.AutoFix(); err != nil {
+			return err
 		}
 	}
+	return nil
 }
 
 func (f *HclFile) appendNewline() {

@@ -8,7 +8,7 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
-func buildNestedBlock(parent blockWithSchema, index int, nestedBlock *HclBlock) *NestedBlock {
+func buildNestedBlock(parent blockWithSchema, index int, nestedBlock *HclBlock) (*NestedBlock, error) {
 	nestedBlockName := nestedBlock.Type
 	sortField := nestedBlock.Type
 	if nestedBlock.Type == "dynamic" {
@@ -27,9 +27,13 @@ func buildNestedBlock(parent blockWithSchema, index int, nestedBlock *HclBlock) 
 		linq.From(attributes).Concat(linq.From(nestedBlock.NestedBlocks()[0].Attributes())).ToMap(&attributes)
 		blocks = blocks[0].NestedBlocks()
 	}
-	buildArgs(nb, attributes)
-	buildNestedBlocks(nb, blocks)
-	return nb
+	if err := buildArgs(nb, attributes); err != nil {
+		return nil, err
+	}
+	if err := buildNestedBlocks(nb, blocks); err != nil {
+		return nil, err
+	}
+	return nb, nil
 }
 
 var _ blockWithSchema = &NestedBlock{}
@@ -46,8 +50,8 @@ func (b *NestedBlock) DefRange() hcl.Range {
 	return b.HclBlock.DefRange()
 }
 
-func (b *NestedBlock) schemaBlock() *tfjson.SchemaBlock {
-	return queryBlockSchema(b.Path)
+func (b *NestedBlock) schemaBlock() (*tfjson.SchemaBlock, error) {
+	return queryBlockSchema(b.Path), nil
 }
 
 // NestedBlocks is the collection of nestedBlocks with the same type
@@ -68,7 +72,7 @@ func (b *NestedBlock) BlockType() string {
 	return b.HclBlock.Type
 }
 
-func (b *NestedBlock) AutoFix() {
+func (b *NestedBlock) AutoFix() error {
 	for _, nestedBlock := range b.nestedBlocks() {
 		nestedBlock.AutoFix()
 	}
@@ -108,6 +112,7 @@ func (b *NestedBlock) AutoFix() {
 	if singleLineBlock && !empty {
 		blockToFix.appendNewline()
 	}
+	return nil
 }
 
 func (b *NestedBlocks) add(arg *NestedBlock) {

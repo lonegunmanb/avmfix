@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/afero"
 	"maps"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -27,7 +28,7 @@ type fileMode interface {
 }
 
 type directory struct {
-	dirPath    string
+	path       string
 	tfFiles    map[string]*HclFile
 	dirEntries map[string]fileMode
 }
@@ -36,9 +37,14 @@ func (d *directory) AutoFix() error {
 	if err := d.loadTfFiles(); err != nil {
 		return err
 	}
+	if err := d.ensureModules(); err != nil {
+		return err
+	}
 	// Use clone here since d.tfFile might be changed during AutoFix, while the content hasn't been updated.
 	for _, hclFile := range maps.Clone(d.tfFiles) {
-		hclFile.AutoFix()
+		if err := hclFile.AutoFix(); err != nil {
+			return err
+		}
 
 		if err := d.writeFileToDisk(hclFile); err != nil {
 			return err
@@ -72,13 +78,13 @@ func (d *directory) writeFileToDisk(hclFile *HclFile) error {
 }
 
 func (d *directory) loadTfFiles() error {
-	files, err := afero.ReadDir(Fs, d.dirPath)
+	files, err := afero.ReadDir(Fs, d.path)
 	if err != nil {
 		return err
 	}
 	for _, file := range files {
 		if !file.IsDir() && strings.HasSuffix(file.Name(), ".tf") {
-			path := filepath.Join(d.dirPath, file.Name())
+			path := filepath.Join(d.path, file.Name())
 			content, err := afero.ReadFile(Fs, path)
 			if err != nil {
 				return err
@@ -97,7 +103,7 @@ func (d *directory) loadTfFiles() error {
 }
 
 func (d *directory) ensureDestFile(destFileName string) error {
-	destFilePath := filepath.Join(d.dirPath, destFileName)
+	destFilePath := filepath.Join(d.path, destFileName)
 	exist, err := afero.Exists(Fs, destFilePath)
 	if err != nil {
 		return err
@@ -121,9 +127,25 @@ func (d *directory) ensureDestFile(destFileName string) error {
 	return nil
 }
 
+func (d *directory) ensureModules() error {
+	dotTerraformFolder := filepath.Join(d.path, ".terraform")
+	exist, err := afero.Exists(Fs, dotTerraformFolder)
+	if err != nil {
+		return err
+	}
+	if exist {
+		return nil
+	}
+	initCmd := exec.Command("terraform", "init")
+	initCmd.Dir = d.path
+	initCmd.Stdout = os.Stdout
+	initCmd.Stderr = os.Stderr
+	return initCmd.Run()
+}
+
 func newDirectory(path string) *directory {
 	return &directory{
-		dirPath:    path,
+		path:       path,
 		tfFiles:    make(map[string]*HclFile),
 		dirEntries: make(map[string]fileMode),
 	}

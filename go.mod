@@ -31,13 +31,28 @@ require (
 require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
+	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+	github.com/hashicorp/go-getter/v2 v2.2.3 // indirect
+	github.com/hashicorp/go-multierror v1.1.0 // indirect
+	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
-	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
+	github.com/hashicorp/hcl v0.0.0-20170504190234-a4b07c25de5f // indirect
+	github.com/hashicorp/terraform-config-inspect v0.0.0-20250401063509-d2d12f9a63bb // indirect
+	github.com/hashicorp/terraform-exec v0.23.0 // indirect
+	github.com/klauspost/compress v1.11.2 // indirect
+	github.com/mitchellh/go-homedir v1.0.0 // indirect
+	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
+	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prashantv/gostub v1.1.0 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
+	github.com/spf13/pflag v1.0.3 // indirect
+	github.com/ulikunitz/xz v0.5.8 // indirect
+	github.com/xyproto/randomstring v1.2.0 // indirect
 	github.com/zclconf/go-cty v1.16.2 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/sync v0.13.0 // indirect

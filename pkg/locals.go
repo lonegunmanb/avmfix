@@ -19,9 +19,10 @@ func BuildLocalsBlock(block *HclBlock, file *hcl.File) *LocalsBlock {
 	return r
 }
 
-func (b *LocalsBlock) AutoFix() {
+func (b *LocalsBlock) AutoFix() error {
 	attributes := b.HclBlock.WriteBlock.Body().Attributes()
 	b.HclBlock.Clear()
 	b.HclBlock.appendNewline()
 	b.HclBlock.writeArgs(b.Attributes.SortByName(), attributes)
+	return nil
 }
