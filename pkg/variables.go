@@ -27,7 +27,7 @@ func BuildVariablesFile(f *HclFile) *VariablesFile {
 	}
 }
 
-func (f *VariablesFile) AutoFix() {
+func (f *VariablesFile) AutoFix() error {
 	variableBlocks := make([]*VariableBlock, 0)
 	for i := 0; i < len(f.File.WriteFile.Body().Blocks()); i++ {
 		block := f.File.GetBlock(i)
@@ -61,6 +61,7 @@ func (f *VariablesFile) AutoFix() {
 			f.File.appendNewline()
 		}
 	}
+	return nil
 }
 
 type VariableBlock struct {
@@ -78,11 +79,12 @@ func BuildVariableBlock(f *hcl.File, b *HclBlock) *VariableBlock {
 	return r
 }
 
-func (b *VariableBlock) AutoFix() {
+func (b *VariableBlock) AutoFix() error {
 	b.sortArguments()
 	b.removeUnnecessaryNullable()
 	b.removeUnnecessarySensitive()
 	b.write()
+	return nil
 }
 
 func (b *VariableBlock) sortArguments() {

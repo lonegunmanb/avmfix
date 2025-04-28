@@ -21,10 +21,11 @@ func BuildOutputBlock(f *hcl.File, b *HclBlock) *OutputBlock {
 	return r
 }
 
-func (b *OutputBlock) AutoFix() {
+func (b *OutputBlock) AutoFix() error {
 	b.removeUnnecessarySensitive()
 	b.sortArguments()
 	b.write()
+	return nil
 }
 
 func (b *OutputBlock) write() {
@@ -65,7 +66,7 @@ func BuildOutputsFile(f *HclFile) *OutputsFile {
 	}
 }
 
-func (f *OutputsFile) AutoFix() {
+func (f *OutputsFile) AutoFix() error {
 	var blocks []*OutputBlock
 	for i := 0; i < len(f.File.WriteFile.Body().Blocks()); i++ {
 		block := f.File.GetBlock(i)
@@ -93,4 +94,5 @@ func (f *OutputsFile) AutoFix() {
 			f.File.appendNewline()
 		}
 	}
+	return nil
 }

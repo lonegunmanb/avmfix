@@ -9,7 +9,7 @@ import (
 type blockWithSchema interface {
 	file() *hcl.File
 	path() []string
-	schemaBlock() *tfjson.SchemaBlock
+	schemaBlock() (*tfjson.SchemaBlock, error)
 	isHeadMeta(argNameOrNestedBlockType string) bool
 	isTailMeta(argNameOrNestedBlockType string) bool
 	addHeadMetaArg(arg *Arg)
@@ -24,8 +24,11 @@ type rootBlock interface {
 	addTailMetaNestedBlock(nb *NestedBlock)
 }
 
-func buildArgs(b blockWithSchema, attributes map[string]*HclAttribute) {
-	argSchemas := b.schemaBlock()
+func buildArgs(b blockWithSchema, attributes map[string]*HclAttribute) error {
+	argSchemas, err := b.schemaBlock()
+	if err != nil {
+		return err
+	}
 	for _, attr := range attributesByLines(attributes) {
 		attrName := attr.Name
 		arg := buildAttrArg(attr, b.file())
@@ -49,12 +52,19 @@ func buildArgs(b blockWithSchema, attributes map[string]*HclAttribute) {
 			b.addOptionalAttr(arg)
 		}
 	}
+	return nil
 }
 
-func buildNestedBlocks(b blockWithSchema, nestedBlocks []*HclBlock) {
-	blockSchema := b.schemaBlock()
+func buildNestedBlocks(b blockWithSchema, nestedBlocks []*HclBlock) error {
+	blockSchema, err := b.schemaBlock()
+	if err != nil {
+		return err
+	}
 	for i, nestedBlock := range nestedBlocks {
-		nb := buildNestedBlock(b, i, nestedBlock)
+		nb, err := buildNestedBlock(b, i, nestedBlock)
+		if err != nil {
+			return err
+		}
 		rb, rootBlock := b.(rootBlock)
 		if rootBlock && b.isTailMeta(nb.Name) {
 			rb.addTailMetaNestedBlock(nb)
@@ -71,6 +81,7 @@ func buildNestedBlocks(b blockWithSchema, nestedBlocks []*HclBlock) {
 			b.addOptionalNestedBlock(nb)
 		}
 	}
+	return nil
 }
 
 type resourceBlock struct {

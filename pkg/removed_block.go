@@ -16,10 +16,10 @@ func BuildRemovedBlock(b *HclBlock, f *hcl.File) AutoFixBlock {
 	}
 }
 
-func (r *RemovedBlock) AutoFix() {
+func (r *RemovedBlock) AutoFix() error {
 	from, ok := r.HclBlock.Attributes()["from"]
 	if !ok {
-		return
+		return nil
 	}
 	var lifecycle *HclBlock
 	var provisioners []*HclBlock
@@ -33,7 +33,7 @@ func (r *RemovedBlock) AutoFix() {
 		}
 	}
 	if lifecycle == nil {
-		return
+		return nil
 	}
 	writeAttrs := r.HclBlock.WriteBlock.Body().Attributes()
 	hb := r.HclBlock.Clear().
@@ -51,4 +51,5 @@ func (r *RemovedBlock) AutoFix() {
 	for _, pb := range provisioners {
 		hb.appendBlock(pb.WriteBlock)
 	}
+	return nil
 }

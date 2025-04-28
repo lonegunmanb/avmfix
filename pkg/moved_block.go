@@ -14,18 +14,19 @@ func BuildMovedBlock(block *HclBlock, file *hcl.File) *MovedBlock {
 	}
 }
 
-func (b *MovedBlock) AutoFix() {
+func (b *MovedBlock) AutoFix() error {
 	if !b.isComplete() {
-		return
+		return nil
 	}
 	attributes := b.HclBlock.WriteBlock.Body().Attributes()
 	b.HclBlock.Clear()
 	b.HclBlock.appendNewline()
-	
+
 	b.HclBlock.writeArgs([]*Arg{
 		buildAttrArg(b.HclBlock.Attributes()["from"], b.File),
 		buildAttrArg(b.HclBlock.Attributes()["to"], b.File),
 	}, attributes)
+	return nil
 }
 
 func (b *MovedBlock) isComplete() bool {

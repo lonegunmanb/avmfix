@@ -1,6 +1,8 @@
 package pkg_test
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/lonegunmanb/avmfix/pkg"
@@ -331,6 +333,17 @@ func TestOutputBlockInOutputsDotTfFileShouldNotBeMoved(t *testing.T) {
 	exists, err := afero.Exists(mockFs, "main.tf")
 	require.NoError(t, err)
 	assert.False(t, exists)
+}
+
+func TestDirectoryContainsModuleBlockShouldRunTerraformInitFirst(t *testing.T) {
+	defer func() {
+		_ = os.RemoveAll("test-fixture/local_module/.terraform")
+	}()
+	err := pkg.DirectoryAutoFix(filepath.Join("test-fixture", "local_module"))
+	require.NoError(t, err)
+	stat, err := os.Stat(filepath.Join("test-fixture", "local_module", ".terraform"))
+	require.NoError(t, err)
+	assert.True(t, stat.IsDir())
 }
 
 func fakeFs(files map[string]string) afero.Fs {

@@ -62,3 +62,23 @@ Keep in mind that `avmfix` may not be able to resolve all issues automatically. 
 * Tls (`tls`)
 
 `avmfix` also supports `ephemeral` resource block fix now.
+
+## `module` block fix
+
+`avmfix` can fix `module` block now, but only top-level variables sorting. Nested fields in fields with `object` type **WILL NOT** be sorted.
+
+Now the `module` block would be sorted like this:
+
+```hcl
+module "this" {
+  source = "source"
+  version = "0.1.0"
+  providers = {}
+  for_each = var.for_each
+
+  required_variable = "value"
+  optional_variable = "value"
+
+  depends_on = []
+}
+```
