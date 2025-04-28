@@ -23,6 +23,48 @@ type ModuleBlock struct {
 	dir          string
 }
 
+func BuildModuleBlock(block *HclBlock, dir string, file *hcl.File) (*ModuleBlock, error) {
+	b := &ModuleBlock{
+		dir:      dir,
+		HclBlock: block,
+		File:     file,
+	}
+	err := buildArgs(b, block.Attributes())
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+func (b *ModuleBlock) AutoFix() error {
+	blockToFix := b.HclBlock
+	singleLineBlock := blockToFix.isSingleLineBlock()
+	empty := true
+	attributes := blockToFix.WriteBlock.Body().Attributes()
+	blockToFix.Clear()
+	if b.HeadMetaArgs != nil {
+		blockToFix.appendNewline()
+		blockToFix.writeArgs(b.HeadMetaArgs.SortHeadMetaArgs(), attributes)
+		empty = false
+	}
+	if b.RequiredArgs != nil || b.OptionalArgs != nil {
+		blockToFix.appendNewline()
+		blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
+		blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
+		empty = false
+	}
+	if b.TailMetaArgs != nil {
+		blockToFix.appendNewline()
+		empty = false
+	}
+	blockToFix.writeArgs(b.TailMetaArgs.SortByName(), attributes)
+
+	if singleLineBlock && !empty {
+		blockToFix.appendNewline()
+	}
+	return nil
+}
+
 func (b *ModuleBlock) addTailMetaArg(arg *Arg) {
 	b.TailMetaArgs = append(b.TailMetaArgs, arg)
 }
@@ -106,47 +148,4 @@ func (b *ModuleBlock) addOptionalNestedBlock(nb *NestedBlock) {
 
 func (b *ModuleBlock) addRequiredNestedBlock(nb *NestedBlock) {
 
-}
-
-func BuildModuleBlock(block *HclBlock, dir string, file *hcl.File) (*ModuleBlock, error) {
-
-	b := &ModuleBlock{
-		dir:      dir,
-		HclBlock: block,
-		File:     file,
-	}
-	err := buildArgs(b, block.Attributes())
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
-}
-
-func (b *ModuleBlock) AutoFix() error {
-	blockToFix := b.HclBlock
-	singleLineBlock := blockToFix.isSingleLineBlock()
-	empty := true
-	attributes := blockToFix.WriteBlock.Body().Attributes()
-	blockToFix.Clear()
-	if b.HeadMetaArgs != nil {
-		blockToFix.appendNewline()
-		blockToFix.writeArgs(b.HeadMetaArgs.SortHeadMetaArgs(), attributes)
-		empty = false
-	}
-	if b.RequiredArgs != nil || b.OptionalArgs != nil {
-		blockToFix.appendNewline()
-		blockToFix.writeArgs(b.RequiredArgs.SortByName(), attributes)
-		blockToFix.writeArgs(b.OptionalArgs.SortByName(), attributes)
-		empty = false
-	}
-	if b.TailMetaArgs != nil {
-		blockToFix.appendNewline()
-		empty = false
-	}
-	blockToFix.writeArgs(b.TailMetaArgs.SortByName(), attributes)
-
-	if singleLineBlock && !empty {
-		blockToFix.appendNewline()
-	}
-	return nil
 }

@@ -197,7 +197,8 @@ resource "azurerm_container_group" "example" {
 	require.False(t, diag.HasErrors())
 	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	cb.AutoFix()
+	err := cb.AutoFix()
+	require.NoError(t, err)
 	expected := `container {
     cpu    = "0.5"
     image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
@@ -238,7 +239,8 @@ resource "azurerm_container_group" "example" {
 	require.False(t, diag.HasErrors())
 	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	cb.AutoFix()
+	err := cb.AutoFix()
+	require.NoError(t, err)
 	expected := `container {
     cpu    = "0.5"
     image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
@@ -279,7 +281,8 @@ resource "azurerm_container_group" "example" {
 	require.False(t, diag.HasErrors())
 	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	cb.AutoFix()
+	err := cb.AutoFix()
+	require.NoError(t, err)
 	expected := `container {
     cpu    = "0.5"
     image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
@@ -328,7 +331,8 @@ resource "azurerm_container_group" "example" {
 	require.False(t, diag.HasErrors())
 	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	cb.AutoFix()
+	err := cb.AutoFix()
+	require.NoError(t, err)
 	expected := `
 resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
@@ -385,7 +389,8 @@ resource "azurerm_container_group" "example" {
 	require.False(t, diag.HasErrors())
 	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	cb.AutoFix()
+	err := cb.AutoFix()
+	require.NoError(t, err)
 	expected := `dynamic "container" {
     for_each = ["hello-world"]
     iterator = con

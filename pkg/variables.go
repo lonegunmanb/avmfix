@@ -36,7 +36,9 @@ func (f *VariablesFile) AutoFix() error {
 			continue
 		}
 		b := BuildVariableBlock(f.File.File, block)
-		b.AutoFix()
+		if err := b.AutoFix(); err != nil {
+			return err
+		}
 		variableBlocks = append(variableBlocks, b)
 	}
 	linq.From(variableBlocks).OrderBy(func(i interface{}) interface{} {

@@ -18,7 +18,8 @@ func TestOutputsFile_SortOutputAttribute(t *testing.T) {
 	f, diag := pkg.ParseConfig([]byte(output), "outputs.tf")
 	require.False(t, diag.HasErrors())
 	outputBlock := pkg.BuildOutputsFile(f)
-	outputBlock.AutoFix()
+	err := outputBlock.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `output "test" {
   description = "test"
@@ -39,7 +40,8 @@ func TestOutputsFile_RemoveUnnecessarySensitive(t *testing.T) {
 	f, diag := pkg.ParseConfig([]byte(output), "outputs.tf")
 	require.False(t, diag.HasErrors())
 	outputBlock := pkg.BuildOutputsFile(f)
-	outputBlock.AutoFix()
+	err := outputBlock.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `output "test" {
   description = "test"
@@ -65,7 +67,8 @@ output "test" {
 	f, diag := pkg.ParseConfig([]byte(output), "outputs.tf")
 	require.False(t, diag.HasErrors())
 	outputsFile := pkg.BuildOutputsFile(f)
-	outputsFile.AutoFix()
+	err := outputsFile.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `output "test" {
   description = "test"
@@ -92,7 +95,8 @@ output "image_id" {
 	f, diag := pkg.ParseConfig([]byte(output), "outputs.tf")
 	require.False(t, diag.HasErrors())
 	outputBlock := pkg.BuildOutputsFile(f)
-	outputBlock.AutoFix()
+	err := outputBlock.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	assert.Equal(t, formatHcl(output), formatHcl(fixed))
 }

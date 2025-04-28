@@ -27,8 +27,8 @@ func BuildBlockWithSchema(block *HclBlock, file *hcl.File) *ResourceBlock {
 		resourceBlock: newBlock(resourceName, block, file, []string{block.Type, resourceType}),
 		Type:          resourceType,
 	}
-	buildArgs(b, block.Attributes())
-	buildNestedBlocks(b, block.NestedBlocks())
+	_ = buildArgs(b, block.Attributes())
+	_ = buildNestedBlocks(b, block.NestedBlocks())
 	return b
 }
 
@@ -39,7 +39,9 @@ func (b *ResourceBlock) AutoFix() error {
 		return nil
 	}
 	for _, nestedBlock := range b.nestedBlocks() {
-		nestedBlock.AutoFix()
+		if err := nestedBlock.AutoFix(); err != nil {
+			return err
+		}
 	}
 	blockToFix := b.HclBlock
 	singleLineBlock := blockToFix.isSingleLineBlock()

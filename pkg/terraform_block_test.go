@@ -114,7 +114,8 @@ terraform {
 			f, diag := pkg.ParseConfig([]byte(cc.code), "")
 			require.False(t, diag.HasErrors())
 			sut := pkg.BuildTerraformBlock(f.GetBlock(0), f.File)
-			sut.AutoFix()
+			err := sut.AutoFix()
+			require.NoError(t, err)
 			fixed := string(f.WriteFile.Bytes())
 			assert.Equal(t, formatHcl(cc.expected), formatHcl(fixed))
 

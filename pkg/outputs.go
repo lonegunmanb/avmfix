@@ -75,7 +75,9 @@ func (f *OutputsFile) AutoFix() error {
 			continue
 		}
 		b := BuildOutputBlock(f.File.File, block)
-		b.AutoFix()
+		if err := b.AutoFix(); err != nil {
+			return err
+		}
 		blocks = append(blocks, b)
 	}
 
