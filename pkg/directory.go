@@ -13,7 +13,9 @@ var Fs = afero.NewOsFs()
 
 func DirectoryAutoFix(dirPath string) error {
 	d := newDirectory(dirPath)
-
+	if err := d.ensureModules(); err != nil {
+		return err
+	}
 	// variables and outputs files might move blocks into main.tf without fix, so we need run AutoFix twice
 	for i := 0; i < 2; i++ {
 		if err := d.AutoFix(); err != nil {
@@ -35,9 +37,6 @@ type directory struct {
 
 func (d *directory) AutoFix() error {
 	if err := d.loadTfFiles(); err != nil {
-		return err
-	}
-	if err := d.ensureModules(); err != nil {
 		return err
 	}
 	// Use clone here since d.tfFile might be changed during AutoFix, while the content hasn't been updated.
