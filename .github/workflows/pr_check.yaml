@@ -33,7 +33,9 @@ jobs:
     - name: Run tests for pkg package
       run: go test -v github.com/${{ github.repository }}/pkg
     - name: Run Gosec Security Scanner
-      uses: securego/gosec@master
+      uses: securego/gosec@955a68d0d19f4afb7503068f95059f7d0c529017 #v2.22.3
+      with:
+        args: ./...
     - name: Run GolangCI-Lint
       uses: golangci/golangci-lint-action@1481404843c368bc19ca9406f87d6e0fc97bdcfd #v7.0.0
       with:
