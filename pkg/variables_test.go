@@ -49,7 +49,8 @@ func TestVariablesFile_VariableBlockAttributeSort(t *testing.T) {
 			f, diag := pkg.ParseConfig([]byte(input), "variables.tf")
 			require.False(t, diag.HasErrors())
 			variablesFile := pkg.BuildVariablesFile(f)
-			variablesFile.AutoFix()
+			err := variablesFile.AutoFix()
+			require.NoError(t, err)
 			fixed := string(f.WriteFile.Bytes())
 			assert.Equal(t, formatHcl(expected), formatHcl(fixed))
 		})
@@ -85,7 +86,8 @@ variable "test4" {
 	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
 	require.False(t, diag.HasErrors())
 	variablesFile := pkg.BuildVariablesFile(f)
-	variablesFile.AutoFix()
+	err := variablesFile.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `variable "test3" {
   type        = string
@@ -123,7 +125,8 @@ func TestVariablesFile_RemoveUnnecessaryNullable(t *testing.T) {
 	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
 	require.False(t, diag.HasErrors())
 	variablesFile := pkg.BuildVariablesFile(f)
-	variablesFile.AutoFix()
+	err := variablesFile.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `variable "image_id" {
   type        = string
@@ -143,7 +146,8 @@ func TestVariablesFile_RemoveUnnecessarySensitive(t *testing.T) {
 	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
 	require.False(t, diag.HasErrors())
 	variablesFile := pkg.BuildVariablesFile(f)
-	variablesFile.AutoFix()
+	err := variablesFile.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `variable "image_id" {
   type        = string
@@ -193,7 +197,8 @@ variable "domain_user" {
 	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
 	require.False(t, diag.HasErrors())
 	variablesFile := pkg.BuildVariablesFile(f)
-	variablesFile.AutoFix()
+	err := variablesFile.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `variable "avdLocation" {
   description = "Location of the resource group."
@@ -259,7 +264,8 @@ func TestVariablesFile_MultipleValidations(t *testing.T) {
 	f, diag := pkg.ParseConfig([]byte(code), "variables.tf")
 	require.False(t, diag.HasErrors())
 	variablesFile := pkg.BuildVariablesFile(f)
-	variablesFile.AutoFix()
+	err := variablesFile.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	expected := `variable "image_id" {
   type        = string
@@ -290,7 +296,8 @@ variable "image_id" {
 	f, diag := pkg.ParseConfig([]byte(input), "variables.tf")
 	require.False(t, diag.HasErrors())
 	variablesFile := pkg.BuildVariablesFile(f)
-	variablesFile.AutoFix()
+	err := variablesFile.AutoFix()
+	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())
 	assert.Equal(t, formatHcl(input), formatHcl(fixed))
 }

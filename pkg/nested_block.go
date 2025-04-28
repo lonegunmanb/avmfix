@@ -74,7 +74,9 @@ func (b *NestedBlock) BlockType() string {
 
 func (b *NestedBlock) AutoFix() error {
 	for _, nestedBlock := range b.nestedBlocks() {
-		nestedBlock.AutoFix()
+		if err := nestedBlock.AutoFix(); err != nil {
+			return err
+		}
 	}
 	blockToFix := b.HclBlock
 	if b.BlockType() == "dynamic" {

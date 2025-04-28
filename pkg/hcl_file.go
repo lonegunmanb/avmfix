@@ -40,13 +40,14 @@ var variablesFileRegex = regexp.MustCompile(`.*?variables.*?\.tf$`)
 func (f *HclFile) AutoFix() error {
 	if outputsFileRegex.MatchString(f.FileName) {
 		outputsFile := BuildOutputsFile(f)
-		outputsFile.AutoFix()
+		if err := outputsFile.AutoFix(); err != nil {
+			return err
+		}
 		return nil
 	}
 	if variablesFileRegex.MatchString(f.FileName) {
 		variablesFile := BuildVariablesFile(f)
-		variablesFile.AutoFix()
-		return nil
+		return variablesFile.AutoFix()
 	}
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
 		hclBlock := f.GetBlock(i)
