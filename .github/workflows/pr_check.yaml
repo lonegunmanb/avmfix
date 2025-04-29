@@ -30,8 +30,8 @@ jobs:
       uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd #v3.1.2
     - name: Run go mod tidy
       run: go mod tidy
-    - name: Run tests for pkg package
-      run: go test -v github.com/${{ github.repository }}/pkg
+    - name: Run tests
+      run: go test -v github.com/${{ github.repository }}/...
     - name: Run Gosec Security Scanner
       uses: securego/gosec@955a68d0d19f4afb7503068f95059f7d0c529017 #v2.22.3
       with:
