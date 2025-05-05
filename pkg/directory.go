@@ -135,7 +135,7 @@ func (d *directory) ensureModules() error {
 	if exist {
 		return nil
 	}
-	initCmd := exec.Command("terraform", "init")
+	initCmd := exec.Command("terraform", "get")
 	initCmd.Dir = d.path
 	initCmd.Stdout = os.Stdout
 	initCmd.Stderr = os.Stderr
