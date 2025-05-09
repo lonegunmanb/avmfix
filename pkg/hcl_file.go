@@ -49,8 +49,12 @@ func (f *HclFile) AutoFix() error {
 		variablesFile := BuildVariablesFile(f)
 		return variablesFile.AutoFix()
 	}
+	var blocks []*HclBlock
+	for i := range f.Body.(*hclsyntax.Body).Blocks {
+		blocks = append(blocks, f.GetBlock(i))
+	}
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
-		hclBlock := f.GetBlock(i)
+		hclBlock := blocks[i]
 		var ab AutoFixBlock
 		if _, ok := blockTypesWithSchema[b.Type]; ok {
 			ab = BuildBlockWithSchema(hclBlock, f.File)

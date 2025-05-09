@@ -1,6 +1,10 @@
 package pkg_test
 
 import (
+	"github.com/lonegunmanb/avmfix/pkg"
+	"github.com/prashantv/gostub"
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/require"
 	"regexp"
 	"testing"
 
@@ -39,4 +43,42 @@ func TestRegexPatterns(t *testing.T) {
 			assert.Equal(t, tt.matches, tt.regex.MatchString(tt.filename))
 		})
 	}
+}
+
+func TestMoveOutputBlockToOutputDotTfFile(t *testing.T) {
+	mockFs := fakeFs(map[string]string{
+		"main.tf": `output "test" {}
+
+locals{
+}
+`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+	err := pkg.DirectoryAutoFix(".")
+	require.NoError(t, err)
+	file, err := afero.ReadFile(mockFs, "outputs.tf")
+	require.NoError(t, err)
+	assert.Contains(t, string(file), `output "test" {`)
+}
+
+func TestMoveVariableBlockToVariablesDotTfFile(t *testing.T) {
+	mockFs := fakeFs(map[string]string{
+		"main.tf": `variable "example_var" {
+  type = string
+}
+
+locals {
+}
+`,
+	})
+	stub := gostub.Stub(&pkg.Fs, mockFs)
+	defer stub.Reset()
+
+	err := pkg.DirectoryAutoFix(".")
+	require.NoError(t, err)
+
+	file, err := afero.ReadFile(mockFs, "variables.tf")
+	require.NoError(t, err)
+	assert.Contains(t, string(file), `variable "example_var" {`)
 }
