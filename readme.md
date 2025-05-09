@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/github/actions/workflow/status/lonegunmanb/azure-verified-module-fix/pr_check.yaml?label=Build&style=for-the-badge)
 
-[Azure Verified Modules](https://github.com/Azure/terraform-azure-modules) are a set of well maintained, consistent and trusted Terraform modules that maintained by Microsoft.
+[Azure Verified Modules](https://aka.ms/avm) are a set of well maintained, consistent and trusted Terraform modules that maintained by Microsoft.
 
 The Azure Verified Module Autofix Tool is a utility that can help you ensure your Terraform modules are in compliance with the [Azure Verified Modules Codex](https://github.com/Azure/terraform-azure-modules/blob/main/codex/README.md). By analyzing your code, the tool can identify some issues and automatically fix them to meet the required standards.
 
@@ -18,6 +18,9 @@ For now, the autofix tool can fix the following issues:
 * Do not declare `sensitive = false` for `output`
 * [`local` should be arranged alphabetically](https://github.com/Azure/terraform-azure-modules/blob/main/codex/logic_code/locals.tf.md#local-should-be-arranged-alphabetically)
 * Orders in `moved` block. (`from` then `to`)
+* `variable` blocks that are not in `*variables*.tf` file would be  moved to `variables.tf` file.
+* `output` blocks that are not in `*outputs*.tf` file would be  moved to `outputs.tf` file.
+* Orders within `module` block - `for_each`, `count`, `source`, `version`, `providers`, required variables in alphabetical order, optional variables in alphabetical order, `depends_on`.
 
 We're adding more autofix capabilities to the tool, so stay tuned for updates!
 
