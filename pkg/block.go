@@ -8,6 +8,7 @@ import (
 // Block is an interface offering general APIs on resource/nested Block
 type blockWithSchema interface {
 	file() *hcl.File
+	
 	path() []string
 	schemaBlock() (*tfjson.SchemaBlock, error)
 	isHeadMeta(argNameOrNestedBlockType string) bool
