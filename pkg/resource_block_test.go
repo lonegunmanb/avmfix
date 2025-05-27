@@ -675,3 +675,95 @@ ephemeral "aws_kms_secrets" "example" {
 `
 	assert.Equal(t, formatHcl(want), formatHcl(string(file.WriteFile.Bytes())))
 }
+
+func TestAzapiResource_SpecialFidldsShouldBeTreatedAsRequired(t *testing.T) {
+	code := `
+resource "azapi_resource" "example" {
+  name = "name"
+  location = "location"
+  type = "type"
+  parent_id = "parent_id"
+}
+`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	requireds := make(map[string]struct{})
+	for _, arg := range resourceBlock.RequiredArgs {
+		requireds[arg.Name] = struct{}{}
+	}
+	assert.Contains(t, requireds, "name")
+	assert.Contains(t, requireds, "location")
+	assert.Contains(t, requireds, "type")
+	assert.Contains(t, requireds, "parent_id")
+}
+
+func TestAzapiUpdateResource_SpecialFidldsShouldBeTreatedAsRequired(t *testing.T) {
+	code := `
+resource "azapi_update_resource" "example" {
+  name = "name"
+  resource_id = "resource_id"
+  type = "type"
+  parent_id = "parent_id"
+}
+`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	requireds := make(map[string]struct{})
+	for _, arg := range resourceBlock.RequiredArgs {
+		requireds[arg.Name] = struct{}{}
+	}
+	assert.Contains(t, requireds, "name")
+	assert.Contains(t, requireds, "resource_id")
+	assert.Contains(t, requireds, "type")
+	assert.Contains(t, requireds, "parent_id")
+}
+
+func TestAzapiResourceActionResource_SpecialFidldsShouldBeTreatedAsRequired(t *testing.T) {
+	code := `
+resource "azapi_resource_action" "example" {
+  type = "type"
+  resource_id = "resource_id"
+  action = "action"
+  method = "method"
+  query_parameters = "query_parameters"
+}
+`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	requireds := make(map[string]struct{})
+	for _, arg := range resourceBlock.RequiredArgs {
+		requireds[arg.Name] = struct{}{}
+	}
+	assert.Contains(t, requireds, "type")
+	assert.Contains(t, requireds, "resource_id")
+	assert.Contains(t, requireds, "action")
+	assert.Contains(t, requireds, "method")
+	assert.Contains(t, requireds, "query_parameters")
+}
+
+func TestAzapiResourceActionEphemeralResource_SpecialFidldsShouldBeTreatedAsRequired(t *testing.T) {
+	code := `
+ephemeral "azapi_resource_action" "example" {
+  type = "type"
+  resource_id = "resource_id"
+  action = "action"
+  method = "method"
+  query_parameters = "query_parameters"
+}
+`
+	file, diagnostics := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diagnostics.HasErrors())
+	ephemeralResourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	requireds := make(map[string]struct{})
+	for _, arg := range ephemeralResourceBlock.RequiredArgs {
+		requireds[arg.Name] = struct{}{}
+	}
+	assert.Contains(t, requireds, "type")
+	assert.Contains(t, requireds, "resource_id")
+	assert.Contains(t, requireds, "action")
+	assert.Contains(t, requireds, "method")
+	assert.Contains(t, requireds, "query_parameters")
+}

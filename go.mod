@@ -12,7 +12,7 @@ require (
 	github.com/lonegunmanb/terraform-alicloud-schema v1.249.0
 	github.com/lonegunmanb/terraform-aws-schema/v5 v5.98.0
 	github.com/lonegunmanb/terraform-awscc-schema v1.42.0
-	github.com/lonegunmanb/terraform-azapi-schema v1.15.0
+	github.com/lonegunmanb/terraform-azapi-schema/v2 v2.4.0
 	github.com/lonegunmanb/terraform-azuread-schema/v3 v3.2.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.30.0
 	github.com/lonegunmanb/terraform-bytebase-schema v0.0.9
@@ -38,12 +38,12 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
-	github.com/hashicorp/hcl v0.0.0-20170504190234-a4b07c25de5f // indirect
-	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
+	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/mod v0.24.0 // indirect
-	golang.org/x/sync v0.13.0 // indirect
-	golang.org/x/text v0.24.0 // indirect
-	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
+	golang.org/x/sync v0.14.0 // indirect
+	golang.org/x/text v0.25.0 // indirect
+	golang.org/x/tools v0.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
