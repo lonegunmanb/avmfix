@@ -8,7 +8,7 @@ import (
 	alicloud "github.com/lonegunmanb/terraform-alicloud-schema/generated"
 	aws "github.com/lonegunmanb/terraform-aws-schema/v5/generated"
 	awscc "github.com/lonegunmanb/terraform-awscc-schema/generated"
-	azapi "github.com/lonegunmanb/terraform-azapi-schema/generated"
+	azapi "github.com/lonegunmanb/terraform-azapi-schema/v2/generated"
 	azuread "github.com/lonegunmanb/terraform-azuread-schema/v3/generated"
 	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v4/generated"
 	bytebase "github.com/lonegunmanb/terraform-bytebase-schema/generated"
@@ -74,7 +74,8 @@ func init() {
 		Concat(linq.From(aws.EphemeralResources)).
 		Concat(linq.From(gcp.EphemeralResources)).
 		Concat(linq.From(random.EphemeralResources)).
-		Concat(linq.From(tls.EphemeralResources)).ToMap(&ephemeralResourceSchemas)
+		Concat(linq.From(tls.EphemeralResources)).
+		Concat(linq.From(azapi.EphemeralResources)).ToMap(&ephemeralResourceSchemas)
 }
 
 func queryBlockSchema(path []string) *tfjson.SchemaBlock {
@@ -90,6 +91,9 @@ func queryBlockSchema(path []string) *tfjson.SchemaBlock {
 		return nil
 	}
 	r := b.Block
+	if postProcessor, ok := schemaPostProcessors[path[1]]; ok {
+		postProcessor(r)
+	}
 	for i := 2; i < len(path); i++ {
 		nb, ok := r.NestedBlocks[path[i]]
 		if !ok {
@@ -98,4 +102,28 @@ func queryBlockSchema(path []string) *tfjson.SchemaBlock {
 		r = nb.Block
 	}
 	return r
+}
+
+var schemaPostProcessors = map[string]func(*tfjson.SchemaBlock){
+	"azapi_resource":        azapiResourceSchemaPostProcessor,
+	"azapi_update_resource": azapiResourceSchemaPostProcessor,
+	"azapi_resource_action": azapiResourceSchemaPostProcessor,
+}
+
+func azapiResourceSchemaPostProcessor(b *tfjson.SchemaBlock) {
+	// `name` and `parent_id` and `location` are optional, but obviously they're more important than body and other attributes.
+	for _, key := range []string{
+		"name",
+		"parent_id",
+		"location",
+		"resource_id",
+		"action",
+		"method",
+		"query_parameters",
+	} {
+		if attr, ok := b.Attributes[key]; ok {
+			attr.Optional = false
+			attr.Required = true
+		}
+	}
 }
