@@ -588,8 +588,8 @@ func TestResourceBlock_UnknownNestedBlockShouldBeTreatedAsOptionalBlock(t *testi
     }
 	default_node_pool {
       name       = "default"
-      vm_size    = "Standard_D2_v2"
       node_count = 1
+      vm_size    = "Standard_D2_v2"
     }
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
@@ -600,8 +600,8 @@ func TestResourceBlock_UnknownNestedBlockShouldBeTreatedAsOptionalBlock(t *testi
 	expected := `resource "azurerm_kubernetes_cluster" "test" {
 	default_node_pool {
       name       = "default"
-      vm_size    = "Standard_D2_v2"
       node_count = 1
+      vm_size    = "Standard_D2_v2"
     }
     an_unknown_block {
       unknown_argument = 1
