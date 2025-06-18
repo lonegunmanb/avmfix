@@ -77,6 +77,32 @@ terraform {
 `,
 		},
 		{
+			desc: "argument then nested block",
+			code: `
+terraform {
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+  required_version = ">= 1.3"
+}
+`,
+			expected: `
+terraform {
+  required_version = ">= 1.3"
+
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+}
+`,
+		},
+		{
 			desc: "empty provider",
 			code: `
 terraform {
