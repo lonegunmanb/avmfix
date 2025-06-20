@@ -134,6 +134,134 @@ terraform {
 }
 `,
 		},
+		{
+			desc: "backend nested block",
+			code: `
+terraform {
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+  required_version = ">= 1.3"
+  backend "local" {}
+}
+`,
+			expected: `
+terraform {
+  required_version = ">= 1.3"
+
+  backend "local" {}
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+}
+`,
+		},
+		{
+			desc: "cloud nested block",
+			code: `
+terraform {
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+  required_version = ">= 1.3"
+  cloud  {
+    workspaces {
+      tags = [ "<workspace-tag>" ]
+      name = "<workspace-name>"
+      project = "<project-name>"
+    }            
+  }
+}
+`,
+			expected: `
+terraform {
+  required_version = ">= 1.3"
+
+  cloud  {
+    workspaces {
+      tags = [ "<workspace-tag>" ]
+      name = "<workspace-name>"
+      project = "<project-name>"
+    }            
+  }
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+}
+`,
+		},
+		{
+			desc: "provider_meta nested block",
+			code: `
+terraform {
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+  provider_meta "my-provider" {
+    hello = "world"
+  }
+  required_version = ">= 1.3"
+}
+`,
+			expected: `
+terraform {
+  required_version = ">= 1.3"
+
+  provider_meta "my-provider" {
+    hello = "world"
+  }
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+}
+`,
+		},
+		{
+			desc: "experiments list",
+			code: `
+terraform {
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+  experiments = [ "<feature-name>" ]
+  required_version = ">= 1.3"
+}
+`,
+			expected: `
+terraform {
+  required_version = ">= 1.3"
+  experiments = [ "<feature-name>" ]
+
+  required_providers {
+    bar = {
+      source  = "hashicorp/bar"
+      version = ">= 0.3.2, < 1.0"
+    }
+  }
+}
+`,
+		},
 	}
 	for _, cc := range cases {
 		t.Run(cc.desc, func(t *testing.T) {
