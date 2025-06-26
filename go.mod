@@ -16,7 +16,7 @@ require (
 	github.com/lonegunmanb/terraform-azuread-schema/v3 v3.2.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.34.0
 	github.com/lonegunmanb/terraform-bytebase-schema v0.0.9
-	github.com/lonegunmanb/terraform-google-schema/v6 v6.39.0
+	github.com/lonegunmanb/terraform-google-schema/v6 v6.41.0
 	github.com/lonegunmanb/terraform-helm-schema/v2 v2.17.0
 	github.com/lonegunmanb/terraform-kubernetes-schema/v2 v2.37.0
 	github.com/lonegunmanb/terraform-local-schema/v2 v2.5.3
