@@ -6,7 +6,7 @@ import (
 	"github.com/ahmetb/go-linq/v3"
 	tfjson "github.com/hashicorp/terraform-json"
 	alicloud "github.com/lonegunmanb/terraform-alicloud-schema/generated"
-	aws "github.com/lonegunmanb/terraform-aws-schema/v5/generated"
+	aws "github.com/lonegunmanb/terraform-aws-schema/v6/generated"
 	awscc "github.com/lonegunmanb/terraform-awscc-schema/generated"
 	azapi "github.com/lonegunmanb/terraform-azapi-schema/v2/generated"
 	azuread "github.com/lonegunmanb/terraform-azuread-schema/v3/generated"
