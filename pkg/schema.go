@@ -13,7 +13,7 @@ import (
 	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v4/generated"
 	bytebase "github.com/lonegunmanb/terraform-bytebase-schema/generated"
 	gcp "github.com/lonegunmanb/terraform-google-schema/v6/generated"
-	helm "github.com/lonegunmanb/terraform-helm-schema/v2/generated"
+	helm "github.com/lonegunmanb/terraform-helm-schema/v3/generated"
 	kubernetes "github.com/lonegunmanb/terraform-kubernetes-schema/v2/generated"
 	local "github.com/lonegunmanb/terraform-local-schema/v2/generated"
 	modtm "github.com/lonegunmanb/terraform-modtm-schema/generated"
