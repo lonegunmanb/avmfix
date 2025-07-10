@@ -126,20 +126,16 @@ func (d *directory) ensureDestFile(destFileName string) error {
 	return nil
 }
 
-func (d *directory) ensureModules() error {
-	dotTerraformFolder := filepath.Join(d.path, ".terraform")
-	exist, err := afero.Exists(Fs, dotTerraformFolder)
-	if err != nil {
-		return err
-	}
-	if exist {
-		return nil
-	}
+var terraformGetFunc = func(path string) error {
 	initCmd := exec.Command("terraform", "get")
-	initCmd.Dir = d.path
+	initCmd.Dir = path
 	initCmd.Stdout = os.Stdout
 	initCmd.Stderr = os.Stderr
 	return initCmd.Run()
+}
+
+func (d *directory) ensureModules() error {
+	return terraformGetFunc(d.path)
 }
 
 func newDirectory(path string) *directory {
