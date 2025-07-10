@@ -10,13 +10,13 @@ require (
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20250401063509-d2d12f9a63bb
 	github.com/hashicorp/terraform-json v0.25.0
 	github.com/lonegunmanb/terraform-alicloud-schema v1.253.0
-	github.com/lonegunmanb/terraform-aws-schema/v6 v6.0.0
+	github.com/lonegunmanb/terraform-aws-schema/v6 v6.2.0
 	github.com/lonegunmanb/terraform-awscc-schema v1.48.0
 	github.com/lonegunmanb/terraform-azapi-schema/v2 v2.5.0
 	github.com/lonegunmanb/terraform-azuread-schema/v3 v3.2.0
-	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.34.0
+	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.35.0
 	github.com/lonegunmanb/terraform-bytebase-schema v0.0.9
-	github.com/lonegunmanb/terraform-google-schema/v6 v6.42.0
+	github.com/lonegunmanb/terraform-google-schema/v6 v6.43.0
 	github.com/lonegunmanb/terraform-helm-schema/v3 v3.0.2
 	github.com/lonegunmanb/terraform-kubernetes-schema/v2 v2.37.0
 	github.com/lonegunmanb/terraform-local-schema/v2 v2.5.3
