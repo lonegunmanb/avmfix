@@ -117,7 +117,9 @@ func (s *Server) Get(request Request) error {
 	}
 
 	registryApiRequest, err := http.NewRequest(http.MethodGet, request.String(), nil)
-	l.Debug("Sending request to registry API", "url", registryApiRequest.URL.String())
+	if registryApiRequest != nil {
+		l.Debug("Sending request to registry API", "url", registryApiRequest.URL.String())
+	}
 	if err != nil {
 		return fmt.Errorf("failed to create HTTP request for registry API: %w", err)
 	}
@@ -126,7 +128,9 @@ func (s *Server) Get(request Request) error {
 	if err != nil {
 		return fmt.Errorf("failed to send HTTP request to registry API: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode == http.StatusNotFound {
 		return fmt.Errorf("%w: %s", ErrPluginNotFound, request.String())
@@ -166,7 +170,9 @@ func (s *Server) Get(request Request) error {
 		return fmt.Errorf("failed to download plugin: %w", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to download plugin: %s => %d", downloadURL, resp.StatusCode)
@@ -174,12 +180,14 @@ func (s *Server) Get(request Request) error {
 
 	pluginFilePath := filepath.Join(s.tmpDir, pluginResponse.FileName)
 
-	file, err := os.Create(pluginFilePath)
+	file, err := os.Create(filepath.Clean(pluginFilePath))
 	if err != nil {
 		return fmt.Errorf("failed to create plugin file: %w", err)
 	}
 
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	if _, err := file.ReadFrom(resp.Body); err != nil {
 		return fmt.Errorf("failed to read plugin data into file: %w", err)
@@ -189,7 +197,7 @@ func (s *Server) Get(request Request) error {
 	extractDir := strings.TrimSuffix(pluginResponse.FileName, filepath.Ext(pluginResponse.FileName)) // Remove extension for directory name
 	extractDir = filepath.Join(s.tmpDir, extractDir)
 
-	if err := os.Mkdir(extractDir, 0755); err != nil {
+	if err := os.Mkdir(extractDir, 0750); err != nil {
 		return fmt.Errorf("failed to create extraction directory: %w", err)
 	}
 

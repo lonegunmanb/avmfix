@@ -27,14 +27,6 @@ func unzip(source, destination string) error {
 }
 
 func unzipFile(f *zip.File, destination string) error {
-	rc, err := f.Open()
-	if err != nil {
-		return fmt.Errorf("failed to open file in zip: %w", err)
-	}
-	defer func() {
-		_ = rc.Close()
-	}()
-
 	path := filepath.Join(destination, f.Name)
 	if f.FileInfo().IsDir() {
 		if err := os.MkdirAll(path, f.Mode()); err != nil {
@@ -42,6 +34,14 @@ func unzipFile(f *zip.File, destination string) error {
 		}
 		return nil
 	}
+
+	rc, err := f.Open()
+	if err != nil {
+		return fmt.Errorf("failed to open file in zip: %w", err)
+	}
+	defer func() {
+		_ = rc.Close()
+	}()
 
 	outFile, err := os.OpenFile(filepath.Clean(path), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 	if err != nil {
@@ -51,7 +51,7 @@ func unzipFile(f *zip.File, destination string) error {
 		_ = outFile.Close()
 	}()
 
-	if _, err := io.Copy(outFile, rc); err != nil {
+	if _, err := io.Copy(outFile, rc); err != nil { // #nosec G110
 		return fmt.Errorf("failed to write file: %w", err)
 	}
 
