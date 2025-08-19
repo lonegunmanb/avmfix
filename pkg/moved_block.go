@@ -7,10 +7,10 @@ type MovedBlock struct {
 	File     *hcl.File
 }
 
-func BuildMovedBlock(block *HclBlock, file *hcl.File) *MovedBlock {
+func BuildMovedBlock(block *HclBlock, file *HclFile) *MovedBlock {
 	return &MovedBlock{
 		HclBlock: block,
-		File:     file,
+		File:     file.File,
 	}
 }
 

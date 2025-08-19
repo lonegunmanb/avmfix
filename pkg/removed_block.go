@@ -9,10 +9,10 @@ type RemovedBlock struct {
 	File     *hcl.File
 }
 
-func BuildRemovedBlock(b *HclBlock, f *hcl.File) AutoFixBlock {
+func BuildRemovedBlock(b *HclBlock, f *HclFile) AutoFixBlock {
 	return &RemovedBlock{
 		HclBlock: b,
-		File:     f,
+		File:     f.File,
 	}
 }
 

@@ -8,13 +8,13 @@ type LocalsBlock struct {
 	File       *hcl.File
 }
 
-func BuildLocalsBlock(block *HclBlock, file *hcl.File) *LocalsBlock {
+func BuildLocalsBlock(block *HclBlock, file *HclFile) *LocalsBlock {
 	r := &LocalsBlock{
 		HclBlock: block,
-		File:     file,
+		File:     file.File,
 	}
 	for _, attribute := range attributesByLines(block.Attributes()) {
-		r.Attributes = append(r.Attributes, buildAttrArg(attribute, file))
+		r.Attributes = append(r.Attributes, buildAttrArg(attribute, file.File))
 	}
 	return r
 }

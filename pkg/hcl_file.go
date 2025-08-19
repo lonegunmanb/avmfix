@@ -56,33 +56,37 @@ func (f *HclFile) AutoFix() error {
 	for i, b := range f.Body.(*hclsyntax.Body).Blocks {
 		hclBlock := blocks[i]
 		var ab AutoFixBlock
-		if _, ok := blockTypesWithSchema[b.Type]; ok {
-			ab = BuildBlockWithSchema(hclBlock, f.File)
+		if len(hclBlock.Labels) > 1 {
+			var err error
+			ab, err = BuildBlockWithSchema(hclBlock, f)
+			if err != nil {
+				return err
+			}
 		}
 		switch b.Type {
 		case "module":
 			{
 				var err error
-				ab, err = BuildModuleBlock(hclBlock, f.dir.path, f.File)
+				ab, err = BuildModuleBlock(hclBlock, f.dir.path, f)
 				if err != nil {
 					return err
 				}
 			}
 		case "moved":
 			{
-				ab = BuildMovedBlock(hclBlock, f.File)
+				ab = BuildMovedBlock(hclBlock, f)
 			}
 		case "removed":
 			{
-				ab = BuildRemovedBlock(hclBlock, f.File)
+				ab = BuildRemovedBlock(hclBlock, f)
 			}
 		case "locals":
 			{
-				ab = BuildLocalsBlock(hclBlock, f.File)
+				ab = BuildLocalsBlock(hclBlock, f)
 			}
 		case "terraform":
 			{
-				ab = BuildTerraformBlock(hclBlock, f.File)
+				ab = BuildTerraformBlock(hclBlock, f)
 			}
 		case "variable":
 			{

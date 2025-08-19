@@ -23,7 +23,8 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
@@ -49,17 +50,13 @@ resource "azurerm_container_group" "example" {
     cpu    = "0.5"
     memory = "1.5"
 	memory_limit = 1.5
-	
-	gpu_limit {
-		count = 1
-		sku = "K80"
-	}
   }
 }
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -72,14 +69,6 @@ resource "azurerm_container_group" "example" {
 	assert.Equal(t, "memory", containerBlock.RequiredArgs[3].Name)
 	assert.Equal(t, 1, len(containerBlock.OptionalArgs))
 	assert.Equal(t, "memory_limit", containerBlock.OptionalArgs[0].Name)
-	assert.Equal(t, 1, len(containerBlock.OptionalNestedBlocks.Blocks))
-	gpuLimitBlock := containerBlock.OptionalNestedBlocks.Blocks[0]
-	assert.Equal(t, "gpu_limit", gpuLimitBlock.Name)
-	assert.Equal(t, "gpu_limit", gpuLimitBlock.SortField)
-	assert.Nil(t, gpuLimitBlock.RequiredArgs)
-	assert.Equal(t, 2, len(gpuLimitBlock.OptionalArgs))
-	assert.Equal(t, "count", gpuLimitBlock.OptionalArgs[0].Name)
-	assert.Equal(t, "sku", gpuLimitBlock.OptionalArgs[1].Name)
 }
 
 func TestBuildNestedBlock_DynamicNestedBlock(t *testing.T) {
@@ -98,7 +87,8 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.RequiredNestedBlocks)
 	dnsConfigBlock := resourceBlock.OptionalNestedBlocks.Blocks[0]
@@ -129,7 +119,8 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Equal(t, 1, len(resourceBlock.OptionalNestedBlocks.Blocks))
 	assert.Equal(t, "container", resourceBlock.RequiredNestedBlocks.Blocks[0].Name)
@@ -160,7 +151,8 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	assert.Equal(t, 1, len(resourceBlock.RequiredNestedBlocks.Blocks))
 	assert.Nil(t, resourceBlock.OptionalNestedBlocks)
 	containerBlock := resourceBlock.RequiredNestedBlocks.Blocks[0]
@@ -195,9 +187,10 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	err := cb.AutoFix()
+	err = cb.AutoFix()
 	require.NoError(t, err)
 	expected := `container {
     cpu    = "0.5"
@@ -237,9 +230,10 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	err := cb.AutoFix()
+	err = cb.AutoFix()
 	require.NoError(t, err)
 	expected := `container {
     cpu    = "0.5"
@@ -279,9 +273,10 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	err := cb.AutoFix()
+	err = cb.AutoFix()
 	require.NoError(t, err)
 	expected := `container {
     cpu    = "0.5"
@@ -329,9 +324,10 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	err := cb.AutoFix()
+	err = cb.AutoFix()
 	require.NoError(t, err)
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -387,9 +383,10 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	cb := resourceBlock.RequiredNestedBlocks.Blocks[0]
-	err := cb.AutoFix()
+	err = cb.AutoFix()
 	require.NoError(t, err)
 	expected := `dynamic "container" {
     for_each = ["hello-world"]

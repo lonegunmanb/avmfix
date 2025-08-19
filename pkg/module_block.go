@@ -2,12 +2,13 @@ package pkg
 
 import (
 	"fmt"
+	"path/filepath"
+
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/spf13/afero"
 	"github.com/zclconf/go-cty/cty"
-	"path/filepath"
 )
 
 var _ blockWithSchema = &ModuleBlock{}
@@ -23,11 +24,11 @@ type ModuleBlock struct {
 	dir          string
 }
 
-func BuildModuleBlock(block *HclBlock, dir string, file *hcl.File) (*ModuleBlock, error) {
+func BuildModuleBlock(block *HclBlock, dir string, file *HclFile) (*ModuleBlock, error) {
 	b := &ModuleBlock{
 		dir:      dir,
 		HclBlock: block,
-		File:     file,
+		File:     file.File,
 	}
 	err := buildArgs(b, block.Attributes())
 	if err != nil {

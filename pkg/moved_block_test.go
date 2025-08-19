@@ -28,7 +28,7 @@ moved {
 		t.Run(name, func(t *testing.T) {
 			file, diag := pkg.ParseConfig([]byte(input), "")
 			require.False(t, diag.HasErrors())
-			movedBlock := pkg.BuildMovedBlock(file.GetBlock(0), file.File)
+			movedBlock := pkg.BuildMovedBlock(file.GetBlock(0), file)
 			err := movedBlock.AutoFix()
 			require.NoError(t, err)
 			fixed := string(file.WriteFile.Bytes())
