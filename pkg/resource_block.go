@@ -39,14 +39,22 @@ var resolveProviderVersion = func(namespace, resourceType string, file *HclFile)
 // BuildBlockWithSchema Build the root Block wrapper using hclsyntax.Block
 func BuildBlockWithSchema(block *HclBlock, file *HclFile) (*ResourceBlock, error) {
 	resourceType, resourceName := block.Labels[0], block.Labels[1]
-	namespace, err := resolveNamespace(resourceType, file)
-	if err != nil {
-		return nil, err
+
+	var namespace, version string
+	var err error
+
+	// Special handling for builtin resources like terraform_data
+	if resourceType != "terraform_data" {
+		namespace, err = resolveNamespace(resourceType, file)
+		if err != nil {
+			return nil, err
+		}
+		version, err = resolveProviderVersion(namespace, resourceType, file)
+		if err != nil {
+			return nil, err
+		}
 	}
-	version, err := resolveProviderVersion(namespace, resourceType, file)
-	if err != nil {
-		return nil, err
-	}
+
 	b := &ResourceBlock{
 		resourceBlock: newBlock(resourceName, block, file.File, []string{block.Type, resourceType}),
 		namespace:     namespace,

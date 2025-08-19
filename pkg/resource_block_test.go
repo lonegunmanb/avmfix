@@ -790,3 +790,86 @@ ephemeral "azapi_resource_action" "example" {
 	assert.Contains(t, requireds, "method")
 	assert.Contains(t, requireds, "query_parameters")
 }
+
+func TestResourceBlock_TerraformDataBuiltinResource_ShouldFail(t *testing.T) {
+	// This test defines the correct behavior: builtin resources like terraform_data
+	// should be supported and NOT cause the tool to fail
+	code := `
+resource "terraform_data" "replacement" {
+  input = var.some_input
+}`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+
+	// This should NOT fail - terraform_data is a builtin resource and should be supported
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+
+	// Expected correct behavior - this should succeed
+	assert.NoError(t, err, "Builtin resources like terraform_data should be supported")
+	require.NotNil(t, resourceBlock, "ResourceBlock should not be nil for builtin resources")
+	assert.Equal(t, "terraform_data", resourceBlock.Type)
+	assert.Equal(t, "replacement", resourceBlock.Name)
+}
+
+func TestResourceBlock_WithTerraformDataReference_ShouldFail(t *testing.T) {
+	// This test shows that even referencing terraform_data in lifecycle blocks causes issues
+	code := `
+resource "azurerm_resource_group" "test" {
+  name     = "test-rg"
+  location = "West Europe"
+  
+  lifecycle {
+    replace_triggered_by = [terraform_data.replacement]
+  }
+}`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+
+	// This should work fine because azurerm_resource_group is a known resource
+	// But if we had terraform_data.replacement resource in the same file,
+	// parsing would fail when trying to build that block
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+
+	// This part works because azurerm_resource_group is supported
+	assert.Equal(t, "azurerm_resource_group", resourceBlock.Type)
+	assert.Equal(t, "test", resourceBlock.Name)
+}
+
+func TestResourceBlock_MultipleResourcesWithTerraformData_ShouldFail(t *testing.T) {
+	// This test shows that terraform_data should now work correctly alongside other resources
+	code := `
+resource "terraform_data" "replacement" {
+  input = var.some_input
+}
+
+resource "azurerm_resource_group" "test" {
+  name     = "test-rg"
+  location = "West Europe"
+  
+  lifecycle {
+    replace_triggered_by = [terraform_data.replacement]
+  }
+}`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+
+	// Get the first block (terraform_data)
+	terraformDataBlock := file.GetBlock(0)
+	assert.Equal(t, "terraform_data", terraformDataBlock.Labels[0])
+
+	// This should now succeed because terraform_data is supported
+	terraformDataResourceBlock, err := pkg.BuildBlockWithSchema(terraformDataBlock, file)
+	assert.NoError(t, err, "terraform_data should be supported")
+	require.NotNil(t, terraformDataResourceBlock)
+	assert.Equal(t, "terraform_data", terraformDataResourceBlock.Type)
+	assert.Equal(t, "replacement", terraformDataResourceBlock.Name)
+
+	// The second block (azurerm_resource_group) should also work fine
+	azurermBlock := file.GetBlock(1)
+	assert.Equal(t, "azurerm_resource_group", azurermBlock.Labels[0])
+
+	resourceBlock, err := pkg.BuildBlockWithSchema(azurermBlock, file)
+	require.NoError(t, err)
+	assert.Equal(t, "azurerm_resource_group", resourceBlock.Type)
+}
