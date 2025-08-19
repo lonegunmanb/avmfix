@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func unzip(source, destination string) error {
@@ -28,6 +29,9 @@ func unzip(source, destination string) error {
 
 func unzipFile(f *zip.File, destination string) error {
 	path := filepath.Join(destination, f.Name)
+	if !strings.HasPrefix(path, filepath.Clean(destination)+string(os.PathSeparator)) {
+		return fmt.Errorf("illegal file path: %s", path)
+	}
 	if f.FileInfo().IsDir() {
 		if err := os.MkdirAll(path, f.Mode()); err != nil {
 			return fmt.Errorf("failed to create directory: %w", err)
@@ -51,7 +55,7 @@ func unzipFile(f *zip.File, destination string) error {
 		_ = outFile.Close()
 	}()
 
-	if _, err := io.Copy(outFile, rc); err != nil { // #nosec G110
+	if _, err := io.Copy(outFile, rc); err != nil {
 		return fmt.Errorf("failed to write file: %w", err)
 	}
 
