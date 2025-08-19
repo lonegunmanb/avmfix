@@ -23,6 +23,32 @@ func queryBlockSchema(path []string, namespace string, version string) (*tfjson.
 	}
 	blockCategory := path[0]
 	blockType := path[1]
+
+	// Special handling for terraform_data builtin resource
+	if blockType == "terraform_data" && namespace == "" && version == "" {
+		return &tfjson.SchemaBlock{
+			Attributes: map[string]*tfjson.SchemaAttribute{
+				"input": {
+					Description: "A value which will be stored in the instance state, and reflected in the output attribute after apply.",
+					Optional:    true,
+				},
+				"triggers_replace": {
+					Description: "A value which is stored in the instance state, and will force replacement when the value changes.",
+					Optional:    true,
+				},
+				"id": {
+					Description: "A string value unique to the resource instance.",
+					Computed:    true,
+				},
+				"output": {
+					Description: "The computed value derived from the input argument.",
+					Computed:    true,
+				},
+			},
+			NestedBlocks: map[string]*tfjson.SchemaBlockType{},
+		}, nil
+	}
+
 	providerType := strings.Split(blockType, "_")[0]
 	var getter func(Request, string) (*tfjson.Schema, error)
 	switch blockCategory {
