@@ -188,14 +188,14 @@ func (c *universalProviderClient) v5Schema() (*tfplugin5.GetProviderSchema_Respo
 	if c.v5 != nil {
 		return c.v5.v5Schema()
 	}
-	return nil, fmt.Errorf("V5 protocol not supported by this provider")
+	return nil, errors.New("v5 protocol not supported by this provider")
 }
 
 func (c *universalProviderClient) v6Schema() (*tfplugin6.GetProviderSchema_Response, error) {
 	if c.v6 != nil {
 		return c.v6.v6Schema()
 	}
-	return nil, fmt.Errorf("V6 protocol not supported by this provider")
+	return nil, errors.New("v6 protocol not supported by this provider")
 }
 
 func (c *universalProviderClient) close() {
