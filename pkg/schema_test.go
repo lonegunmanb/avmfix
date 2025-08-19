@@ -13,7 +13,7 @@ func TestQueryBlockSchema_ResourceBlock(t *testing.T) {
 	defer stub.Reset()
 	t.Run("azurerm_resource_group", func(t *testing.T) {
 		path := []string{"resource", "azurerm_resource_group"}
-		schema, err := queryBlockSchema(path, "azurerm", "4.0.0")
+		schema, err := queryBlockSchema(path, "hashicorp", "4.0.0")
 
 		require.NoError(t, err)
 		require.NotNil(t, schema)
