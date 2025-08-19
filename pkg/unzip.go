@@ -43,7 +43,7 @@ func unzipFile(f *zip.File, destination string) error {
 		return nil
 	}
 
-	outFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+	outFile, err := os.OpenFile(filepath.Clean(path), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
