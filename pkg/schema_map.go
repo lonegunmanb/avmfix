@@ -582,7 +582,7 @@ func convertV5NestingModeToTFJSONNestingMode(nesting tfplugin5.Schema_NestedBloc
 	}
 }
 
-//nolint:SA1019
+//nolint:all
 // convertV6SchemaNestedAttributeTypeToTFJSONSchemaNestedAttributeType converts a tfplugin6.Schema_Object to tfjson.SchemaNestedAttributeType
 func convertV6SchemaNestedAttributeTypeToTFJSONSchemaNestedAttributeType(obj *tfplugin6.Schema_Object) (*tfjson.SchemaNestedAttributeType, error) {
 	if obj == nil {
