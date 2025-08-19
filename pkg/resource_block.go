@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"github.com/hashicorp/hcl/v2"
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
@@ -11,33 +10,61 @@ var _ rootBlock = &ResourceBlock{}
 // ResourceBlock is the wrapper of a resource Block
 type ResourceBlock struct {
 	*resourceBlock
+	namespace            string
+	version              string
 	Type                 string
 	TailMetaArgs         Args
 	TailMetaNestedBlocks *NestedBlocks
 }
 
+func (b *ResourceBlock) getProviderNamespace() string {
+	return b.namespace
+}
+
+func (b *ResourceBlock) getProviderVersion() string {
+	return b.version
+}
+
 func (b *ResourceBlock) schemaBlock() (*tfjson.SchemaBlock, error) {
-	return queryBlockSchema(b.path()), nil
+	return queryBlockSchema(b.path(), b.namespace, b.version)
+}
+
+var resolveNamespace = func(resourceType string, file *HclFile) (string, error) {
+	return file.dir.resolveNamespace(resourceType)
+}
+var resolveProviderVersion = func(namespace, resourceType string, file *HclFile) (string, error) {
+	return file.dir.resolveProviderVersion(namespace, resourceType)
 }
 
 // BuildBlockWithSchema Build the root Block wrapper using hclsyntax.Block
-func BuildBlockWithSchema(block *HclBlock, file *hcl.File) *ResourceBlock {
+func BuildBlockWithSchema(block *HclBlock, file *HclFile) (*ResourceBlock, error) {
 	resourceType, resourceName := block.Labels[0], block.Labels[1]
+	namespace, err := resolveNamespace(resourceType, file)
+	if err != nil {
+		return nil, err
+	}
+	version, err := resolveProviderVersion(namespace, resourceType, file)
+	if err != nil {
+		return nil, err
+	}
 	b := &ResourceBlock{
-		resourceBlock: newBlock(resourceName, block, file, []string{block.Type, resourceType}),
+		resourceBlock: newBlock(resourceName, block, file.File, []string{block.Type, resourceType}),
+		namespace:     namespace,
+		version:       version,
 		Type:          resourceType,
 	}
-	_ = buildArgs(b, block.Attributes())
-	_ = buildNestedBlocks(b, block.NestedBlocks())
-	return b
+	err = buildArgs(b, block.Attributes())
+	if err != nil {
+		return nil, err
+	}
+	err = buildNestedBlocks(b, block.NestedBlocks())
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 func (b *ResourceBlock) AutoFix() error {
-	schemas := blockTypesWithSchema[b.Path[0]]
-	_, ok := schemas[b.Type]
-	if !ok {
-		return nil
-	}
 	for _, nestedBlock := range b.nestedBlocks() {
 		if err := nestedBlock.AutoFix(); err != nil {
 			return err

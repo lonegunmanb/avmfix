@@ -32,7 +32,7 @@ locals {
 `
 	f, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	localsBlock := pkg.BuildLocalsBlock(f.GetBlock(0), f.File)
+	localsBlock := pkg.BuildLocalsBlock(f.GetBlock(0), f)
 	err := localsBlock.AutoFix()
 	require.NoError(t, err)
 	fixed := string(f.WriteFile.Bytes())

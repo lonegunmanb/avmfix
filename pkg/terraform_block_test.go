@@ -267,7 +267,7 @@ terraform {
 		t.Run(cc.desc, func(t *testing.T) {
 			f, diag := pkg.ParseConfig([]byte(cc.code), "")
 			require.False(t, diag.HasErrors())
-			sut := pkg.BuildTerraformBlock(f.GetBlock(0), f.File)
+			sut := pkg.BuildTerraformBlock(f.GetBlock(0), f)
 			err := sut.AutoFix()
 			require.NoError(t, err)
 			fixed := string(f.WriteFile.Bytes())
