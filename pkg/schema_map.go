@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"errors"
 	"fmt"
 
 	tfjson "github.com/hashicorp/terraform-json"
@@ -138,8 +139,13 @@ func convertV6SchemaToTFJSONSchema(schema *tfplugin6.Schema) (*tfjson.Schema, er
 		return nil, nil
 	}
 
+	version, err := safeInt64ToUint64(schema.GetVersion())
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert schema version: %w", err)
+	}
+
 	tfjsonSchema := &tfjson.Schema{
-		Version: uint64(schema.GetVersion()),
+		Version: version,
 	}
 
 	// Convert the block
@@ -160,8 +166,13 @@ func convertV5SchemaToTFJSONSchema(schema *tfplugin5.Schema) (*tfjson.Schema, er
 		return nil, nil
 	}
 
+	version, err := safeInt64ToUint64(schema.GetVersion())
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert schema version: %w", err)
+	}
+
 	tfjsonSchema := &tfjson.Schema{
-		Version: uint64(schema.GetVersion()),
+		Version: version,
 	}
 
 	// Convert the block
@@ -480,11 +491,19 @@ func convertV6SchemaNestedBlockToTFJSONSchemaBlockType(nestedBlock *tfplugin6.Sc
 	if nestedBlock == nil {
 		return nil, nil
 	}
+	minItems, err := safeInt64ToUint64(nestedBlock.GetMinItems())
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert min items: %w", err)
+	}
+	maxItems, err := safeInt64ToUint64(nestedBlock.GetMaxItems())
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert max items: %w", err)
+	}
 
 	blockType := &tfjson.SchemaBlockType{
 		NestingMode: convertV6NestingModeToTFJSONNestingMode(nestedBlock.GetNesting()),
-		MinItems:    uint64(nestedBlock.GetMinItems()),
-		MaxItems:    uint64(nestedBlock.GetMaxItems()),
+		MinItems:    minItems,
+		MaxItems:    maxItems,
 	}
 
 	// Convert the nested block
@@ -505,10 +524,19 @@ func convertV5SchemaNestedBlockToTFJSONSchemaBlockType(nestedBlock *tfplugin5.Sc
 		return nil, nil
 	}
 
+	minItems, err := safeInt64ToUint64(nestedBlock.GetMinItems())
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert min items: %w", err)
+	}
+	maxItems, err := safeInt64ToUint64(nestedBlock.GetMaxItems())
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert max items: %w", err)
+	}
+
 	blockType := &tfjson.SchemaBlockType{
 		NestingMode: convertV5NestingModeToTFJSONNestingMode(nestedBlock.GetNesting()),
-		MinItems:    uint64(nestedBlock.GetMinItems()),
-		MaxItems:    uint64(nestedBlock.GetMaxItems()),
+		MinItems:    minItems,
+		MaxItems:    maxItems,
 	}
 
 	// Convert the nested block
@@ -573,13 +601,18 @@ func convertV6SchemaNestedAttributeTypeToTFJSONSchemaNestedAttributeType(obj *tf
 		}
 		nestedType.Attributes[attr.GetName()] = convertedAttr
 	}
+	var err error
 
 	// Set min/max items if applicable
 	if obj.GetMinItems() > 0 {
-		nestedType.MinItems = uint64(obj.GetMinItems())
+		if nestedType.MinItems, err = safeInt64ToUint64(obj.GetMinItems()); err != nil {
+			return nil, fmt.Errorf("failed to convert min items: %w", err)
+		}
 	}
 	if obj.GetMaxItems() > 0 {
-		nestedType.MaxItems = uint64(obj.GetMaxItems())
+		if nestedType.MaxItems, err = safeInt64ToUint64(obj.GetMaxItems()); err != nil {
+			return nil, fmt.Errorf("failed to convert max items: %w", err)
+		}
 	}
 
 	return nestedType, nil
@@ -599,4 +632,14 @@ func convertV6ObjectNestingModeToTFJSONNestingMode(nesting tfplugin6.Schema_Obje
 	default:
 		return tfjson.SchemaNestingModeSingle // default to single
 	}
+}
+
+// SafeInt64ToUint64 converts an int64 to a uint64, returning an error if the input is negative.
+func safeInt64ToUint64(val int64) (uint64, error) {
+	// 1. Check if the value is negative.
+	if val < 0 {
+		return 0, errors.New("cannot convert a negative int64 to uint64")
+	}
+	// 2. If non-negative, the cast is safe.
+	return uint64(val), nil
 }

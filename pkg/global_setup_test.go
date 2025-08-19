@@ -63,7 +63,24 @@ func TestMain(m *testing.M) {
 		return "registry.terraform.io/hashicorp", nil
 	}).Stub(&resolveProviderVersion, func(string, string, *HclFile) (string, error) {
 		return "4.37.0", nil
-	}).Stub(&tfPluginServer, dummySchemaGetter{})
+	}).Stub(&tfPluginServer, dummySchemaGetter{}).Stub(&terraformInitFunc, func(string) error {
+		return nil
+	}).Stub(&parseTerraformLockFile, func(lockFilePath string) (map[string]map[string]string, error) {
+		return map[string]map[string]string{
+			"registry.terraform.io/hashicorp/azurerm": {
+				"version": "4.37.0",
+			},
+			"registry.terraform.io/hashicorp/aws": {
+				"version": "6.0.0",
+			},
+			"registry.terraform.io/hashicorp/azapi": {
+				"version": "2.0.0",
+			},
+			"registry.terraform.io/hashicorp/random": {
+				"version": "3.0.0",
+			},
+		}, nil
+	})
 	defer stub.Reset()
 	// Run the tests
 	m.Run()

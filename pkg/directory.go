@@ -21,7 +21,9 @@ func DirectoryAutoFix(dirPath string) error {
 	if err := d.ensureModules(); err != nil {
 		return err
 	}
-	d.parseTerraformLockFile()
+	if err := d.parseTerraformLockFile(); err != nil {
+		return fmt.Errorf("failed to parse .terraform.lock.hcl: %w", err)
+	}
 	// variables and outputs files might move blocks into main.tf without fix, so we need run AutoFix twice
 	for i := 0; i < 2; i++ {
 		if err := d.AutoFix(); err != nil {
@@ -158,27 +160,32 @@ func newDirectory(path string) *directory {
 // Example: "hashicorp" -> "azurerm" -> "4.37.0"
 func (d *directory) parseTerraformLockFile() error {
 	lockFilePath := filepath.Join(d.path, ".terraform.lock.hcl")
+	var err error
+	d.providerVersions, err = parseTerraformLockFile(lockFilePath)
+	return err
+}
 
+func parseTerraformLockFileStub(lockFilePath string) (map[string]map[string]string, error) {
 	// Check if the lock file exists
 	exists, err := afero.Exists(Fs, lockFilePath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if !exists {
 		// Return empty map if lock file doesn't exist
-		return fmt.Errorf("lock file %s does not exist", lockFilePath)
+		return nil, fmt.Errorf("lock file %s does not exist", lockFilePath)
 	}
 
 	// Read the lock file content
 	content, err := afero.ReadFile(Fs, lockFilePath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Parse the HCL content
 	file, diags := hclsyntax.ParseConfig(content, lockFilePath, hcl.InitialPos)
 	if diags.HasErrors() {
-		return diags
+		return nil, diags
 	}
 
 	providerVersions := make(map[string]map[string]string)
@@ -186,7 +193,7 @@ func (d *directory) parseTerraformLockFile() error {
 	// Iterate through the body to find provider blocks
 	body, ok := file.Body.(*hclsyntax.Body)
 	if !ok {
-		return errors.New("failed to parse `.terraform.lock.hcl` body")
+		return nil, errors.New("failed to parse `.terraform.lock.hcl` body")
 	}
 
 	for _, block := range body.Blocks {
@@ -238,9 +245,10 @@ func (d *directory) parseTerraformLockFile() error {
 		providerVersions[namespace][providerName] = version
 	}
 
-	d.providerVersions = providerVersions
-	return nil
+	return providerVersions, nil
 }
+
+var parseTerraformLockFile = parseTerraformLockFileStub
 
 func (d *directory) resolveNamespace(resourceType string) (string, error) {
 	providerType := providerName(resourceType)

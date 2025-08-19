@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -102,7 +101,7 @@ func NewServer(l *slog.Logger) *Server {
 // Cleanup removes the temporary directory used for plugin downloads.
 func (s *Server) Cleanup() {
 	s.l.Info("Cleaning up temporary directory", "dir", s.tmpDir)
-	os.RemoveAll(s.tmpDir)
+	_ = os.RemoveAll(s.tmpDir)
 }
 
 // Get retrieves the plugin for the specified request, downloading it if necessary.
@@ -363,15 +362,4 @@ func (s *Server) GetProviderSchema(request Request) (*tfjson.ProviderSchema, err
 	}
 
 	return schemaResp, nil
-}
-
-// marshalResponse marshals the response into JSON and compacts it for better suitability with LLMs.
-func marshalResponse(resp any) ([]byte, error) {
-	marshalled, err := json.Marshal(resp)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal response: %w", err)
-	}
-	var compacted bytes.Buffer
-	json.Compact(&compacted, marshalled)
-	return compacted.Bytes(), nil
 }

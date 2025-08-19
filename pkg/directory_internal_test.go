@@ -112,6 +112,8 @@ provider "registry.terraform.io/microsoft/azuredevops" {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			stub := gostub.Stub(&parseTerraformLockFile, parseTerraformLockFileStub)
+			defer stub.Reset()
 			// Setup filesystem
 			mockFs := afero.NewMemMapFs()
 			testDir := "/test"
@@ -142,4 +144,14 @@ provider "registry.terraform.io/microsoft/azuredevops" {
 			}
 		})
 	}
+}
+
+func TestDirectoryContainsModuleBlockShouldRunTerraformInitFirst(t *testing.T) {
+	called := false
+	gostub.Stub(&parseTerraformLockFile, func(lockFilePath string) (map[string]map[string]string, error) {
+		called = true
+		return nil, nil
+	})
+	_ = DirectoryAutoFix(filepath.Join("test-fixture", "local_module"))
+	assert.True(t, called)
 }
