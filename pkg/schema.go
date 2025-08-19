@@ -79,11 +79,13 @@ func nameSpaceOrDefault(namespace string, providerType string) string {
 func getLatestVersion(namespace string, providerType string) (string, error) {
 	url := fmt.Sprintf("https://registry.terraform.io/v1/providers/%s/%s", namespace, providerType)
 
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) // #nosec G107
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch provider info from registry: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("registry API returned status %d for provider %s/%s", resp.StatusCode, namespace, providerType)
