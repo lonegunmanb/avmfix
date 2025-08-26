@@ -19,7 +19,7 @@ require (
 	github.com/spf13/afero v1.14.0
 	github.com/stretchr/testify v1.11.0
 	github.com/zclconf/go-cty v1.16.3
-	google.golang.org/grpc v1.74.2
+	google.golang.org/grpc v1.75.0
 )
 
 require (
