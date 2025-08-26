@@ -48,8 +48,8 @@ github.com/lonegunmanb/terraform-azapi-schema/v2 v2.6.0 h1:nE8ot7MR4BW66330X3Klg
 github.com/lonegunmanb/terraform-azapi-schema/v2 v2.6.0/go.mod h1:RGAwSWjCTD0m2SNZxKShVZSe4XxjkngQFCHmeMP3ktw=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.91.0 h1:07um2NBeD/74qdAjmwG8bK08cXJtcVEESMckd42Q0xU=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.91.0/go.mod h1:dc6R6RbFfMgpYGYQs/uT+u5j+L5+1NzABjmrrtrQ6nI=
-github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0 h1:39i1wwmBFrmkWDqN4ln5uG0Lh/n5goIoQqhlfnu6ETs=
-github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0/go.mod h1:jIym+ZhYjJiAVbrNiLD1t1Azqn58a6WOvhO8htaYn6Q=
+github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.41.0 h1:n4emrJ2OrplQRzuYMkDLKjud6jD1cmkhHztz1W5AdKI=
+github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.41.0/go.mod h1:jIym+ZhYjJiAVbrNiLD1t1Azqn58a6WOvhO8htaYn6Q=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2 h1:8vsRChXRYjqEvHjCOkLQTF71/s1r7INFh5Y40fUQQBU=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2/go.mod h1:fjxLtDhghd5kojh4HAUyQt6jO1yx1iVpr47e4e+pAjQ=
 github.com/matt-FFFFFF/tfpluginschema v0.3.0 h1:nbufbZnahZRVoD0W2gc+fr/2MyI5HGFttOrYrZ+RoXs=
@@ -70,10 +70,6 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prashantv/gostub v1.1.0 h1:BTyx3RfQjRHnUWaGF9oQos79AlQ5k8WNktv7VGvVH4g=
 github.com/prashantv/gostub v1.1.0/go.mod h1:A5zLQHz7ieHGG7is6LLXLz7I8+3LZzsrV0P1IAHhP5U=
-github.com/reiver/go-cast v0.0.0-20250810135534-c993eee155ee h1:pCKjf3i7WvF79pcmLIqlJSNOx50c9hIWIo/cVvllvPM=
-github.com/reiver/go-cast v0.0.0-20250810135534-c993eee155ee/go.mod h1:baMIic1VWx4m5MRviwSyHFx1Z6POGMRrnVgsMvsLlAA=
-github.com/reiver/go-erorr v0.0.0-20240801233437-8cbde6d1fa3f h1:D1QSxKHm8U73XhjsW3SFLkT0zT5pKJi+1KGboMhY1Rk=
-github.com/reiver/go-erorr v0.0.0-20240801233437-8cbde6d1fa3f/go.mod h1:F0HbBf+Ak2ZlE8YkDW4Y+KxaUmT0KaaIJK6CXY3cJxE=
 github.com/spf13/afero v1.14.0 h1:9tH6MapGnn/j0eb0yIXiLjERO8RB6xIVZRDCX7PtqWA=
 github.com/spf13/afero v1.14.0/go.mod h1:acJQ8t0ohCGuMN3O+Pv0V0hgMxNYDlvdk+VTfyZmbYo=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
