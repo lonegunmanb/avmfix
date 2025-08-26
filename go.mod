@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/go-plugin v1.7.0
 	github.com/hashicorp/hcl/v2 v2.24.0
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20250401063509-d2d12f9a63bb
-	github.com/hashicorp/terraform-json v0.25.0
+	github.com/hashicorp/terraform-json v0.26.0
 	github.com/lonegunmanb/terraform-aws-schema/v6 v6.9.0
 	github.com/lonegunmanb/terraform-azapi-schema/v2 v2.6.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0
