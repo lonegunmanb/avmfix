@@ -1,6 +1,6 @@
 module github.com/lonegunmanb/avmfix
 
-go 1.24.5
+go 1.25.0
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
@@ -14,7 +14,7 @@ require (
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0
 	github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2
-	github.com/matt-FFFFFF/tfpluginschema v0.3.0
+	github.com/matt-FFFFFF/tfpluginschema v0.6.1
 	github.com/prashantv/gostub v1.1.0
 	github.com/spf13/afero v1.14.0
 	github.com/stretchr/testify v1.11.0
@@ -41,8 +41,8 @@ require (
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
-	golang.org/x/text v0.27.0 // indirect
-	golang.org/x/tools v0.34.0 // indirect
+	golang.org/x/text v0.28.0 // indirect
+	golang.org/x/tools v0.35.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250728155136-f173205681a0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

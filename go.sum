@@ -52,8 +52,8 @@ github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0 h1:39i1wwmBFrmkWDqN4l
 github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0/go.mod h1:jIym+ZhYjJiAVbrNiLD1t1Azqn58a6WOvhO8htaYn6Q=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2 h1:8vsRChXRYjqEvHjCOkLQTF71/s1r7INFh5Y40fUQQBU=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2/go.mod h1:fjxLtDhghd5kojh4HAUyQt6jO1yx1iVpr47e4e+pAjQ=
-github.com/matt-FFFFFF/tfpluginschema v0.3.0 h1:nbufbZnahZRVoD0W2gc+fr/2MyI5HGFttOrYrZ+RoXs=
-github.com/matt-FFFFFF/tfpluginschema v0.3.0/go.mod h1:Hb3RueEC+FcDfwub6fTBVyZmuGGyYL7IUP2oMLgGgX4=
+github.com/matt-FFFFFF/tfpluginschema v0.6.1 h1:PMJ63l5W59V86TJJI+XM0XPuHJZw7bggHBjGB/x6O88=
+github.com/matt-FFFFFF/tfpluginschema v0.6.1/go.mod h1:8rXzXlIcURD88FM8XIcelmXrte8L/nPremy963DR4oI=
 github.com/mattn/go-colorable v0.1.9/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
 github.com/mattn/go-colorable v0.1.12/go.mod h1:u5H1YNBxpqRaxsYJYSkiCWKzEfiAb1Gb520KVy5xxl4=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
@@ -106,10 +106,10 @@ golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.34.0 h1:H5Y5sJ2L2JRdyv7ROF1he/lPdvFsd0mJHFw2ThKHxLA=
 golang.org/x/sys v0.34.0/go.mod h1:BJP2sWEmIv4KK5OTEluFJCKSidICx8ciO85XgH3Ak8k=
-golang.org/x/text v0.27.0 h1:4fGWRpyh641NLlecmyl4LOe6yDdfaYNrGb2zdfo4JV4=
-golang.org/x/text v0.27.0/go.mod h1:1D28KMCvyooCX9hBiosv5Tz/+YLxj0j7XhWjpSUF7CU=
-golang.org/x/tools v0.34.0 h1:qIpSLOxeCYGg9TrcJokLBG4KFA6d795g0xkBkiESGlo=
-golang.org/x/tools v0.34.0/go.mod h1:pAP9OwEaY1CAW3HOmg3hLZC5Z0CCmzjAF2UQMSqNARg=
+golang.org/x/text v0.28.0 h1:rhazDwis8INMIwQ4tpjLDzUhx6RlXqZNPEM0huQojng=
+golang.org/x/text v0.28.0/go.mod h1:U8nCwOR8jO/marOQ0QbDiOngZVEBB7MAiitBuMjXiNU=
+golang.org/x/tools v0.35.0 h1:mBffYraMEf7aa0sB+NuKnuCy8qI/9Bughn8dC2Gu5r0=
+golang.org/x/tools v0.35.0/go.mod h1:NKdj5HkL/73byiZSJjqJgKn3ep7KjFkBOkR/Hps3VPw=
 gonum.org/v1/gonum v0.16.0 h1:5+ul4Swaf3ESvrOnidPp4GZbzf0mxVQpDCYUQE7OJfk=
 gonum.org/v1/gonum v0.16.0/go.mod h1:fef3am4MQ93R2HHpKnLk4/Tbh/s0+wqD5nfa6Pnwy4E=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20250728155136-f173205681a0 h1:MAKi5q709QWfnkkpNQ0M12hYJ1+e8qYVDyowc4U1XZM=
