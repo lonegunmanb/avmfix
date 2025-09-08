@@ -48,8 +48,8 @@ github.com/lonegunmanb/terraform-azapi-schema/v2 v2.6.0 h1:nE8ot7MR4BW66330X3Klg
 github.com/lonegunmanb/terraform-azapi-schema/v2 v2.6.0/go.mod h1:RGAwSWjCTD0m2SNZxKShVZSe4XxjkngQFCHmeMP3ktw=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0 h1:njyNYids//j5Rou0Tp74t9nDVVpaucWr6zJn0N6FtDY=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0/go.mod h1:7pfXsxWT9j7wffXjE3iGUsVaKDb7Q1SJgE4Ir/ziRbM=
-github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0 h1:39i1wwmBFrmkWDqN4ln5uG0Lh/n5goIoQqhlfnu6ETs=
-github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0/go.mod h1:jIym+ZhYjJiAVbrNiLD1t1Azqn58a6WOvhO8htaYn6Q=
+github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.43.0 h1:4IkQ3wgu+KdFpQcJ2RPVVembx/ACLjrtOoE3Cg3nP24=
+github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.43.0/go.mod h1:jIym+ZhYjJiAVbrNiLD1t1Azqn58a6WOvhO8htaYn6Q=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2 h1:8vsRChXRYjqEvHjCOkLQTF71/s1r7INFh5Y40fUQQBU=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2/go.mod h1:fjxLtDhghd5kojh4HAUyQt6jO1yx1iVpr47e4e+pAjQ=
 github.com/matt-FFFFFF/tfpluginschema v0.3.0 h1:nbufbZnahZRVoD0W2gc+fr/2MyI5HGFttOrYrZ+RoXs=
