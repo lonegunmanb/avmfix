@@ -12,8 +12,12 @@ import (
 
 var Fs = afero.NewOsFs()
 
-func DirectoryAutoFix(dirPath, excludePattern string) error {
-	d := newDirectory(dirPath, excludePattern)
+func DirectoryAutoFix(dirPath string, excludePattern ...string) error {
+	pattern := ""
+	if len(excludePattern) > 0 {
+		pattern = excludePattern[0]
+	}
+	d := newDirectory(dirPath, pattern)
 	if err := d.ensureModules(); err != nil {
 		return err
 	}
@@ -31,11 +35,10 @@ type fileMode interface {
 }
 
 type directory struct {
-	path           string
-	excludePattern string
-	excludeGlob    glob.Glob
-	tfFiles        map[string]*HclFile
-	dirEntries     map[string]fileMode
+	path        string
+	excludeGlob glob.Glob
+	tfFiles     map[string]*HclFile
+	dirEntries  map[string]fileMode
 }
 
 func (d *directory) AutoFix() error {
@@ -159,10 +162,9 @@ func newDirectory(path, excludePattern string) *directory {
 		excludeGlob = glob.MustCompile(excludePattern)
 	}
 	return &directory{
-		path:           path,
-		excludePattern: excludePattern,
-		excludeGlob:    excludeGlob,
-		tfFiles:        make(map[string]*HclFile),
-		dirEntries:     make(map[string]fileMode),
+		path:        path,
+		excludeGlob: excludeGlob,
+		tfFiles:     make(map[string]*HclFile),
+		dirEntries:  make(map[string]fileMode),
 	}
 }
