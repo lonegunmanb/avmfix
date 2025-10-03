@@ -76,7 +76,7 @@ func TestModuleAutoFix(t *testing.T) {
 `
 	file, diag := ParseConfig([]byte(moduleHclConfig), "test.tf")
 	require.False(t, diag.HasErrors())
-	sut, err := BuildModuleBlock(file.GetBlock(0), filepath.Join("test-fixture", "remote_module"), file.File)
+	sut, err := BuildModuleBlock(file.GetBlock(0), filepath.Join("test-fixture", "remote_module"), file)
 	require.NoError(t, err)
 	err = sut.AutoFix()
 	require.NoError(t, err)

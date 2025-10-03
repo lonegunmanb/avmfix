@@ -1,14 +1,14 @@
 package pkg_test
 
 import (
-	"github.com/lonegunmanb/avmfix/pkg"
-	"github.com/prashantv/gostub"
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/require"
 	"regexp"
 	"testing"
 
+	"github.com/lonegunmanb/avmfix/pkg"
+	"github.com/prashantv/gostub"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRegexPatterns(t *testing.T) {

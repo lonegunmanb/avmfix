@@ -21,6 +21,10 @@ func buildNestedBlock(parent blockWithSchema, index int, nestedBlock *HclBlock) 
 		SortField:     sortField,
 		Index:         index,
 	}
+	if pb, ok := parent.(providerBlock); ok {
+		nb.providerNamespace = pb.getProviderNamespace()
+		nb.providerVersion = pb.getProviderVersion()
+	}
 	attributes := nestedBlock.Attributes()
 	blocks := nestedBlock.NestedBlocks()
 	if nb.BlockType() == "dynamic" {
@@ -41,8 +45,18 @@ var _ blockWithSchema = &NestedBlock{}
 // NestedBlock is a wrapper of the nested Block
 type NestedBlock struct {
 	*resourceBlock
-	SortField string
-	Index     int
+	providerNamespace string
+	providerVersion   string
+	SortField         string
+	Index             int
+}
+
+func (b *NestedBlock) getProviderNamespace() string {
+	return b.providerNamespace
+}
+
+func (b *NestedBlock) getProviderVersion() string {
+	return b.providerVersion
 }
 
 // DefRange gets the definition range of the nested Block
@@ -51,7 +65,7 @@ func (b *NestedBlock) DefRange() hcl.Range {
 }
 
 func (b *NestedBlock) schemaBlock() (*tfjson.SchemaBlock, error) {
-	return queryBlockSchema(b.Path), nil
+	return queryBlockSchema(b.Path, b.providerNamespace, b.providerVersion)
 }
 
 // NestedBlocks is the collection of nestedBlocks with the same type

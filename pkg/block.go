@@ -8,7 +8,7 @@ import (
 // Block is an interface offering general APIs on resource/nested Block
 type blockWithSchema interface {
 	file() *hcl.File
-	
+
 	path() []string
 	schemaBlock() (*tfjson.SchemaBlock, error)
 	isHeadMeta(argNameOrNestedBlockType string) bool
@@ -18,6 +18,11 @@ type blockWithSchema interface {
 	addRequiredAttr(arg *Arg)
 	addOptionalNestedBlock(nb *NestedBlock)
 	addRequiredNestedBlock(nb *NestedBlock)
+}
+
+type providerBlock interface {
+	getProviderNamespace() string
+	getProviderVersion() string
 }
 
 type rootBlock interface {

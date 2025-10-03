@@ -46,23 +46,7 @@ Keep in mind that `avmfix` may not be able to resolve all issues automatically. 
 
 # Supported Providers
 
-`avmfix` currently supports variable block description generation for the following providers:
-* Alicloud (`alicloud`)
-* AWS (`aws`)
-* AWS Cloud Control API (`awscc`)
-* AzAPI (`azapi`)
-* Azure Resource Manager (`azurerm`)
-* Azure Active Directory (`azuread`)
-* Google Cloud Platform (`google`)
-* Helm (`helm`)
-* Kubernetes (`kubernetes`)
-* Local (`local`)
-* Modtm (`modtm`)
-* Null (`null`)
-* Random (`random`)
-* Template (`template`)
-* Time (`time`)
-* Tls (`tls`)
+`avmfix` uses schema retrieved from the provider plugin, so now it supports all providers that are supported by Terraform CLI.
 
 `avmfix` also supports `ephemeral` resource block fix now.
 

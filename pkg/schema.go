@@ -1,107 +1,146 @@
 package pkg
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
 
-	"github.com/ahmetb/go-linq/v3"
 	tfjson "github.com/hashicorp/terraform-json"
-	alicloud "github.com/lonegunmanb/terraform-alicloud-schema/generated"
-	aws "github.com/lonegunmanb/terraform-aws-schema/v6/generated"
-	awscc "github.com/lonegunmanb/terraform-awscc-schema/generated"
-	azapi "github.com/lonegunmanb/terraform-azapi-schema/v2/generated"
-	azuread "github.com/lonegunmanb/terraform-azuread-schema/v3/generated"
-	azurerm "github.com/lonegunmanb/terraform-azurerm-schema/v4/generated"
-	bytebase "github.com/lonegunmanb/terraform-bytebase-schema/generated"
-	gcp "github.com/lonegunmanb/terraform-google-schema/v6/generated"
-	helm "github.com/lonegunmanb/terraform-helm-schema/v3/generated"
-	kubernetes "github.com/lonegunmanb/terraform-kubernetes-schema/v2/generated"
-	local "github.com/lonegunmanb/terraform-local-schema/v2/generated"
-	modtm "github.com/lonegunmanb/terraform-modtm-schema/generated"
-	null "github.com/lonegunmanb/terraform-null-schema/v3/generated"
-	random "github.com/lonegunmanb/terraform-random-schema/v3/generated"
-	template "github.com/lonegunmanb/terraform-template-schema/v2/generated"
-	time "github.com/lonegunmanb/terraform-time-schema/generated"
-	tls "github.com/lonegunmanb/terraform-tls-schema/v4/generated"
 )
 
-var resourceSchemas = make(map[string]*tfjson.Schema, 0)
-var dataSourceSchemas = make(map[string]*tfjson.Schema, 0)
-var ephemeralResourceSchemas = make(map[string]*tfjson.Schema, 0)
-var blockTypesWithSchema = map[string]map[string]*tfjson.Schema{
-	"resource":  resourceSchemas,
-	"data":      dataSourceSchemas,
-	"ephemeral": ephemeralResourceSchemas,
+type SchemaGetter interface {
+	GetResourceSchema(request Request, resource string) (*tfjson.Schema, error)
+	GetDataSourceSchema(request Request, dataSource string) (*tfjson.Schema, error)
+	GetEphemeralResourceSchema(request Request, ephemeralResource string) (*tfjson.Schema, error)
 }
 
-func init() {
-	linq.From(azurerm.Resources).
-		Concat(linq.From(azuread.Resources)).
-		Concat(linq.From(alicloud.Resources)).
-		Concat(linq.From(azapi.Resources)).
-		Concat(linq.From(aws.Resources)).
-		Concat(linq.From(awscc.Resources)).
-		Concat(linq.From(bytebase.Resources)).
-		Concat(linq.From(gcp.Resources)).
-		Concat(linq.From(helm.Resources)).
-		Concat(linq.From(kubernetes.Resources)).
-		Concat(linq.From(null.Resources)).
-		Concat(linq.From(local.Resources)).
-		Concat(linq.From(template.Resources)).
-		Concat(linq.From(tls.Resources)).
-		Concat(linq.From(azapi.Resources)).
-		Concat(linq.From(time.Resources)).
-		Concat(linq.From(random.Resources)).
-		Concat(linq.From(modtm.Resources)).ToMap(&resourceSchemas)
-	linq.From(azurerm.DataSources).
-		Concat(linq.From(azuread.DataSources)).
-		Concat(linq.From(alicloud.DataSources)).
-		Concat(linq.From(azapi.DataSources)).
-		Concat(linq.From(bytebase.DataSources)).
-		Concat(linq.From(aws.DataSources)).
-		Concat(linq.From(awscc.DataSources)).
-		Concat(linq.From(gcp.DataSources)).
-		Concat(linq.From(helm.DataSources)).
-		Concat(linq.From(kubernetes.DataSources)).
-		Concat(linq.From(null.DataSources)).
-		Concat(linq.From(local.DataSources)).
-		Concat(linq.From(template.DataSources)).
-		Concat(linq.From(tls.DataSources)).
-		Concat(linq.From(azapi.DataSources)).
-		Concat(linq.From(time.DataSources)).
-		Concat(linq.From(random.DataSources)).
-		Concat(linq.From(modtm.DataSources)).ToMap(&dataSourceSchemas)
-	linq.From(azurerm.EphemeralResources).
-		Concat(linq.From(aws.EphemeralResources)).
-		Concat(linq.From(gcp.EphemeralResources)).
-		Concat(linq.From(random.EphemeralResources)).
-		Concat(linq.From(tls.EphemeralResources)).
-		Concat(linq.From(azapi.EphemeralResources)).ToMap(&ephemeralResourceSchemas)
-}
+var tfPluginServer SchemaGetter = NewServer(nil)
 
-func queryBlockSchema(path []string) *tfjson.SchemaBlock {
-	schemas, ok := blockTypesWithSchema[path[0]]
-	if !ok {
-		return nil
-	}
+func queryBlockSchema(path []string, namespace string, version string) (*tfjson.SchemaBlock, error) {
 	if len(path) < 2 {
-		panic(fmt.Sprintf("invalid path:%v", path))
+		return nil, fmt.Errorf("invalid path:%v", path)
 	}
-	b, ok := schemas[path[1]]
-	if !ok {
-		return nil
+	blockCategory := path[0]
+	blockType := path[1]
+
+	// Special handling for terraform_data builtin resource
+	if blockType == "terraform_data" && namespace == "" && version == "" {
+		return &tfjson.SchemaBlock{
+			Attributes: map[string]*tfjson.SchemaAttribute{
+				"input": {
+					Description: "A value which will be stored in the instance state, and reflected in the output attribute after apply.",
+					Optional:    true,
+				},
+				"triggers_replace": {
+					Description: "A value which is stored in the instance state, and will force replacement when the value changes.",
+					Optional:    true,
+				},
+				"id": {
+					Description: "A string value unique to the resource instance.",
+					Computed:    true,
+				},
+				"output": {
+					Description: "The computed value derived from the input argument.",
+					Computed:    true,
+				},
+			},
+			NestedBlocks: map[string]*tfjson.SchemaBlockType{},
+		}, nil
 	}
-	r := b.Block
-	if postProcessor, ok := schemaPostProcessors[path[1]]; ok {
+
+	providerType := strings.Split(blockType, "_")[0]
+	var getter func(Request, string) (*tfjson.Schema, error)
+	switch blockCategory {
+	case "resource":
+		getter = tfPluginServer.GetResourceSchema
+	case "data":
+		getter = tfPluginServer.GetDataSourceSchema
+	case "ephemeral":
+		getter = tfPluginServer.GetEphemeralResourceSchema
+	default:
+		return nil, fmt.Errorf("unsupport block category: %s", blockCategory)
+	}
+	namespace = nameSpaceOrDefault(namespace, providerType)
+	version, err := versionOrLatest(namespace, providerType, version)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get version for %s: %w", providerType, err)
+	}
+	schema, err := getter(Request{
+		Namespace: namespace,
+		Name:      providerType,
+		Version:   version,
+	}, blockType)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get schema for %s: %w", blockType, err)
+	}
+	r := schema.Block
+	if postProcessor, ok := schemaPostProcessors[blockType]; ok {
 		postProcessor(r)
 	}
 	for i := 2; i < len(path); i++ {
 		nb, ok := r.NestedBlocks[path[i]]
 		if !ok {
-			return nil
+			return nil, nil
 		}
 		r = nb.Block
 	}
-	return r
+	return r, nil
+}
+
+func nameSpaceOrDefault(namespace string, providerType string) string {
+	if namespace == "" {
+		switch providerType {
+		case "azapi":
+			return "Azure"
+		case "msgraph":
+			return "microsoft"
+		default:
+			return "hashicorp"
+		}
+	}
+	return namespace
+}
+
+func getLatestVersion(namespace string, providerType string) (string, error) {
+	url := fmt.Sprintf("https://registry.terraform.io/v1/providers/%s/%s", namespace, providerType)
+
+	resp, err := http.Get(url) // #nosec G107
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch provider info from registry: %w", err)
+	}
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("registry API returned status %d for provider %s/%s", resp.StatusCode, namespace, providerType)
+	}
+
+	var providerInfo struct {
+		Tag string `json:"tag"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&providerInfo); err != nil {
+		return "", fmt.Errorf("failed to decode provider info response: %w", err)
+	}
+
+	if providerInfo.Tag == "" {
+		return "", fmt.Errorf("no tag found in provider info for %s/%s", namespace, providerType)
+	}
+
+	return providerInfo.Tag, nil
+}
+
+func versionOrLatest(namespace, providerType, version string) (string, error) {
+	if version == "" {
+		v, err := getLatestVersion(namespace, providerType)
+		if err != nil {
+			return "", err
+		}
+		version = v
+	}
+	return strings.TrimPrefix(version, "v"), nil
 }
 
 var schemaPostProcessors = map[string]func(*tfjson.SchemaBlock){

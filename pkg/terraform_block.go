@@ -16,10 +16,10 @@ type TerraformBlock struct {
 	File                   *hcl.File
 }
 
-func BuildTerraformBlock(block *HclBlock, file *hcl.File) *TerraformBlock {
+func BuildTerraformBlock(block *HclBlock, file *HclFile) *TerraformBlock {
 	r := &TerraformBlock{
 		HclBlock: block,
-		File:     file,
+		File:     file.File,
 	}
 	if requiredVersionAttr, ok := block.Attributes()["required_version"]; ok {
 		r.RequiredVersion = requiredVersionAttr
@@ -31,7 +31,7 @@ func BuildTerraformBlock(block *HclBlock, file *hcl.File) *TerraformBlock {
 		if nb.Type == "required_providers" {
 			r.RequiredProvidersBlock = nb
 			for _, attribute := range attributesByLines(nb.Attributes()) {
-				r.providers = append(r.providers, buildAttrArg(attribute, file))
+				r.providers = append(r.providers, buildAttrArg(attribute, file.File))
 			}
 			continue
 		}

@@ -3,11 +3,17 @@ package pkg
 import (
 	"github.com/gobwas/glob"
 	"github.com/spf13/afero"
+	"errors"
+	"fmt"
 	"maps"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/spf13/afero"
 )
 
 var Fs = afero.NewOsFs()
@@ -20,6 +26,9 @@ func DirectoryAutoFix(dirPath string, excludePattern ...string) error {
 	d := newDirectory(dirPath, pattern)
 	if err := d.ensureModules(); err != nil {
 		return err
+	}
+	if err := d.parseTerraformLockFile(); err != nil {
+		return fmt.Errorf("failed to parse .terraform.lock.hcl: %w", err)
 	}
 	// variables and outputs files might move blocks into main.tf without fix, so we need run AutoFix twice
 	for i := 0; i < 2; i++ {
@@ -35,10 +44,11 @@ type fileMode interface {
 }
 
 type directory struct {
-	path        string
-	excludeGlob glob.Glob
-	tfFiles     map[string]*HclFile
-	dirEntries  map[string]fileMode
+	path             string
+	excludeGlob      glob.Glob
+	tfFiles          map[string]*HclFile
+	dirEntries       map[string]fileMode
+	providerVersions map[string]map[string]string
 }
 
 func (d *directory) AutoFix() error {
@@ -137,8 +147,8 @@ func (d *directory) ensureDestFile(destFileName string) error {
 	return nil
 }
 
-var terraformGetFunc = func(path string) error {
-	initCmd := exec.Command("terraform", "get")
+var terraformInitFunc = func(path string) error {
+	initCmd := exec.Command("terraform", "init", "-backend=false")
 	initCmd.Dir = path
 	initCmd.Stdout = os.Stdout
 	initCmd.Stderr = os.Stderr
@@ -153,7 +163,7 @@ func (d *directory) shouldExclude(fileName string) bool {
 }
 
 func (d *directory) ensureModules() error {
-	return terraformGetFunc(d.path)
+	return terraformInitFunc(d.path)
 }
 
 func newDirectory(path, excludePattern string) *directory {
@@ -167,4 +177,124 @@ func newDirectory(path, excludePattern string) *directory {
 		tfFiles:     make(map[string]*HclFile),
 		dirEntries:  make(map[string]fileMode),
 	}
+}
+
+// parseTerraformLockFile parses the .terraform.lock.hcl file in the given directory
+// and returns a nested map structure: namespace -> provider name -> version.
+// Example: "hashicorp" -> "azurerm" -> "4.37.0"
+func (d *directory) parseTerraformLockFile() error {
+	lockFilePath := filepath.Join(d.path, ".terraform.lock.hcl")
+	var err error
+	d.providerVersions, err = parseTerraformLockFile(lockFilePath)
+	return err
+}
+
+func parseTerraformLockFileStub(lockFilePath string) (map[string]map[string]string, error) {
+	// Check if the lock file exists
+	exists, err := afero.Exists(Fs, lockFilePath)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		// Return empty map if lock file doesn't exist
+		return nil, fmt.Errorf("lock file %s does not exist", lockFilePath)
+	}
+
+	// Read the lock file content
+	content, err := afero.ReadFile(Fs, lockFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the HCL content
+	file, diags := hclsyntax.ParseConfig(content, lockFilePath, hcl.InitialPos)
+	if diags.HasErrors() {
+		return nil, diags
+	}
+
+	providerVersions := make(map[string]map[string]string)
+
+	// Iterate through the body to find provider blocks
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		return nil, errors.New("failed to parse `.terraform.lock.hcl` body")
+	}
+
+	for _, block := range body.Blocks {
+		if block.Type != "provider" || len(block.Labels) == 0 {
+			continue
+		}
+
+		fullProviderName := block.Labels[0]
+		// Remove quotes from the provider name if present
+		fullProviderName = strings.Trim(fullProviderName, `"`)
+
+		// Parse the provider name to extract namespace and provider name
+		// Format: "registry.terraform.io/namespace/provider"
+		parts := strings.Split(fullProviderName, "/")
+		if len(parts) < 3 {
+			continue
+		}
+
+		namespace := parts[len(parts)-2]    // e.g., "hashicorp"
+		providerName := parts[len(parts)-1] // e.g., "azurerm"
+
+		// Look for the version attribute in the block
+		versionAttr, exists := block.Body.Attributes["version"]
+		if !exists {
+			continue
+		}
+
+		var version string
+		if literal, ok := versionAttr.Expr.(*hclsyntax.LiteralValueExpr); ok {
+			version = literal.Val.AsString()
+		} else if template, ok := versionAttr.Expr.(*hclsyntax.TemplateExpr); ok {
+			// Handle template expressions (quoted strings)
+			if len(template.Parts) == 1 {
+				if literal, ok := template.Parts[0].(*hclsyntax.LiteralValueExpr); ok {
+					version = literal.Val.AsString()
+				}
+			}
+		}
+
+		if version == "" {
+			continue
+		}
+
+		// Initialize namespace map if it doesn't exist
+		if providerVersions[namespace] == nil {
+			providerVersions[namespace] = make(map[string]string)
+		}
+
+		providerVersions[namespace][providerName] = version
+	}
+
+	return providerVersions, nil
+}
+
+var parseTerraformLockFile = parseTerraformLockFileStub
+
+func (d *directory) resolveNamespace(resourceType string) (string, error) {
+	providerType := providerName(resourceType)
+	for space, providers := range d.providerVersions {
+		if _, ok := providers[providerType]; ok {
+			return space, nil
+		}
+	}
+	return "", fmt.Errorf("namespace for resource %s not found", resourceType)
+}
+
+func providerName(resourceType string) string {
+	return strings.Split(resourceType, "_")[0]
+}
+
+func (d *directory) resolveProviderVersion(namespace, resourceType string) (string, error) {
+	providerType := providerName(resourceType)
+	if providers, ok := d.providerVersions[namespace]; ok {
+		if version, ok := providers[providerType]; ok {
+			return version, nil
+		}
+	}
+	return "", fmt.Errorf("version for resource %s in namespace %s not found", resourceType, namespace)
+
 }

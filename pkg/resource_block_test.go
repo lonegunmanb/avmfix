@@ -19,7 +19,8 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	assert.Equal(t, "example", resourceBlock.Name)
 	assert.Equal(t, "azurerm_resource_group", resourceBlock.Type)
 	assert.Equal(t, 2, len(resourceBlock.RequiredArgs))
@@ -56,7 +57,8 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	assert.Equal(t, 2, len(resourceBlock.HeadMetaArgs))
 	assert.Equal(t, "count", resourceBlock.HeadMetaArgs[0].Name)
 	assert.Equal(t, "provider", resourceBlock.HeadMetaArgs[1].Name)
@@ -106,8 +108,9 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -179,8 +182,9 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -231,8 +235,9 @@ resource "azurerm_kubernetes_cluster" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 resource "azurerm_kubernetes_cluster" "example" {
@@ -259,8 +264,9 @@ resource "azurerm_kubernetes_cluster" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 resource "azurerm_kubernetes_cluster" "example" {
@@ -306,8 +312,9 @@ resource "azurerm_container_group" "example" {
 `
 	file, diag := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diag.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 resource "azurerm_container_group" "example" {
@@ -383,8 +390,9 @@ resource "azurerm_container_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 # Multi-Line Comments
@@ -436,8 +444,9 @@ data "azurerm_virtual_network" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 data "azurerm_virtual_network" "example" {
@@ -457,8 +466,9 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 resource "azurerm_resource_group" "example" {
@@ -487,8 +497,9 @@ resource "azurerm_resource_group" "example" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `
 resource "azurerm_resource_group" "example" {
@@ -518,8 +529,9 @@ func TestResourceBlockAutoFix_SingleLineLifecycle(t *testing.T) {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `resource "azurerm_key_vault" "kv" {
   name                     = local.keyvault_name
@@ -537,8 +549,9 @@ func TestResourceBlock_SingleLineResource(t *testing.T) {
 	code := `resource "random_pet" "test" { prefix = "abc" }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `resource "random_pet" "test" {
   prefix = "abc" 
@@ -551,8 +564,9 @@ func TestResourceBlock_EmptyBlock(t *testing.T) {
 	code := `resource "random_pet" "test" {}`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `resource "random_pet" "test" {}`
 	fixed := string(file.WriteFile.Bytes())
@@ -568,8 +582,9 @@ name = "test"
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `resource "azurerm_resource_group" "test" {
 provider = azurerm.test
@@ -587,21 +602,22 @@ func TestResourceBlock_UnknownNestedBlockShouldBeTreatedAsOptionalBlock(t *testi
       unknown_argument = 1
     }
 	default_node_pool {
-      name       = "default"
-      node_count = 1
       vm_size    = "Standard_D2_v2"
+      node_count = 1
+      name       = "default"
     }
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	expected := `resource "azurerm_kubernetes_cluster" "test" {
 	default_node_pool {
       name       = "default"
-      node_count = 1
       vm_size    = "Standard_D2_v2"
+      node_count = 1
     }
     an_unknown_block {
       unknown_argument = 1
@@ -620,8 +636,9 @@ data "azurerm_policy_definition" "vm_policies" {
 }`
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	assert.Equal(t, formatHcl(code), formatHcl(string(file.WriteFile.Bytes())))
 }
@@ -635,8 +652,9 @@ data "azurerm_resources" "spokes" {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	want := `
 data "azurerm_resources" "spokes" {
@@ -660,8 +678,9 @@ ephemeral "aws_kms_secrets" "example" {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
-	err := resourceBlock.AutoFix()
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+	err = resourceBlock.AutoFix()
 	require.NoError(t, err)
 	want := `
 ephemeral "aws_kms_secrets" "example" {
@@ -687,7 +706,8 @@ resource "azapi_resource" "example" {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	requireds := make(map[string]struct{})
 	for _, arg := range resourceBlock.RequiredArgs {
 		requireds[arg.Name] = struct{}{}
@@ -709,7 +729,8 @@ resource "azapi_update_resource" "example" {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	requireds := make(map[string]struct{})
 	for _, arg := range resourceBlock.RequiredArgs {
 		requireds[arg.Name] = struct{}{}
@@ -732,7 +753,8 @@ resource "azapi_resource_action" "example" {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	resourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	requireds := make(map[string]struct{})
 	for _, arg := range resourceBlock.RequiredArgs {
 		requireds[arg.Name] = struct{}{}
@@ -756,7 +778,8 @@ ephemeral "azapi_resource_action" "example" {
 `
 	file, diagnostics := pkg.ParseConfig([]byte(code), "")
 	require.False(t, diagnostics.HasErrors())
-	ephemeralResourceBlock := pkg.BuildBlockWithSchema(file.GetBlock(0), file.File)
+	ephemeralResourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
 	requireds := make(map[string]struct{})
 	for _, arg := range ephemeralResourceBlock.RequiredArgs {
 		requireds[arg.Name] = struct{}{}
@@ -766,4 +789,87 @@ ephemeral "azapi_resource_action" "example" {
 	assert.Contains(t, requireds, "action")
 	assert.Contains(t, requireds, "method")
 	assert.Contains(t, requireds, "query_parameters")
+}
+
+func TestResourceBlock_TerraformDataBuiltinResource_ShouldFail(t *testing.T) {
+	// This test defines the correct behavior: builtin resources like terraform_data
+	// should be supported and NOT cause the tool to fail
+	code := `
+resource "terraform_data" "replacement" {
+  input = var.some_input
+}`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+
+	// This should NOT fail - terraform_data is a builtin resource and should be supported
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+
+	// Expected correct behavior - this should succeed
+	assert.NoError(t, err, "Builtin resources like terraform_data should be supported")
+	require.NotNil(t, resourceBlock, "ResourceBlock should not be nil for builtin resources")
+	assert.Equal(t, "terraform_data", resourceBlock.Type)
+	assert.Equal(t, "replacement", resourceBlock.Name)
+}
+
+func TestResourceBlock_WithTerraformDataReference_ShouldFail(t *testing.T) {
+	// This test shows that even referencing terraform_data in lifecycle blocks causes issues
+	code := `
+resource "azurerm_resource_group" "test" {
+  name     = "test-rg"
+  location = "West Europe"
+  
+  lifecycle {
+    replace_triggered_by = [terraform_data.replacement]
+  }
+}`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+
+	// This should work fine because azurerm_resource_group is a known resource
+	// But if we had terraform_data.replacement resource in the same file,
+	// parsing would fail when trying to build that block
+	resourceBlock, err := pkg.BuildBlockWithSchema(file.GetBlock(0), file)
+	require.NoError(t, err)
+
+	// This part works because azurerm_resource_group is supported
+	assert.Equal(t, "azurerm_resource_group", resourceBlock.Type)
+	assert.Equal(t, "test", resourceBlock.Name)
+}
+
+func TestResourceBlock_MultipleResourcesWithTerraformData_ShouldFail(t *testing.T) {
+	// This test shows that terraform_data should now work correctly alongside other resources
+	code := `
+resource "terraform_data" "replacement" {
+  input = var.some_input
+}
+
+resource "azurerm_resource_group" "test" {
+  name     = "test-rg"
+  location = "West Europe"
+  
+  lifecycle {
+    replace_triggered_by = [terraform_data.replacement]
+  }
+}`
+	file, diag := pkg.ParseConfig([]byte(code), "")
+	require.False(t, diag.HasErrors())
+
+	// Get the first block (terraform_data)
+	terraformDataBlock := file.GetBlock(0)
+	assert.Equal(t, "terraform_data", terraformDataBlock.Labels[0])
+
+	// This should now succeed because terraform_data is supported
+	terraformDataResourceBlock, err := pkg.BuildBlockWithSchema(terraformDataBlock, file)
+	assert.NoError(t, err, "terraform_data should be supported")
+	require.NotNil(t, terraformDataResourceBlock)
+	assert.Equal(t, "terraform_data", terraformDataResourceBlock.Type)
+	assert.Equal(t, "replacement", terraformDataResourceBlock.Name)
+
+	// The second block (azurerm_resource_group) should also work fine
+	azurermBlock := file.GetBlock(1)
+	assert.Equal(t, "azurerm_resource_group", azurermBlock.Labels[0])
+
+	resourceBlock, err := pkg.BuildBlockWithSchema(azurermBlock, file)
+	require.NoError(t, err)
+	assert.Equal(t, "azurerm_resource_group", resourceBlock.Type)
 }
