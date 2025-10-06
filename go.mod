@@ -12,7 +12,7 @@ require (
 	github.com/lonegunmanb/terraform-aws-schema/v6 v6.9.0
 	github.com/lonegunmanb/terraform-azapi-schema/v2 v2.6.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0
-	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0
+	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.47.0
 	github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2
 	github.com/matt-FFFFFF/tfpluginschema v0.3.0
 	github.com/prashantv/gostub v1.1.0
