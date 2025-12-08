@@ -36,8 +36,8 @@ github.com/hashicorp/hcl/v2 v2.24.0 h1:2QJdZ454DSsYGoaE6QheQZjtKZSUs9Nh2izTWiwQx
 github.com/hashicorp/hcl/v2 v2.24.0/go.mod h1:oGoO1FIQYfn/AgyOhlg9qLC6/nOJPX3qGbkZpYAcqfM=
 github.com/hashicorp/terraform-config-inspect v0.0.0-20250401063509-d2d12f9a63bb h1:9TvrRaIIL7QYPk6i1TVKZvRuELwPNR7xVmBuYh52HUY=
 github.com/hashicorp/terraform-config-inspect v0.0.0-20250401063509-d2d12f9a63bb/go.mod h1:Gz/z9Hbn+4KSp8A2FBtNszfLSdT2Tn/uAKGuVqqWmDI=
-github.com/hashicorp/terraform-json v0.26.0 h1:+BnJavhRH+oyNWPnfzrfQwVWCZBFMvjdiH2Vi38Udz4=
-github.com/hashicorp/terraform-json v0.26.0/go.mod h1:eyWCeC3nrZamyrKLFnrvwpc3LQPIJsx8hWHQ/nu2/v4=
+github.com/hashicorp/terraform-json v0.27.2 h1:BwGuzM6iUPqf9JYM/Z4AF1OJ5VVJEEzoKST/tRDBJKU=
+github.com/hashicorp/terraform-json v0.27.2/go.mod h1:GzPLJ1PLdUG5xL6xn1OXWIjteQRT2CNT9o/6A9mi9hE=
 github.com/hashicorp/yamux v0.1.2 h1:XtB8kyFOyHXYVFnwT5C3+Bdo8gArse7j2AQ0DA0Uey8=
 github.com/hashicorp/yamux v0.1.2/go.mod h1:C+zze2n6e/7wshOZep2A70/aQU6QBRWJO/G6FT1wIns=
 github.com/jhump/protoreflect v1.17.0 h1:qOEr613fac2lOuTgWN4tPAtLL7fUSbuJL5X5XumQh94=
@@ -48,8 +48,8 @@ github.com/lonegunmanb/terraform-azapi-schema/v2 v2.6.0 h1:nE8ot7MR4BW66330X3Klg
 github.com/lonegunmanb/terraform-azapi-schema/v2 v2.6.0/go.mod h1:RGAwSWjCTD0m2SNZxKShVZSe4XxjkngQFCHmeMP3ktw=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0 h1:njyNYids//j5Rou0Tp74t9nDVVpaucWr6zJn0N6FtDY=
 github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0/go.mod h1:7pfXsxWT9j7wffXjE3iGUsVaKDb7Q1SJgE4Ir/ziRbM=
-github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0 h1:39i1wwmBFrmkWDqN4ln5uG0Lh/n5goIoQqhlfnu6ETs=
-github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0/go.mod h1:jIym+ZhYjJiAVbrNiLD1t1Azqn58a6WOvhO8htaYn6Q=
+github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.55.0 h1:TqCt8BFDH+w5R8o6fiV4PJTcsOLka/D7ipNAjyqOrew=
+github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.55.0/go.mod h1:9KXCZAfw3lwEwIEJxOODxM1AtyGTYMN+9dbIj2CCZgY=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2 h1:8vsRChXRYjqEvHjCOkLQTF71/s1r7INFh5Y40fUQQBU=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2/go.mod h1:fjxLtDhghd5kojh4HAUyQt6jO1yx1iVpr47e4e+pAjQ=
 github.com/matt-FFFFFF/tfpluginschema v0.3.0 h1:nbufbZnahZRVoD0W2gc+fr/2MyI5HGFttOrYrZ+RoXs=
