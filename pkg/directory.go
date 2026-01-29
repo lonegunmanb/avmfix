@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	"github.com/gobwas/glob"
+	"github.com/spf13/afero"
 	"errors"
 	"fmt"
 	"maps"
@@ -16,8 +18,12 @@ import (
 
 var Fs = afero.NewOsFs()
 
-func DirectoryAutoFix(dirPath string) error {
-	d := newDirectory(dirPath)
+func DirectoryAutoFix(dirPath string, excludePattern ...string) error {
+	pattern := ""
+	if len(excludePattern) > 0 {
+		pattern = excludePattern[0]
+	}
+	d := newDirectory(dirPath, pattern)
 	if err := d.ensureModules(); err != nil {
 		return err
 	}
@@ -39,6 +45,7 @@ type fileMode interface {
 
 type directory struct {
 	path             string
+	excludeGlob      glob.Glob
 	tfFiles          map[string]*HclFile
 	dirEntries       map[string]fileMode
 	providerVersions map[string]map[string]string
@@ -92,6 +99,11 @@ func (d *directory) loadTfFiles() error {
 	}
 	for _, file := range files {
 		if !file.IsDir() && strings.HasSuffix(file.Name(), ".tf") {
+			// Check if file should be excluded
+			if d.shouldExclude(file.Name()) {
+				continue
+			}
+			
 			path := filepath.Join(d.path, file.Name())
 			content, err := afero.ReadFile(Fs, path)
 			if err != nil {
@@ -143,15 +155,27 @@ var terraformInitFunc = func(path string) error {
 	return initCmd.Run()
 }
 
+func (d *directory) shouldExclude(fileName string) bool {
+	if d.excludeGlob == nil {
+		return false
+	}
+	return d.excludeGlob.Match(fileName)
+}
+
 func (d *directory) ensureModules() error {
 	return terraformInitFunc(d.path)
 }
 
-func newDirectory(path string) *directory {
+func newDirectory(path, excludePattern string) *directory {
+	var excludeGlob glob.Glob
+	if excludePattern != "" {
+		excludeGlob = glob.MustCompile(excludePattern)
+	}
 	return &directory{
-		path:       path,
-		tfFiles:    make(map[string]*HclFile),
-		dirEntries: make(map[string]fileMode),
+		path:        path,
+		excludeGlob: excludeGlob,
+		tfFiles:     make(map[string]*HclFile),
+		dirEntries:  make(map[string]fileMode),
 	}
 }
 
