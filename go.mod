@@ -1,9 +1,10 @@
 module github.com/lonegunmanb/avmfix
 
-go 1.24.5
+go 1.25.0
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
+	github.com/gobwas/glob v0.2.3
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-plugin v1.7.0
 	github.com/hashicorp/hcl/v2 v2.24.0
@@ -14,7 +15,7 @@ require (
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0
 	github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2
-	github.com/matt-FFFFFF/tfpluginschema v0.3.0
+	github.com/matt-FFFFFF/tfpluginschema v0.7.0
 	github.com/prashantv/gostub v1.1.0
 	github.com/spf13/afero v1.14.0
 	github.com/stretchr/testify v1.11.1
@@ -26,7 +27,6 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
