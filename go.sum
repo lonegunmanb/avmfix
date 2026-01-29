@@ -54,8 +54,8 @@ github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0 h1:39i1wwmBFrmkWDqN4l
 github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0/go.mod h1:jIym+ZhYjJiAVbrNiLD1t1Azqn58a6WOvhO8htaYn6Q=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2 h1:8vsRChXRYjqEvHjCOkLQTF71/s1r7INFh5Y40fUQQBU=
 github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2/go.mod h1:fjxLtDhghd5kojh4HAUyQt6jO1yx1iVpr47e4e+pAjQ=
-github.com/matt-FFFFFF/tfpluginschema v0.3.0 h1:nbufbZnahZRVoD0W2gc+fr/2MyI5HGFttOrYrZ+RoXs=
-github.com/matt-FFFFFF/tfpluginschema v0.3.0/go.mod h1:Hb3RueEC+FcDfwub6fTBVyZmuGGyYL7IUP2oMLgGgX4=
+github.com/matt-FFFFFF/tfpluginschema v0.7.0 h1:6neaytgJJ6M+3d6FwskqGApcGaRabZcLPlyDeqwEPk0=
+github.com/matt-FFFFFF/tfpluginschema v0.7.0/go.mod h1:8rXzXlIcURD88FM8XIcelmXrte8L/nPremy963DR4oI=
 github.com/mattn/go-colorable v0.1.9/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
 github.com/mattn/go-colorable v0.1.12/go.mod h1:u5H1YNBxpqRaxsYJYSkiCWKzEfiAb1Gb520KVy5xxl4=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
