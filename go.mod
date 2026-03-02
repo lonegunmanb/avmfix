@@ -19,7 +19,7 @@ require (
 	github.com/prashantv/gostub v1.1.0
 	github.com/spf13/afero v1.15.0
 	github.com/stretchr/testify v1.11.1
-	github.com/zclconf/go-cty v1.17.0
+	github.com/zclconf/go-cty v1.18.0
 	google.golang.org/grpc v1.79.1
 )
 
