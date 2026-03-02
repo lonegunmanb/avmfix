@@ -4,3 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "github.com/lonegunmanb/terraform-azurerm-schema/*"
+      - dependency-name: "github.com/lonegunmanb/terraform-aws-schema/*"
+      - dependency-name: "github.com/lonegunmanb/terraform-azapi-schema/*"
+      - dependency-name: "github.com/lonegunmanb/terraform-random-schema/*"
