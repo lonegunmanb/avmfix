@@ -1,8 +1,6 @@
 package pkg
 
 import (
-	"github.com/gobwas/glob"
-	"github.com/spf13/afero"
 	"errors"
 	"fmt"
 	"maps"
@@ -11,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/gobwas/glob"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/spf13/afero"
