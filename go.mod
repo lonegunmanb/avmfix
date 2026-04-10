@@ -15,7 +15,7 @@ require (
 	github.com/lonegunmanb/terraform-azurerm-schema/v3 v3.116.0
 	github.com/lonegunmanb/terraform-azurerm-schema/v4 v4.40.0
 	github.com/lonegunmanb/terraform-random-schema/v3 v3.7.2
-	github.com/matt-FFFFFF/tfpluginschema v0.8.0
+	github.com/matt-FFFFFF/tfpluginschema v0.8.1
 	github.com/prashantv/gostub v1.1.0
 	github.com/spf13/afero v1.15.0
 	github.com/stretchr/testify v1.11.1
