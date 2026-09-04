@@ -4,7 +4,7 @@ go 1.26.1
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
-	github.com/gobwas/glob v0.2.3
+	github.com/gobwas/glob v1.0.0
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-plugin v1.8.0
 	github.com/hashicorp/hcl/v2 v2.24.0
